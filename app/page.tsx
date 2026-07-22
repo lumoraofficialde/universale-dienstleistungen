@@ -116,39 +116,6 @@ const fleet = [
 
 type FleetIcon = (typeof fleet)[number]["icon"];
 
-function ServicesEmblem() {
-  return (
-    <svg
-      className="services-emblem"
-      viewBox="0 0 132 132"
-      aria-hidden="true"
-    >
-      <circle className="services-emblem__orbit" cx="66" cy="66" r="58" pathLength="1" />
-      <circle className="services-emblem__core" cx="66" cy="66" r="12" pathLength="1" />
-      <path className="services-emblem__axis" d="M66 8v46M124 66H78M66 124V78M8 66h46" pathLength="1" />
-
-      <g className="services-emblem__mark services-emblem__mark--leaf">
-        <path d="M29 43c13 1 21-6 25-18-13-1-23 5-25 18Z" pathLength="1" />
-        <path d="M31 42c7-5 13-9 21-14" pathLength="1" />
-      </g>
-
-      <g className="services-emblem__mark services-emblem__mark--snow">
-        <path d="M91 25v28M79 32l24 14M103 32 79 46" pathLength="1" />
-        <path d="m91 25-4 5m4-5 4 5m8 2-1 7m1-7-7 2m7 12-7-2m7 2-1-7m-11 14-4-5m4 5 4-5m-16-6 7-2m-7 2 1-7m-1-7 1 7m-1-7 7 2" pathLength="1" />
-      </g>
-
-      <g className="services-emblem__mark services-emblem__mark--home">
-        <path d="m25 92 18-15 18 15M31 88v20h24V88M40 108V96h7v12" pathLength="1" />
-      </g>
-
-      <g className="services-emblem__mark services-emblem__mark--clear">
-        <path d="m82 84 24 24M87 79l19 19M78 89l19 19" pathLength="1" />
-        <path d="m96 108 12-12M82 84l5-5" pathLength="1" />
-      </g>
-    </svg>
-  );
-}
-
 function ServiceIllustration({ type }: { type: ServiceChoiceIcon }) {
   const common = {
     className: "service-choice__icon",
@@ -425,43 +392,11 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="intro-body" data-reveal>
-              <p className="intro-lead">
-                Wir halten Immobilien, Außenflächen und Wege in Ordnung —
-                einmalig, saisonal oder als laufende Betreuung.
-              </p>
-              <p>
-                Von der ersten Besichtigung bis zur sauberen Übergabe planen wir
-                individuell und setzen mit eigenem Personal und moderner Technik
-                fachgerecht um.
-              </p>
-              <a className="text-link" href="#leistungen">
-                Leistungen ansehen <span aria-hidden="true">→</span>
-              </a>
-            </div>
-
           </div>
         </section>
 
         <section className="services section" id="leistungen">
           <div className="container">
-            <div className="section-heading services-heading">
-              <div data-reveal="left">
-                <p className="eyebrow eyebrow--dark">Was wir übernehmen</p>
-                <h2>
-                  <span>Arbeit, die man sieht.</span>
-                  <span>Service, den man merkt.</span>
-                </h2>
-              </div>
-              <aside className="services-note" data-reveal="right">
-                <ServicesEmblem />
-                <div>
-                  <strong>Vier Bereiche. Ein Team.</strong>
-                  <p>Einzeln buchbar oder als laufende Objektbetreuung.</p>
-                </div>
-              </aside>
-            </div>
-
             <div className="services-grid">
               {services.map((service, index) => (
                 <article

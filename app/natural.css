@@ -188,6 +188,10 @@ body::after {
   background-size: 760px auto;
 }
 
+.intro.section {
+  padding-bottom: clamp(2.5rem, 4vw, 4.5rem);
+}
+
 .intro::before {
   border-color: rgba(91, 113, 61, 0.16);
   box-shadow:
@@ -275,153 +279,7 @@ body::after {
 }
 
 .services.section {
-  padding-block: clamp(5.5rem, 7.25vw, 8rem);
-}
-
-.services-heading {
-  grid-template-columns: minmax(0, 1fr) minmax(230px, 0.32fr);
-  gap: clamp(1.5rem, 3.5vw, 4rem);
-  align-items: center;
-  margin-bottom: clamp(3.25rem, 5vw, 5.5rem);
-}
-
-.services-heading h2 {
-  max-width: none;
-  font-size: clamp(3.25rem, 5.35vw, 6.2rem);
-  line-height: 0.86;
-  text-wrap: balance;
-}
-
-.services-heading h2 span {
-  display: block;
-}
-
-.services-note {
-  position: relative;
-  display: grid;
-  grid-template-columns: clamp(82px, 8vw, 112px) minmax(0, 1fr);
-  gap: 1.15rem;
-  align-items: center;
-  padding: 1rem 0 1rem clamp(1.1rem, 2vw, 1.8rem);
-  border-left: 1px solid rgba(24, 51, 40, 0.2);
-}
-
-.services-note::after {
-  position: absolute;
-  top: 50%;
-  left: -4px;
-  width: 7px;
-  height: 34px;
-  content: "";
-  background: var(--moss);
-  border-radius: 1px 5px 1px 4px;
-  transform: translateY(-50%);
-}
-
-.services-note strong {
-  display: block;
-  color: var(--pine);
-  font-family: var(--font-display), sans-serif;
-  font-size: clamp(1.35rem, 1.7vw, 1.85rem);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 0.95;
-  text-transform: uppercase;
-}
-
-.services-note p {
-  max-width: 28ch;
-  margin-top: 0.55rem;
-  color: var(--muted);
-  font-size: 0.75rem;
-  line-height: 1.55;
-}
-
-.services-emblem {
-  width: 100%;
-  overflow: visible;
-  color: var(--moss-deep);
-  transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.services-note:hover .services-emblem {
-  transform: rotate(4deg) scale(1.025);
-}
-
-.services-emblem circle,
-.services-emblem path {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset 900ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.services-emblem__orbit {
-  opacity: 0.42;
-  stroke-width: 1.2 !important;
-}
-
-.services-emblem__core {
-  fill: var(--acid) !important;
-  stroke: var(--pine) !important;
-}
-
-.services-emblem__axis {
-  opacity: 0.26;
-  stroke-width: 1.1;
-}
-
-.services-emblem__mark--leaf path:first-child {
-  fill: rgba(114, 135, 76, 0.13);
-}
-
-.services-emblem__mark--snow {
-  color: #6f8979;
-}
-
-.services-emblem__mark--home {
-  color: var(--pine);
-}
-
-.services-emblem__mark--clear {
-  color: #89975f;
-}
-
-.motion-ready .services-note:not(.is-visible) .services-emblem circle,
-.motion-ready .services-note:not(.is-visible) .services-emblem path {
-  stroke-dashoffset: 1;
-}
-
-.motion-ready .services-note.is-visible .services-emblem__mark--snow path {
-  transition-delay: 130ms;
-}
-
-.motion-ready .services-note.is-visible .services-emblem__mark--home path {
-  transition-delay: 230ms;
-}
-
-.motion-ready .services-note.is-visible .services-emblem__mark--clear path {
-  transition-delay: 330ms;
-}
-
-@media (min-width: 781px) {
-  .services-heading h2 span {
-    white-space: nowrap;
-  }
-}
-
-@media (max-width: 780px) {
-  .services-heading {
-    grid-template-columns: 1fr;
-  }
-
-  .services-note {
-    max-width: 520px;
-  }
+  padding-block: clamp(1.5rem, 3vw, 3rem) clamp(5.5rem, 7.25vw, 8rem);
 }
 
 .service-card {
@@ -900,35 +758,7 @@ body::after {
   }
 
   .services.section {
-    padding-block: 5rem 5.75rem;
-  }
-
-  .services-heading {
-    gap: 2.5rem;
-    margin-bottom: 2.9rem;
-  }
-
-  .services-heading h2 {
-    font-size: clamp(1.7rem, 8.3vw, 2.6rem);
-  }
-
-  .services-heading h2 span {
-    white-space: nowrap;
-  }
-
-  .services-note {
-    grid-template-columns: 76px minmax(0, 1fr);
-    gap: 1rem;
-    padding-block: 0.55rem;
-  }
-
-  .services-note strong {
-    font-size: 1.3rem;
-  }
-
-  .services-note p {
-    max-width: 29ch;
-    font-size: 0.7rem;
+    padding-block: 1.25rem 5.75rem;
   }
 
   .hero::after {

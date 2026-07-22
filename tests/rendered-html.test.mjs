@@ -12,6 +12,8 @@ test("exports a complete static GitHub Pages site", async () => {
   assert.match(html, /<title>Universale Dienstleistungen/i);
   assert.match(html, /Alles im Griff\./);
   assert.match(html, /Vier Aufgaben\./);
+  assert.doesNotMatch(html, /Arbeit, die man sieht\./);
+  assert.doesNotMatch(html, /Wir halten Immobilien/);
   assert.match(html, /24 Stunden am Tag, 7 Tage die Woche erreichbar/);
   assert.match(html, /Drei Schritte\./);
   assert.doesNotMatch(html, /Worauf Sie sich verlassen können\./);
@@ -57,9 +59,11 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(page, /data-season-story/);
   assert.match(page, /service-picker__grid/);
   assert.match(page, /selectedService/);
-  assert.match(page, /function ServicesEmblem/);
+  assert.doesNotMatch(page, /function ServicesEmblem/);
+  assert.doesNotMatch(page, /Arbeit, die man sieht\./);
+  assert.doesNotMatch(page, /Wir halten Immobilien/);
+  assert.doesNotMatch(page, /services-heading/);
   assert.match(page, /function FleetGlyph/);
-  assert.match(page, /Vier Bereiche\. Ein Team\./);
   assert.match(page, /<span>Für jede Fläche<\/span>/);
   assert.match(page, /<span>das richtige Gerät\.<\/span>/);
   assert.doesNotMatch(page, /<figcaption>/);
@@ -78,7 +82,7 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.doesNotMatch(naturalCss, /\.process-card\s*\{[^}]*position:/);
   assert.doesNotMatch(naturalCss, /\.hero-media\s*\{/);
   assert.doesNotMatch(naturalCss, /\.services-grid\s*\{/);
-  assert.match(naturalCss, /\.services-heading h2 span\s*\{[\s\S]*?white-space:\s*nowrap/);
+  assert.doesNotMatch(naturalCss, /\.services-heading/);
   assert.match(naturalCss, /\.fleet-glyph\s*\{/);
   assert.match(css, /\.fleet-title h2 span\s*\{[\s\S]*?white-space:\s*nowrap/);
   assert.match(css, /\.readiness-rail span\s*\{\s*font-size:\s*clamp\(3\.25rem, 15vw, 4\.5rem\)/);
