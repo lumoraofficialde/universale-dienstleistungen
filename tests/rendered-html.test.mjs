@@ -14,7 +14,7 @@ test("exports a complete static GitHub Pages site", async () => {
   assert.match(html, /Vier Aufgaben\./);
   assert.match(html, /24 Stunden am Tag, 7 Tage die Woche erreichbar/);
   assert.match(html, /Drei Schritte\./);
-  assert.match(html, /Worauf Sie sich verlassen können\./);
+  assert.doesNotMatch(html, /Worauf Sie sich verlassen können\./);
   assert.match(html, /Wobei können wir helfen\?/);
   assert.match(html, /id="kontakt"/);
 
@@ -41,6 +41,8 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
 
   assert.match(shell, /NEXT_PUBLIC_BASE_PATH/);
   assert.match(page, /data-scroll-parallax/);
+  assert.match(page, /data-process-reveal/);
+  assert.match(shell, /processObserver/);
   assert.match(shell, /Math\.min\(y \* 0\.58, 280\)/);
   assert.doesNotMatch(page, /Kompetenz durch Erfahrung/);
   assert.doesNotMatch(page, /hero-proof/);

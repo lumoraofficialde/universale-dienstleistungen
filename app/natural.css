@@ -457,34 +457,6 @@ body::after {
   background: rgba(16, 45, 35, 0.22);
 }
 
-/* Verified facts are presented as an editorial ledger, never as generic cards. */
-.trust-ledger {
-  background-color: var(--paper-bright);
-  background-image: url("/media/natural-paper-texture.webp");
-  background-size: 760px auto;
-}
-
-.trust-ledger::after {
-  position: absolute;
-  right: -9vw;
-  bottom: -3rem;
-  width: min(36vw, 560px);
-  height: 72%;
-  content: "";
-  opacity: 0.055;
-  background: url("/media/natural-grass-ornament.webp") right bottom / contain no-repeat;
-  pointer-events: none;
-}
-
-.trust-ledger .container {
-  position: relative;
-  z-index: 1;
-}
-
-.trust-entry strong {
-  color: var(--moss-deep);
-}
-
 /* 24/7 section */
 .readiness {
   background-color: var(--pine-deep);

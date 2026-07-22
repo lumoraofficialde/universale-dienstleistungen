@@ -500,29 +500,6 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="trust-ledger" aria-labelledby="trust-title">
-          <div className="container">
-            <div className="trust-ledger__heading" data-reveal="left">
-              <p className="eyebrow eyebrow--dark">Fakten statt Floskeln</p>
-              <h2 id="trust-title">Worauf Sie sich verlassen können.</h2>
-            </div>
-            <div className="trust-ledger__grid" data-reveal="right">
-              <div className="trust-entry trust-entry--wide">
-                <span>Erreichbarkeit</span><strong>24 / 7</strong><p>Telefonisch erreichbar</p>
-              </div>
-              <div className="trust-entry">
-                <span>Leistung</span><strong>04</strong><p>klar definierte Bereiche</p>
-              </div>
-              <div className="trust-entry">
-                <span>Standort</span><strong>Büsum</strong><p>Westerstraße 3</p>
-              </div>
-              <div className="trust-entry trust-entry--wide">
-                <span>Einsatzgebiet</span><strong>Deutschlandweit</strong><p>nach Aufgabe und Abstimmung</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
         <section className="readiness" aria-labelledby="readiness-title">
           <div className="readiness-noise" aria-hidden="true" />
           <div className="container readiness-grid">
@@ -573,10 +550,6 @@ export default function Home() {
         <section className="fleet section" id="fuhrpark">
           <div className="container">
             <div className="fleet-top">
-              <div className="section-label" data-reveal="left">
-                <span>02</span>
-                <p>Fuhr- &<br />Maschinenpark</p>
-              </div>
               <div className="fleet-title" data-reveal="right">
                 <p className="eyebrow eyebrow--dark">Technik, die mitarbeitet</p>
                 <h2>
@@ -650,7 +623,7 @@ export default function Home() {
             </div>
 
             <ol className="process-stack">
-              <li className="process-card process-card--one" data-reveal="right">
+              <li className="process-card process-card--one" data-process-reveal>
                 <div className="process-card__top">
                   <span>01</span><p>Anfrage</p><i>Start</i>
                 </div>
@@ -662,7 +635,7 @@ export default function Home() {
                   <span>Telefon</span><span>E-Mail</span><span>Formular</span>
                 </div>
               </li>
-              <li className="process-card process-card--two" data-reveal="left">
+              <li className="process-card process-card--two" data-process-reveal>
                 <div className="process-card__top">
                   <span>02</span><p>Planung</p><i>Abstimmung</i>
                 </div>
@@ -674,7 +647,7 @@ export default function Home() {
                   <span>Umfang</span><span>Termin</span><span>Angebot</span>
                 </div>
               </li>
-              <li className="process-card process-card--three" data-reveal="right">
+              <li className="process-card process-card--three" data-process-reveal>
                 <div className="process-card__top">
                   <span>03</span><p>Umsetzung</p><i>Erledigt</i>
                 </div>
