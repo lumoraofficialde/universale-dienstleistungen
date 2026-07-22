@@ -27,8 +27,18 @@ test("keeps the Pages asset prefix and motion system wired in", async () => {
 
   assert.match(page, /NEXT_PUBLIC_BASE_PATH/);
   assert.match(page, /data-scroll-parallax/);
+  assert.match(page, /Math\.min\(y \* 0\.26, 180\)/);
+  assert.match(page, /readiness-rail__track/);
   assert.match(page, /classList\.toggle\(\s*"is-past"/);
+  assert.match(page, /handleHashNavigation/);
+  assert.match(page, /addEventListener\(\s*"click",\s*handleHashNavigation/);
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
+  assert.match(css, /@keyframes readiness-marquee/);
+  assert.match(css, /\.readiness-rail span\s*\{\s*font-size:\s*clamp\(3\.25rem, 15vw, 4\.5rem\)/);
+  assert.match(
+    css,
+    /@media \(max-width: 780px\)[\s\S]*?\.hero-kicker\s*\{\s*display:\s*none;/,
+  );
   assert.match(nextConfig, /output:\s*"export"/);
   assert.match(viteConfig, /NEXT_PUBLIC_BASE_PATH/);
   assert.match(viteConfig, /base:/);

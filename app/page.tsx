@@ -75,7 +75,7 @@ export default function Home() {
       );
       document.documentElement.style.setProperty(
         "--hero-shift",
-        `${Math.min(y * 0.18, 120)}px`,
+        `${Math.min(y * 0.26, 180)}px`,
       );
       document.documentElement.style.setProperty(
         "--hero-content-y",
@@ -154,6 +154,54 @@ export default function Home() {
     document.body.classList.toggle("menu-is-open", menuOpen);
     return () => document.body.classList.remove("menu-is-open");
   }, [menuOpen]);
+
+  useEffect(() => {
+    const handleHashNavigation = (event: globalThis.MouseEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
+        return;
+      }
+
+      const origin = event.target;
+      if (!(origin instanceof Element)) return;
+
+      const link = origin.closest<HTMLAnchorElement>('a[href^="#"]');
+      const hash = link?.getAttribute("href");
+      if (!hash || hash === "#") return;
+
+      const target = document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (!target) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      setMenuOpen(false);
+
+      const behavior = window.matchMedia("(prefers-reduced-motion: reduce)")
+        .matches
+        ? "auto"
+        : "smooth";
+      const scrollToTarget = () => {
+        target.scrollIntoView({ behavior, block: "start" });
+        if (window.location.hash !== hash) {
+          window.history.pushState(null, "", hash);
+        }
+      };
+
+      window.requestAnimationFrame(() =>
+        window.requestAnimationFrame(scrollToTarget),
+      );
+    };
+
+    window.addEventListener("click", handleHashNavigation, { capture: true });
+    return () =>
+      window.removeEventListener("click", handleHashNavigation, true);
+  }, []);
 
   const handleSpotlight = (event: MouseEvent<HTMLElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -459,9 +507,16 @@ export default function Home() {
             </div>
           </div>
           <div className="readiness-rail" aria-hidden="true">
-            <span>Räumen</span><i>—</i><span>Streuen</span><i>—</i>
-            <span>Sichern</span><i>—</i><span>Betreuen</span><i>—</i>
-            <span>Räumen</span><i>—</i><span>Streuen</span>
+            <div className="readiness-rail__track">
+              {[0, 1].map((copy) => (
+                <div className="readiness-rail__set" key={copy}>
+                  <span>Räumen</span><i>—</i>
+                  <span>Streuen</span><i>—</i>
+                  <span>Sichern</span><i>—</i>
+                  <span>Betreuen</span><i>—</i>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
