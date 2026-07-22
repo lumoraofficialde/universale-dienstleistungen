@@ -1,4 +1,5 @@
 import "./globals.css";
+import "./natural.css";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const siteUrl =

@@ -5,6 +5,11 @@ import { FormEvent, MouseEvent, useEffect, useState } from "react";
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const assetPath = (path: string) => `${basePath}${path}`;
 
+type VinextNavigate = (
+  href: string,
+  ...navigationArguments: unknown[]
+) => Promise<unknown>;
+
 const services = [
   {
     number: "01",
@@ -41,13 +46,128 @@ const services = [
 ];
 
 const fleet = [
-  "Räumfahrzeuge mit Streusystem",
-  "Mobile Schneefräsen",
-  "Mähwerke für Großflächen",
-  "Mähwerke für Eigenheime",
-  "Technik für Hecken- und Rückschnitt",
-  "3,5-t-Einsatzfahrzeug",
-];
+  {
+    name: "Räumfahrzeuge mit Streusystem",
+    note: "Räumen · streuen",
+    icon: "plow",
+  },
+  {
+    name: "Mobile Schneefräsen",
+    note: "Wendig im Nahbereich",
+    icon: "blower",
+  },
+  {
+    name: "Mähwerke für Großflächen",
+    note: "Effizient auf Fläche",
+    icon: "acreage",
+  },
+  {
+    name: "Mähwerke für Eigenheime",
+    note: "Präzise am Objekt",
+    icon: "residential",
+  },
+  {
+    name: "Technik für Hecken- und Rückschnitt",
+    note: "Saubere Konturen",
+    icon: "hedge",
+  },
+  {
+    name: "3,5-t-Einsatzfahrzeug",
+    note: "Schnell vor Ort",
+    icon: "response",
+  },
+] as const;
+
+type FleetIcon = (typeof fleet)[number]["icon"];
+
+function ServicesEmblem() {
+  return (
+    <svg
+      className="services-emblem"
+      viewBox="0 0 132 132"
+      aria-hidden="true"
+    >
+      <circle className="services-emblem__orbit" cx="66" cy="66" r="58" pathLength="1" />
+      <circle className="services-emblem__core" cx="66" cy="66" r="12" pathLength="1" />
+      <path className="services-emblem__axis" d="M66 8v46M124 66H78M66 124V78M8 66h46" pathLength="1" />
+
+      <g className="services-emblem__mark services-emblem__mark--leaf">
+        <path d="M29 43c13 1 21-6 25-18-13-1-23 5-25 18Z" pathLength="1" />
+        <path d="M31 42c7-5 13-9 21-14" pathLength="1" />
+      </g>
+
+      <g className="services-emblem__mark services-emblem__mark--snow">
+        <path d="M91 25v28M79 32l24 14M103 32 79 46" pathLength="1" />
+        <path d="m91 25-4 5m4-5 4 5m8 2-1 7m1-7-7 2m7 12-7-2m7 2-1-7m-11 14-4-5m4 5 4-5m-16-6 7-2m-7 2 1-7m-1-7 1 7m-1-7 7 2" pathLength="1" />
+      </g>
+
+      <g className="services-emblem__mark services-emblem__mark--home">
+        <path d="m25 92 18-15 18 15M31 88v20h24V88M40 108V96h7v12" pathLength="1" />
+      </g>
+
+      <g className="services-emblem__mark services-emblem__mark--clear">
+        <path d="m82 84 24 24M87 79l19 19M78 89l19 19" pathLength="1" />
+        <path d="m96 108 12-12M82 84l5-5" pathLength="1" />
+      </g>
+    </svg>
+  );
+}
+
+function FleetGlyph({ type }: { type: FleetIcon }) {
+  const common = {
+    className: "fleet-glyph",
+    viewBox: "0 0 48 48",
+    "aria-hidden": true,
+  } as const;
+
+  switch (type) {
+    case "plow":
+      return (
+        <svg {...common}>
+          <path d="M8 28h24l7 6H18L8 28Z" />
+          <path d="M14 28v-9h14l4 9M11 35l25-1M9 39h28" />
+          <circle cx="17" cy="36" r="3" /><circle cx="32" cy="36" r="3" />
+        </svg>
+      );
+    case "blower":
+      return (
+        <svg {...common}>
+          <circle cx="18" cy="29" r="9" /><path d="m12 29 12-5-2 11-10-6ZM25 23l7-11h6v5h-6l-3 10M27 34h11M34 34v5" />
+          <circle cx="17" cy="29" r="2" />
+        </svg>
+      );
+    case "acreage":
+      return (
+        <svg {...common}>
+          <path d="M7 29h34M12 24h24l4 5-4 6H12l-4-6 4-5Z" />
+          <path d="m17 29 7-4 7 4-7 4-7-4ZM12 38h24" />
+        </svg>
+      );
+    case "residential":
+      return (
+        <svg {...common}>
+          <path d="M10 34h23l4-7H17l-7 7ZM18 27l8-14 9 14" />
+          <circle cx="17" cy="35" r="3" /><circle cx="32" cy="35" r="3" />
+          <path d="M26 13v-4" />
+        </svg>
+      );
+    case "hedge":
+      return (
+        <svg {...common}>
+          <path d="M8 29h27l6 5H14l-6-5ZM13 25l4 4 4-4 4 4 4-4 4 4" />
+          <path d="m11 34-4 6M34 34l7 6" />
+        </svg>
+      );
+    case "response":
+      return (
+        <svg {...common}>
+          <path d="M7 32V20h23l8 7v5H7ZM30 22v7h8M17 20v-5h9v5" />
+          <path d="M19 15v-4h5v4M20 26h5M22.5 23.5v5" />
+          <circle cx="15" cy="34" r="3" /><circle cx="33" cy="34" r="3" />
+        </svg>
+      );
+  }
+}
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -75,7 +195,7 @@ export default function Home() {
       );
       document.documentElement.style.setProperty(
         "--hero-shift",
-        `${Math.min(y * 0.26, 180)}px`,
+        `${Math.min(y * 0.44, 200)}px`,
       );
       document.documentElement.style.setProperty(
         "--hero-content-y",
@@ -156,6 +276,54 @@ export default function Home() {
   }, [menuOpen]);
 
   useEffect(() => {
+    const vinextWindow = window as Window & {
+      __VINEXT_RSC_NAVIGATE__?: VinextNavigate;
+    };
+
+    const originalVinextNavigate = vinextWindow.__VINEXT_RSC_NAVIGATE__;
+    const handleStaticHashNavigation: VinextNavigate = (
+      href,
+      ...navigationArguments
+    ) => {
+      const nextUrl = new URL(href, window.location.href);
+      const currentUrl = new URL(window.location.href);
+      const isSameDocument =
+        nextUrl.origin === currentUrl.origin &&
+        nextUrl.pathname === currentUrl.pathname &&
+        nextUrl.search === currentUrl.search;
+
+      if (isSameDocument) {
+        const id = decodeURIComponent(nextUrl.hash.slice(1));
+        const scrollToHash = () => {
+          if (!id || id === "top") {
+            window.scrollTo({ top: 0, behavior: "auto" });
+          } else {
+            document.getElementById(id)?.scrollIntoView({
+              behavior: "auto",
+              block: "start",
+            });
+          }
+        };
+
+        return new Promise((resolve) => {
+          window.requestAnimationFrame(() => {
+            resolve(undefined);
+            window.queueMicrotask(() =>
+              window.requestAnimationFrame(scrollToHash),
+            );
+          });
+        });
+      }
+
+      return originalVinextNavigate
+        ? originalVinextNavigate(href, ...navigationArguments)
+        : Promise.resolve();
+    };
+
+    if (originalVinextNavigate) {
+      vinextWindow.__VINEXT_RSC_NAVIGATE__ = handleStaticHashNavigation;
+    }
+
     const handleHashNavigation = (event: globalThis.MouseEvent) => {
       if (
         event.defaultPrevented ||
@@ -199,8 +367,14 @@ export default function Home() {
     };
 
     window.addEventListener("click", handleHashNavigation, { capture: true });
-    return () =>
+    return () => {
       window.removeEventListener("click", handleHashNavigation, true);
+      if (
+        vinextWindow.__VINEXT_RSC_NAVIGATE__ === handleStaticHashNavigation
+      ) {
+        vinextWindow.__VINEXT_RSC_NAVIGATE__ = originalVinextNavigate;
+      }
+    };
   }, []);
 
   const handleSpotlight = (event: MouseEvent<HTMLElement>) => {
@@ -319,7 +493,6 @@ export default function Home() {
 
             <div className="hero-layout">
               <div className="hero-copy">
-                <p className="eyebrow">Kompetenz durch Erfahrung</p>
                 <h1 id="hero-title">
                   Alles im Griff.
                   <span>Bei jedem Wetter.</span>
@@ -342,19 +515,7 @@ export default function Home() {
               </aside>
             </div>
 
-            <div className="hero-foot">
-              <div className="hero-proof">
-                <span>01</span>
-                <p>Persönliche<br />Beratung</p>
-              </div>
-              <div className="hero-proof">
-                <span>02</span>
-                <p>24 Stunden<br />abrufbereit</p>
-              </div>
-              <div className="hero-proof">
-                <span>03</span>
-                <p>Moderner<br />Maschinenpark</p>
-              </div>
+            <div className="hero-scroll">
               <a className="scroll-cue" href="#unternehmen">
                 <span>Entdecken</span>
                 <i aria-hidden="true">↓</i>
@@ -434,15 +595,21 @@ export default function Home() {
 
         <section className="services section" id="leistungen">
           <div className="container">
-            <div className="section-heading" data-reveal="left">
-              <div>
+            <div className="section-heading services-heading">
+              <div data-reveal="left">
                 <p className="eyebrow eyebrow--dark">Was wir übernehmen</p>
-                <h2>Arbeit, die man sieht.<br />Service, den man merkt.</h2>
+                <h2>
+                  <span>Arbeit, die man sieht.</span>
+                  <span>Service, den man merkt.</span>
+                </h2>
               </div>
-              <p>
-                Ganzjährig einsatzbereit und flexibel kombinierbar — als
-                Einzelauftrag oder laufende Objektbetreuung.
-              </p>
+              <aside className="services-note" data-reveal="right">
+                <ServicesEmblem />
+                <div>
+                  <strong>Vier Bereiche. Ein Team.</strong>
+                  <p>Einzeln buchbar oder als laufende Objektbetreuung.</p>
+                </div>
+              </aside>
             </div>
 
             <div className="services-grid">
@@ -529,11 +696,13 @@ export default function Home() {
               </div>
               <div className="fleet-title" data-reveal="right">
                 <p className="eyebrow eyebrow--dark">Technik, die mitarbeitet</p>
-                <h2>Für jede Fläche<br />das richtige Gerät.</h2>
+                <h2>
+                  <span>Für jede Fläche</span>
+                  <span>das richtige Gerät.</span>
+                </h2>
                 <p>
-                  Unser eigener Fuhrpark macht uns flexibel. So können wir
-                  Personal und Technik passend zur Aufgabe einplanen — auch
-                  kurzfristig und außerhalb üblicher Zeiten.
+                  Eigener Fuhrpark, passend zur Aufgabe — flexibel und
+                  kurzfristig einsatzbereit.
                 </p>
               </div>
             </div>
@@ -546,18 +715,17 @@ export default function Home() {
                   loading="lazy"
                   data-scroll-parallax
                 />
-                <figcaption>
-                  <span>Im Einsatz</span>
-                  <p>Mit Plan, Personal und passender Technik.</p>
-                </figcaption>
               </figure>
 
               <div className="fleet-list" data-reveal="right">
                 {fleet.map((item, index) => (
-                  <div className="fleet-item" key={item}>
+                  <div className={`fleet-item fleet-item--${item.icon}`} key={item.name}>
                     <span>{String(index + 1).padStart(2, "0")}</span>
-                    <p>{item}</p>
-                    <i aria-hidden="true">↗</i>
+                    <div className="fleet-item__copy">
+                      <p>{item.name}</p>
+                      <small>{item.note}</small>
+                    </div>
+                    <i><FleetGlyph type={item.icon} /></i>
                   </div>
                 ))}
               </div>
