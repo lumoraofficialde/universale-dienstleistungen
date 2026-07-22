@@ -1,49 +1,85 @@
 "use client";
 
-import { FormEvent, MouseEvent, useEffect, useState } from "react";
-
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-const assetPath = (path: string) => `${basePath}${path}`;
-
-type VinextNavigate = (
-  href: string,
-  ...navigationArguments: unknown[]
-) => Promise<unknown>;
+import { FormEvent, MouseEvent, useState } from "react";
+import {
+  assetPath,
+  MobileCall,
+  SiteFooter,
+  SiteHeader,
+  SiteMotion,
+} from "./site-shell";
 
 const services = [
   {
     number: "01",
     title: "Garten & Grundstück",
+    formValue: "Gartenpflege",
     text: "Pflege, Rückschnitt und saubere Außenflächen — regelmäßig oder genau dann, wenn Unterstützung gebraucht wird.",
     image: assetPath("/media/gardener-trimming.webp"),
+    srcSet: `${assetPath("/media/gardener-trimming-1280.webp")} 1280w, ${assetPath("/media/gardener-trimming.webp")} 2560w`,
     alt: "Mitarbeiter bei der professionellen Pflege einer Gartenanlage",
     className: "service-card--garden",
   },
   {
     number: "02",
     title: "Winterdienst",
+    formValue: "Winterdienst",
     text: "Schnee räumen, Flächen streuen und Wege sichern. Abrufbereit bei plötzlichem Wintereinbruch.",
     image: assetPath("/media/snow-clearing.webp"),
+    srcSet: `${assetPath("/media/snow-clearing-1280.webp")} 1280w, ${assetPath("/media/snow-clearing.webp")} 2560w`,
     alt: "Winterdienst beim Räumen einer verschneiten Fläche",
     className: "service-card--winter",
   },
   {
     number: "03",
     title: "Hausmeisterservice",
+    formValue: "Hausmeisterservice",
     text: "Kontrolle, Pflege, Koordination und kleinere Reparaturen für private und gewerbliche Immobilien.",
     image: assetPath("/media/grass-cutting.webp"),
+    srcSet: `${assetPath("/media/grass-cutting-1280.webp")} 1280w, ${assetPath("/media/grass-cutting.webp")} 1920w`,
     alt: "Professionelle Grünpflege auf einer weitläufigen Außenfläche",
     className: "service-card--house",
   },
   {
     number: "04",
     title: "Entrümpelung",
+    formValue: "Entrümpelung",
     text: "Wohnungsauflösung, Betriebsauflösung, Demontage und besenreine Übergabe — diskret und gut geplant.",
     image: assetPath("/media/winter-vehicle.webp"),
+    srcSet: undefined,
     alt: "Einsatzfahrzeug von Universale Dienstleistungen",
     className: "service-card--clear",
   },
 ];
+
+const serviceChoices = [
+  {
+    value: "Gartenpflege",
+    label: "Gartenpflege",
+    note: "Pflege & Rückschnitt",
+    icon: "garden",
+  },
+  {
+    value: "Winterdienst",
+    label: "Winterdienst",
+    note: "Räumen & sichern",
+    icon: "winter",
+  },
+  {
+    value: "Hausmeisterservice",
+    label: "Objektservice",
+    note: "Kontrolle & Pflege",
+    icon: "property",
+  },
+  {
+    value: "Entrümpelung",
+    label: "Entrümpelung",
+    note: "Räumen & übergeben",
+    icon: "clear",
+  },
+] as const;
+
+type ServiceChoiceIcon = (typeof serviceChoices)[number]["icon"];
 
 const fleet = [
   {
@@ -113,6 +149,68 @@ function ServicesEmblem() {
   );
 }
 
+function ServiceIllustration({ type }: { type: ServiceChoiceIcon }) {
+  const common = {
+    className: "service-choice__icon",
+    viewBox: "0 0 72 72",
+    "aria-hidden": true,
+  } as const;
+
+  if (type === "garden") {
+    return (
+      <svg {...common}>
+        <path d="M14 54c14-3 25-13 31-29M27 43c-8 0-13-5-14-13 9-1 15 3 17 10M38 33c1-10 7-16 17-17 0 10-5 17-15 20M18 56h39" />
+      </svg>
+    );
+  }
+  if (type === "winter") {
+    return (
+      <svg {...common}>
+        <path d="M36 13v46M16 25l40 22M56 25 16 47M36 13l-6 7m6-7 6 7M16 25l9 2m-9-2 3 9M56 25l-9 2m9-2-3 9M16 47l9-2m-9 2 3-9M56 47l-9-2m9 2-3-9M36 59l-6-7m6 7 6-7" />
+      </svg>
+    );
+  }
+  if (type === "property") {
+    return (
+      <svg {...common}>
+        <path d="m13 34 23-19 23 19M19 30v28h34V30M29 58V42h14v16M15 58h42" />
+        <path d="M48 20v-6h7v12" />
+      </svg>
+    );
+  }
+  return (
+    <svg {...common}>
+      <path d="M22 19h28l-3 40H25l-3-40ZM18 19h36M29 19v-6h14v6M31 29v20M41 29v20" />
+      <path d="m12 54 7-7m-1 11-6-4" />
+    </svg>
+  );
+}
+
+function SeasonsArtwork() {
+  return (
+    <svg className="season-art" viewBox="0 0 300 300" aria-hidden="true">
+      <g className="season-art__scene season-art__spring">
+        <path d="M31 190c42-8 67-42 78-92M67 142c-27 2-43-12-47-38 27-4 48 9 53 31M86 119c1-30 19-49 49-54 2 31-15 52-45 60" />
+        <path d="M23 215c54-12 104-11 151 5" className="season-art__ground" />
+        <circle cx="232" cy="66" r="5" /><circle cx="249" cy="91" r="3" />
+      </g>
+      <g className="season-art__scene season-art__summer">
+        <circle cx="224" cy="70" r="28" /><path d="M224 25v-13M224 128v-13M179 70h-13M282 70h-13M192 38l-10-10M266 112l-10-10M256 38l10-10M182 112l10-10" />
+        <path d="M27 221c35-9 75-8 118 2M41 219l-4-42m16 43 4-54m12 55-2-33m18 35 8-48m9 51-1-37m18 39 8-52m9 55 2-35" className="season-art__ground" />
+      </g>
+      <g className="season-art__scene season-art__autumn">
+        <path d="M28 218c42-10 86-7 131 7" className="season-art__ground" />
+        <path d="M61 69c22 7 37 22 46 44-25 2-43-8-54-30 3-6 5-10 8-14ZM179 48c18 12 27 29 29 51-22-4-37-17-44-38 5-5 10-9 15-13ZM221 137c18 5 31 17 39 35-20 2-35-6-44-23 1-5 3-9 5-12Z" />
+        <path d="M50 56c43 47 76 90 100 150M180 43c-9 62-21 112-37 163M223 127c-26 35-52 62-80 82" />
+      </g>
+      <g className="season-art__scene season-art__winter">
+        <path d="M31 222c52-18 100-16 145 6M44 188c28-13 56-12 84 3" className="season-art__ground" />
+        <path d="M221 51v111M173 79l96 55M269 79l-96 55M221 51l-12 14m12-14 12 14M173 79l21 4m-21-4 7 20M269 79l-21 4m21-4-7 20M173 134l21-4m-21 4 7-20M269 134l-21-4m21 4-7-20M221 162l-12-14m12 14 12-14" />
+      </g>
+    </svg>
+  );
+}
+
 function FleetGlyph({ type }: { type: FleetIcon }) {
   const common = {
     className: "fleet-glyph",
@@ -170,212 +268,8 @@ function FleetGlyph({ type }: { type: FleetIcon }) {
 }
 
 export default function Home() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [formStatus, setFormStatus] = useState("");
-
-  useEffect(() => {
-    document.documentElement.classList.add("motion-ready");
-
-    let animationFrame = 0;
-    const parallaxElements = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-scroll-parallax]"),
-    );
-    const rotatingElements = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-scroll-rotate]"),
-    );
-
-    const updateScrollEffects = () => {
-      const y = window.scrollY;
-      const viewportHeight = window.innerHeight;
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      document.documentElement.style.setProperty(
-        "--scroll-progress",
-        `${max > 0 ? (y / max) * 100 : 0}%`,
-      );
-      document.documentElement.style.setProperty(
-        "--hero-shift",
-        `${Math.min(y * 0.44, 200)}px`,
-      );
-      document.documentElement.style.setProperty(
-        "--hero-content-y",
-        `${Math.min(y * 0.1, 84)}px`,
-      );
-      document.documentElement.style.setProperty(
-        "--hero-fade",
-        `${Math.max(0.08, 1 - y / (viewportHeight * 0.82))}`,
-      );
-
-      parallaxElements.forEach((element) => {
-        const rect = element.getBoundingClientRect();
-        const distanceFromCenter =
-          (rect.top + rect.height / 2 - viewportHeight / 2) /
-          (viewportHeight + rect.height);
-        element.style.setProperty(
-          "--parallax-y",
-          `${Math.max(-44, Math.min(44, distanceFromCenter * -96))}px`,
-        );
-      });
-
-      rotatingElements.forEach((element) => {
-        const rect = element.getBoundingClientRect();
-        const progress = Math.max(
-          0,
-          Math.min(1, (viewportHeight - rect.top) / (viewportHeight + rect.height)),
-        );
-        element.style.setProperty("--scroll-turn", `${progress * 150 - 75}deg`);
-      });
-
-      setScrolled(y > 40);
-      animationFrame = 0;
-    };
-
-    const onScroll = () => {
-      if (!animationFrame) {
-        animationFrame = window.requestAnimationFrame(updateScrollEffects);
-      }
-    };
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            entry.target.classList.remove("is-past");
-          } else {
-            entry.target.classList.remove("is-visible");
-            entry.target.classList.toggle(
-              "is-past",
-              entry.boundingClientRect.top < 0,
-            );
-          }
-        });
-      },
-      { threshold: 0.08, rootMargin: "-4% 0px -4% 0px" },
-    );
-
-    document.querySelectorAll("[data-reveal]").forEach((element) =>
-      observer.observe(element),
-    );
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
-    updateScrollEffects();
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (animationFrame) window.cancelAnimationFrame(animationFrame);
-      document.documentElement.classList.remove("motion-ready");
-    };
-  }, []);
-
-  useEffect(() => {
-    document.body.classList.toggle("menu-is-open", menuOpen);
-    return () => document.body.classList.remove("menu-is-open");
-  }, [menuOpen]);
-
-  useEffect(() => {
-    const vinextWindow = window as Window & {
-      __VINEXT_RSC_NAVIGATE__?: VinextNavigate;
-    };
-
-    const originalVinextNavigate = vinextWindow.__VINEXT_RSC_NAVIGATE__;
-    const handleStaticHashNavigation: VinextNavigate = (
-      href,
-      ...navigationArguments
-    ) => {
-      const nextUrl = new URL(href, window.location.href);
-      const currentUrl = new URL(window.location.href);
-      const isSameDocument =
-        nextUrl.origin === currentUrl.origin &&
-        nextUrl.pathname === currentUrl.pathname &&
-        nextUrl.search === currentUrl.search;
-
-      if (isSameDocument) {
-        const id = decodeURIComponent(nextUrl.hash.slice(1));
-        const scrollToHash = () => {
-          if (!id || id === "top") {
-            window.scrollTo({ top: 0, behavior: "auto" });
-          } else {
-            document.getElementById(id)?.scrollIntoView({
-              behavior: "auto",
-              block: "start",
-            });
-          }
-        };
-
-        return new Promise((resolve) => {
-          window.requestAnimationFrame(() => {
-            resolve(undefined);
-            window.queueMicrotask(() =>
-              window.requestAnimationFrame(scrollToHash),
-            );
-          });
-        });
-      }
-
-      return originalVinextNavigate
-        ? originalVinextNavigate(href, ...navigationArguments)
-        : Promise.resolve();
-    };
-
-    if (originalVinextNavigate) {
-      vinextWindow.__VINEXT_RSC_NAVIGATE__ = handleStaticHashNavigation;
-    }
-
-    const handleHashNavigation = (event: globalThis.MouseEvent) => {
-      if (
-        event.defaultPrevented ||
-        event.button !== 0 ||
-        event.metaKey ||
-        event.ctrlKey ||
-        event.shiftKey ||
-        event.altKey
-      ) {
-        return;
-      }
-
-      const origin = event.target;
-      if (!(origin instanceof Element)) return;
-
-      const link = origin.closest<HTMLAnchorElement>('a[href^="#"]');
-      const hash = link?.getAttribute("href");
-      if (!hash || hash === "#") return;
-
-      const target = document.getElementById(decodeURIComponent(hash.slice(1)));
-      if (!target) return;
-
-      event.preventDefault();
-      event.stopPropagation();
-      setMenuOpen(false);
-
-      const behavior = window.matchMedia("(prefers-reduced-motion: reduce)")
-        .matches
-        ? "auto"
-        : "smooth";
-      const scrollToTarget = () => {
-        target.scrollIntoView({ behavior, block: "start" });
-        if (window.location.hash !== hash) {
-          window.history.pushState(null, "", hash);
-        }
-      };
-
-      window.requestAnimationFrame(() =>
-        window.requestAnimationFrame(scrollToTarget),
-      );
-    };
-
-    window.addEventListener("click", handleHashNavigation, { capture: true });
-    return () => {
-      window.removeEventListener("click", handleHashNavigation, true);
-      if (
-        vinextWindow.__VINEXT_RSC_NAVIGATE__ === handleStaticHashNavigation
-      ) {
-        vinextWindow.__VINEXT_RSC_NAVIGATE__ = originalVinextNavigate;
-      }
-    };
-  }, []);
+  const [selectedService, setSelectedService] = useState("");
 
   const handleSpotlight = (event: MouseEvent<HTMLElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -391,6 +285,10 @@ export default function Home() {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!selectedService) {
+      setFormStatus("Bitte wählen Sie zuerst einen Leistungsbereich aus.");
+      return;
+    }
     const form = event.currentTarget;
     if (!form.reportValidity()) return;
 
@@ -411,73 +309,23 @@ export default function Home() {
     window.location.href = `mailto:info@universale-dienstleistungen.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
-  const closeMenu = () => setMenuOpen(false);
+  const chooseService = (service: string) => {
+    setSelectedService(service);
+    setFormStatus("");
+  };
 
   return (
     <>
-      <a className="skip-link" href="#main">
-        Zum Inhalt springen
-      </a>
-      <div className="scroll-progress" aria-hidden="true" />
-
-      <header className={`site-header${scrolled ? " is-scrolled" : ""}`}>
-        <div className="header-inner">
-          <a className="brand" href="#top" aria-label="Universale Startseite">
-            <span className="brand-mark">
-              <img src={assetPath("/media/universale-logo.png")} alt="" />
-            </span>
-            <span className="brand-name">
-              <strong>Universale</strong>
-              <span>Dienstleistungen</span>
-            </span>
-          </a>
-
-          <nav className="desktop-nav" aria-label="Hauptnavigation">
-            <a href="#leistungen">Leistungen</a>
-            <a href="#unternehmen">Über uns</a>
-            <a href="#fuhrpark">Fuhrpark</a>
-            <a href="#kontakt">Kontakt</a>
-          </nav>
-
-          <a className="header-call" href="tel:+491738948124">
-            <span>24/7 erreichbar</span>
-            <strong>+49 173 8948124</strong>
-          </a>
-
-          <button
-            className={`menu-button${menuOpen ? " is-open" : ""}`}
-            type="button"
-            aria-expanded={menuOpen}
-            aria-controls="mobile-menu"
-            aria-label={menuOpen ? "Menü schließen" : "Menü öffnen"}
-            onClick={() => setMenuOpen((open) => !open)}
-          >
-            <span />
-            <span />
-          </button>
-        </div>
-
-        <div id="mobile-menu" className={`mobile-menu${menuOpen ? " is-open" : ""}`}>
-          <nav aria-label="Mobile Navigation">
-            <a href="#leistungen" onClick={closeMenu}>Leistungen <span>01</span></a>
-            <a href="#unternehmen" onClick={closeMenu}>Über uns <span>02</span></a>
-            <a href="#fuhrpark" onClick={closeMenu}>Fuhrpark <span>03</span></a>
-            <a href="#kontakt" onClick={closeMenu}>Kontakt <span>04</span></a>
-          </nav>
-          <div className="mobile-menu__contact">
-            <a href="tel:+491738948124">+49 173 8948124</a>
-            <a href="mailto:info@universale-dienstleistungen.de">
-              info@universale-dienstleistungen.de
-            </a>
-          </div>
-        </div>
-      </header>
+      <SiteMotion />
+      <SiteHeader />
 
       <main id="main">
         <section className="hero" id="top" aria-labelledby="hero-title">
           <div className="hero-media" aria-hidden="true">
             <img
               src={assetPath("/media/gardener-trimming.webp")}
+              srcSet={`${assetPath("/media/gardener-trimming-1280.webp")} 1280w, ${assetPath("/media/gardener-trimming.webp")} 2560w`}
+              sizes="100vw"
               alt=""
               fetchPriority="high"
             />
@@ -549,16 +397,32 @@ export default function Home() {
             </div>
 
             <div
-              className="intro-orbit"
+              className="season-story"
+              data-season-story
+              data-season="spring"
               data-reveal="scale"
-              data-scroll-rotate
-              aria-label="365 Tage im Jahr einsatzbereit"
+              aria-label="365 Tage im Jahr: Frühling, Sommer, Herbst und Winter"
             >
-              <div className="intro-orbit__core" aria-hidden="true">
-                <strong>365</strong>
-                <span>Tage im Jahr</span>
+              <div className="season-story__sticky">
+                <div className="intro-orbit" data-scroll-rotate>
+                  <SeasonsArtwork />
+                  <div className="intro-orbit__core" aria-hidden="true">
+                    <strong>365</strong>
+                    <span>Tage im Jahr</span>
+                  </div>
+                  <i aria-hidden="true">ganzjährig · einsatzbereit</i>
+                </div>
+
+                <div className="season-index" aria-hidden="true">
+                  <span data-season-name="spring"><b>01</b>Frühling</span>
+                  <span data-season-name="summer"><b>02</b>Sommer</span>
+                  <span data-season-name="autumn"><b>03</b>Herbst</span>
+                  <span data-season-name="winter"><b>04</b>Winter</span>
+                </div>
+                <p className="season-caption">
+                  <span>Wachsen.</span><span>Pflegen.</span><span>Sichern.</span><span>Räumen.</span>
+                </p>
               </div>
-              <i aria-hidden="true">ganzjährig · einsatzbereit</i>
             </div>
 
             <div className="intro-body" data-reveal>
@@ -576,20 +440,6 @@ export default function Home() {
               </a>
             </div>
 
-            <div className="intro-proof" data-reveal="right">
-              <div>
-                <span>01</span>
-                <p><strong>Privat & Gewerbe</strong>Passend zum Objekt geplant.</p>
-              </div>
-              <div>
-                <span>02</span>
-                <p><strong>Innen & Außen</strong>Ein Team koordiniert alles.</p>
-              </div>
-              <div>
-                <span>03</span>
-                <p><strong>Büsum & darüber hinaus</strong>Flexibel deutschlandweit im Einsatz.</p>
-              </div>
-            </div>
           </div>
         </section>
 
@@ -621,7 +471,13 @@ export default function Home() {
                   onMouseMove={handleSpotlight}
                   key={service.title}
                 >
-                  <img src={service.image} alt={service.alt} loading="lazy" />
+                  <img
+                    src={service.image}
+                    srcSet={service.srcSet}
+                    sizes="(max-width: 780px) calc(100vw - 36px), (max-width: 1100px) 55vw, 50vw"
+                    alt={service.alt}
+                    loading="lazy"
+                  />
                   <div className="service-card__shade" aria-hidden="true" />
                   <div className="service-card__top">
                     <span>{service.number}</span>
@@ -630,12 +486,39 @@ export default function Home() {
                   <div className="service-card__body">
                     <h3>{service.title}</h3>
                     <p>{service.text}</p>
-                    <a href="#kontakt" aria-label={`${service.title} anfragen`}>
+                    <a
+                      href="#kontakt"
+                      aria-label={`${service.title} anfragen`}
+                      onClick={() => chooseService(service.formValue)}
+                    >
                       Leistung anfragen <span aria-hidden="true">↗</span>
                     </a>
                   </div>
                 </article>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="trust-ledger" aria-labelledby="trust-title">
+          <div className="container">
+            <div className="trust-ledger__heading" data-reveal="left">
+              <p className="eyebrow eyebrow--dark">Fakten statt Floskeln</p>
+              <h2 id="trust-title">Worauf Sie sich verlassen können.</h2>
+            </div>
+            <div className="trust-ledger__grid" data-reveal="right">
+              <div className="trust-entry trust-entry--wide">
+                <span>Erreichbarkeit</span><strong>24 / 7</strong><p>Telefonisch erreichbar</p>
+              </div>
+              <div className="trust-entry">
+                <span>Leistung</span><strong>04</strong><p>klar definierte Bereiche</p>
+              </div>
+              <div className="trust-entry">
+                <span>Standort</span><strong>Büsum</strong><p>Westerstraße 3</p>
+              </div>
+              <div className="trust-entry trust-entry--wide">
+                <span>Einsatzgebiet</span><strong>Deutschlandweit</strong><p>nach Aufgabe und Abstimmung</p>
+              </div>
             </div>
           </div>
         </section>
@@ -736,6 +619,8 @@ export default function Home() {
         <section className="image-break" aria-label="Gartenpflege im Einsatz">
           <img
             src={assetPath("/media/tree-shaping.webp")}
+            srcSet={`${assetPath("/media/tree-shaping-1280.webp")} 1280w, ${assetPath("/media/tree-shaping.webp")} 2560w`}
+            sizes="100vw"
             alt="Gärtner beim professionellen Formschnitt einer Hecke"
             loading="lazy"
             data-scroll-parallax
@@ -832,101 +717,97 @@ export default function Home() {
             </div>
 
             <form className="contact-form" onSubmit={handleSubmit} data-reveal="right">
-              <div className="form-row form-row--two">
-                <label>
-                  <span>Name *</span>
-                  <input name="name" type="text" autoComplete="name" required />
-                </label>
-                <label>
-                  <span>Telefon *</span>
-                  <input name="phone" type="tel" autoComplete="tel" required />
-                </label>
-              </div>
+              <fieldset className="service-picker">
+                <legend>Wobei können wir helfen?</legend>
+                <div className="service-picker__meta">
+                  <span>01 / Leistung wählen</span>
+                  <p>Ein Bereich genügt für den Start.</p>
+                </div>
+                <div className="service-picker__grid">
+                  {serviceChoices.map((choice) => (
+                    <button
+                      className={`service-choice${selectedService === choice.value ? " is-selected" : ""}`}
+                      type="button"
+                      aria-pressed={selectedService === choice.value}
+                      onClick={() => chooseService(choice.value)}
+                      key={choice.value}
+                    >
+                      <ServiceIllustration type={choice.icon} />
+                      <span><strong>{choice.label}</strong><small>{choice.note}</small></span>
+                      <i aria-hidden="true">↗</i>
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
 
-              <div className="form-row form-row--two">
-                <label>
-                  <span>E-Mail *</span>
-                  <input name="email" type="email" autoComplete="email" required />
-                </label>
-                <label>
-                  <span>Gewünschte Leistung *</span>
-                  <select name="service" defaultValue="" required>
-                    <option value="" disabled>Bitte auswählen</option>
-                    <option>Winterdienst</option>
-                    <option>Hausmeisterservice</option>
-                    <option>Gartenpflege</option>
-                    <option>Entrümpelung</option>
-                    <option>Mehrere Leistungen</option>
-                  </select>
-                </label>
-              </div>
+              <input type="hidden" name="service" value={selectedService} />
 
-              <div className="form-row form-row--two">
-                <label>
-                  <span>Wunschtermin</span>
-                  <input name="date" type="date" />
-                </label>
-                <label>
-                  <span>Ausführungsort *</span>
-                  <input name="location" type="text" autoComplete="street-address" required />
-                </label>
-              </div>
+              {selectedService ? (
+                <div className="form-details" key={selectedService}>
+                  <div className="form-details__heading">
+                    <span>02 / Ihre Anfrage</span>
+                    <p><strong>{selectedService}</strong> ist ausgewählt.</p>
+                  </div>
 
-              <label className="message-label">
-                <span>Worum geht es? *</span>
-                <textarea
-                  name="message"
-                  rows={4}
-                  placeholder="Fläche, Aufgabe, gewünschter Zeitraum …"
-                  required
-                />
-              </label>
+                  <div className="form-row form-row--two">
+                    <label>
+                      <span>Name *</span>
+                      <input name="name" type="text" autoComplete="name" required />
+                    </label>
+                    <label>
+                      <span>Telefon *</span>
+                      <input name="phone" type="tel" autoComplete="tel" required />
+                    </label>
+                  </div>
 
-              <label className="privacy-check">
-                <input name="privacy" type="checkbox" required />
-                <span>
-                  Ich habe die <a href="https://universale-dienstleistungen.de/datenschutz/" target="_blank" rel="noreferrer">Datenschutzerklärung</a> gelesen und stimme der Kontaktaufnahme zu.
-                </span>
-              </label>
+                  <div className="form-row form-row--two">
+                    <label>
+                      <span>E-Mail *</span>
+                      <input name="email" type="email" autoComplete="email" required />
+                    </label>
+                    <label>
+                      <span>Ausführungsort *</span>
+                      <input name="location" type="text" autoComplete="street-address" required />
+                    </label>
+                  </div>
 
-              <div className="form-submit">
-                <button className="button button--accent" type="submit">
-                  Anfrage vorbereiten <span aria-hidden="true">↗</span>
-                </button>
-                <p aria-live="polite">{formStatus}</p>
-              </div>
+                  <label className="message-label">
+                    <span>Worum geht es? *</span>
+                    <textarea
+                      name="message"
+                      rows={4}
+                      placeholder="Fläche, Aufgabe, gewünschter Zeitraum …"
+                      required
+                    />
+                  </label>
+
+                  <label className="privacy-check">
+                    <input name="privacy" type="checkbox" required />
+                    <span>
+                      Ich habe die <a href="https://universale-dienstleistungen.de/datenschutz/" target="_blank" rel="noreferrer">Datenschutzerklärung</a> gelesen und stimme der Kontaktaufnahme zu.
+                    </span>
+                  </label>
+
+                  <div className="form-submit">
+                    <button className="button button--accent" type="submit">
+                      Anfrage vorbereiten <span aria-hidden="true">↗</span>
+                    </button>
+                    <p aria-live="polite">{formStatus}</p>
+                  </div>
+                </div>
+              ) : (
+                <p className="form-awaiting" aria-live="polite">
+                  Wählen Sie oben einen Bereich aus. Danach fragen wir nur noch
+                  die Angaben ab, die wir für eine erste Einschätzung brauchen.
+                </p>
+              )}
             </form>
           </div>
         </section>
       </main>
 
-      <footer className="site-footer">
-        <div className="container footer-main">
-          <a className="brand brand--footer" href="#top" aria-label="Zurück zum Anfang">
-            <span className="brand-mark"><img src={assetPath("/media/universale-logo.png")} alt="" /></span>
-            <span className="brand-name"><strong>Universale</strong><span>Dienstleistungen</span></span>
-          </a>
-          <p>Gepflegte Flächen. Sichere Wege.<br />Ein zuverlässiger Partner.</p>
-          <div className="footer-links">
-            <a href="#leistungen">Leistungen</a>
-            <a href="#unternehmen">Über uns</a>
-            <a href="#fuhrpark">Fuhrpark</a>
-            <a href="#kontakt">Kontakt</a>
-          </div>
-        </div>
-        <div className="container footer-meta">
-          <span>© {new Date().getFullYear()} Universale Dienstleistungen GmbH</span>
-          <div>
-            <a href="https://universale-dienstleistungen.de/datenschutz/" target="_blank" rel="noreferrer">Datenschutz</a>
-            <a href="https://universale-dienstleistungen.de/impressum/" target="_blank" rel="noreferrer">Impressum</a>
-          </div>
-          <a href="#top">Nach oben ↑</a>
-        </div>
-      </footer>
-
-      <a className="mobile-call" href="tel:+491738948124">
-        <span aria-hidden="true">●</span> 24/7 anrufen
-      </a>
+      <SiteFooter />
+      <MobileCall />
     </>
   );
 }

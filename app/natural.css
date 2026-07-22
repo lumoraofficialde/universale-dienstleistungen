@@ -30,7 +30,7 @@ body {
 }
 
 body {
-  background-image: url("/media/natural-paper-texture.png");
+  background-image: url("/media/natural-paper-texture.webp");
   background-size: 760px auto;
 }
 
@@ -60,7 +60,7 @@ body::after {
 /* Header: transparent over the original hero, tactile paper after scroll. */
 .site-header.is-scrolled {
   background-color: rgba(247, 244, 235, 0.92);
-  background-image: url("/media/natural-paper-texture.png");
+  background-image: url("/media/natural-paper-texture.webp");
   background-size: 640px auto;
   background-blend-mode: soft-light;
   box-shadow: 0 14px 42px rgba(31, 58, 45, 0.08);
@@ -125,7 +125,7 @@ body::after {
   inset: 0;
   content: "";
   opacity: 0.12;
-  background: url("/media/natural-paper-texture.png") center / 720px auto repeat;
+  background: url("/media/natural-paper-texture.webp") center / 720px auto repeat;
   mix-blend-mode: soft-light;
   pointer-events: none;
 }
@@ -139,7 +139,7 @@ body::after {
   height: 28%;
   content: "";
   opacity: 0.12;
-  background: url("/media/natural-grass-ornament.png") right bottom / contain no-repeat;
+  background: url("/media/natural-grass-ornament.webp") right bottom / contain no-repeat;
   pointer-events: none;
 }
 
@@ -171,7 +171,7 @@ body::after {
 .service-marquee {
   color: var(--paper-bright);
   background-color: var(--moss-deep);
-  background-image: url("/media/natural-paper-texture.png");
+  background-image: url("/media/natural-paper-texture.webp");
   background-size: 620px auto;
   background-blend-mode: soft-light;
   border-block: 1px solid rgba(255, 255, 255, 0.15);
@@ -184,7 +184,7 @@ body::after {
 /* Intro */
 .intro {
   background-color: var(--paper);
-  background-image: url("/media/natural-paper-texture.png");
+  background-image: url("/media/natural-paper-texture.webp");
   background-size: 760px auto;
 }
 
@@ -203,7 +203,7 @@ body::after {
   height: 25%;
   content: "";
   opacity: 0.1;
-  background: url("/media/natural-grass-ornament.png") right bottom / contain no-repeat;
+  background: url("/media/natural-grass-ornament.webp") right bottom / contain no-repeat;
   pointer-events: none;
 }
 
@@ -220,7 +220,7 @@ body::after {
 
 .intro-orbit {
   background-color: rgba(251, 248, 239, 0.86);
-  background-image: url("/media/natural-paper-texture.png");
+  background-image: url("/media/natural-paper-texture.webp");
   background-size: 520px auto;
   border-color: rgba(92, 113, 61, 0.25);
   box-shadow:
@@ -233,13 +233,27 @@ body::after {
   border-right-color: var(--acid-strong);
 }
 
+.season-story .intro-orbit {
+  background-image:
+    linear-gradient(var(--season-wash), var(--season-wash)),
+    url("/media/natural-paper-texture.webp");
+  background-size: auto, 520px auto;
+  box-shadow:
+    inset 0 0 0 12px rgba(92, 113, 61, 0.025),
+    0 24px 56px rgba(39, 68, 51, 0.09);
+}
+
+.season-index {
+  background: rgba(251, 248, 239, 0.38);
+}
+
 /* Original bento service layout, natural surfaces. */
 .services {
   position: relative;
   background-color: var(--sage-soft, #e8ead7);
   background-image:
     linear-gradient(rgba(232, 234, 215, 0.84), rgba(232, 234, 215, 0.84)),
-    url("/media/natural-paper-texture.png");
+    url("/media/natural-paper-texture.webp");
   background-size: auto, 760px auto;
 }
 
@@ -251,7 +265,7 @@ body::after {
   height: 17%;
   content: "";
   opacity: 0.085;
-  background: url("/media/natural-grass-ornament.png") right bottom / contain no-repeat;
+  background: url("/media/natural-grass-ornament.webp") right bottom / contain no-repeat;
   pointer-events: none;
 }
 
@@ -443,12 +457,40 @@ body::after {
   background: rgba(16, 45, 35, 0.22);
 }
 
+/* Verified facts are presented as an editorial ledger, never as generic cards. */
+.trust-ledger {
+  background-color: var(--paper-bright);
+  background-image: url("/media/natural-paper-texture.webp");
+  background-size: 760px auto;
+}
+
+.trust-ledger::after {
+  position: absolute;
+  right: -9vw;
+  bottom: -3rem;
+  width: min(36vw, 560px);
+  height: 72%;
+  content: "";
+  opacity: 0.055;
+  background: url("/media/natural-grass-ornament.webp") right bottom / contain no-repeat;
+  pointer-events: none;
+}
+
+.trust-ledger .container {
+  position: relative;
+  z-index: 1;
+}
+
+.trust-entry strong {
+  color: var(--moss-deep);
+}
+
 /* 24/7 section */
 .readiness {
   background-color: var(--pine-deep);
   background-image:
     linear-gradient(rgba(16, 45, 35, 0.91), rgba(16, 45, 35, 0.91)),
-    url("/media/natural-paper-texture.png");
+    url("/media/natural-paper-texture.webp");
   background-size: auto, 720px auto;
   background-blend-mode: normal, soft-light;
 }
@@ -475,7 +517,7 @@ body::after {
 .fleet {
   position: relative;
   background-color: var(--paper);
-  background-image: url("/media/natural-paper-texture.png");
+  background-image: url("/media/natural-paper-texture.webp");
   background-size: 760px auto;
 }
 
@@ -700,7 +742,7 @@ body::after {
   background-color: var(--sand);
   background-image:
     linear-gradient(rgba(232, 234, 215, 0.82), rgba(232, 234, 215, 0.82)),
-    url("/media/natural-paper-texture.png");
+    url("/media/natural-paper-texture.webp");
   background-size: auto, 760px auto;
 }
 
@@ -711,7 +753,7 @@ body::after {
 
 .process-card--one {
   background-color: var(--paper-bright);
-  background-image: url("/media/natural-paper-texture.png");
+  background-image: url("/media/natural-paper-texture.webp");
   background-size: 680px auto;
   border-radius: 5px 5px 42px 5px;
 }
@@ -720,7 +762,7 @@ body::after {
   background-color: var(--sage);
   background-image:
     linear-gradient(rgba(203, 210, 174, 0.9), rgba(203, 210, 174, 0.9)),
-    url("/media/natural-paper-texture.png");
+    url("/media/natural-paper-texture.webp");
   background-size: auto, 680px auto;
   border-radius: 5px 42px 5px 38px;
 }
@@ -729,7 +771,7 @@ body::after {
   background-color: var(--pine-deep);
   background-image:
     linear-gradient(rgba(16, 45, 35, 0.94), rgba(16, 45, 35, 0.94)),
-    url("/media/natural-grass-ornament.png");
+    url("/media/natural-grass-ornament.webp");
   background-position: center, right bottom;
   background-size: auto, 56% auto;
   background-repeat: no-repeat;
@@ -758,7 +800,7 @@ body::after {
   background-color: var(--pine);
   background-image:
     linear-gradient(rgba(20, 59, 45, 0.93), rgba(20, 59, 45, 0.93)),
-    url("/media/natural-paper-texture.png");
+    url("/media/natural-paper-texture.webp");
   background-size: auto, 720px auto;
 }
 
@@ -771,7 +813,7 @@ body::after {
   height: 32%;
   content: "";
   opacity: 0.11;
-  background: url("/media/natural-grass-ornament.png") right bottom / contain no-repeat;
+  background: url("/media/natural-grass-ornament.webp") right bottom / contain no-repeat;
   pointer-events: none;
 }
 
@@ -788,11 +830,77 @@ body::after {
   background: rgba(220, 233, 154, 0.035);
 }
 
+.service-choice {
+  border-radius: 5px 5px 24px 5px;
+}
+
+.service-choice.is-selected {
+  background-color: var(--acid);
+  background-image: url("/media/natural-paper-texture.webp");
+  background-size: 520px auto;
+  background-blend-mode: soft-light;
+  box-shadow: 0 18px 42px rgba(6, 28, 20, 0.18);
+}
+
+/* Team page: the same natural visual language with a calmer editorial rhythm. */
+.team-hero::after {
+  position: absolute;
+  z-index: -1;
+  right: -7vw;
+  bottom: -2rem;
+  width: min(52vw, 780px);
+  height: 30%;
+  content: "";
+  opacity: 0.1;
+  background: url("/media/natural-grass-ornament.webp") right bottom / contain no-repeat;
+  pointer-events: none;
+}
+
+.team-intro,
+.team-portrait {
+  background-color: var(--paper);
+  background-image: url("/media/natural-paper-texture.webp");
+  background-size: 760px auto;
+}
+
+.team-principles {
+  background-color: var(--pine-deep);
+  background-image:
+    linear-gradient(rgba(16, 45, 35, 0.94), rgba(16, 45, 35, 0.94)),
+    url("/media/natural-paper-texture.webp");
+  background-size: auto, 720px auto;
+}
+
+.team-principles__list li {
+  transition: padding 280ms ease, background-color 280ms ease;
+}
+
+.team-principles__list li:hover {
+  padding-inline: 1.2rem;
+  background: rgba(220, 233, 154, 0.055);
+}
+
+.team-portrait__frame {
+  box-shadow: 0 30px 72px rgba(39, 68, 51, 0.14);
+}
+
+.team-cta {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--pine);
+  background-image:
+    linear-gradient(rgba(36, 74, 55, 0.94), rgba(36, 74, 55, 0.94)),
+    url("/media/natural-grass-ornament.webp");
+  background-position: center, right bottom;
+  background-size: auto, min(58vw, 800px) auto;
+  background-repeat: no-repeat;
+}
+
 /* Paper footer, same original grid. */
 .site-footer {
   color: var(--ink);
   background-color: var(--paper);
-  background-image: url("/media/natural-paper-texture.png");
+  background-image: url("/media/natural-paper-texture.webp");
   background-size: 760px auto;
   border-top: 1px solid var(--line);
 }
@@ -865,7 +973,7 @@ body::after {
 
   .mobile-menu {
     background-color: var(--paper);
-    background-image: url("/media/natural-paper-texture.png");
+    background-image: url("/media/natural-paper-texture.webp");
     background-size: 640px auto;
   }
 
@@ -882,8 +990,14 @@ body::after {
 
   .services::before,
   .intro::after {
-    width: 100vw;
+    right: 0;
+    width: 100%;
     opacity: 0.07;
+  }
+
+  .contact::after {
+    right: 0;
+    width: min(64vw, 420px);
   }
 
   .fleet::before {

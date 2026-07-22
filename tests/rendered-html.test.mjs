@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { access, readFile, readdir } from "node:fs/promises";
+import { access, readFile, readdir, stat } from "node:fs/promises";
 import test from "node:test";
 
 test("exports a complete static GitHub Pages site", async () => {
@@ -14,12 +14,24 @@ test("exports a complete static GitHub Pages site", async () => {
   assert.match(html, /Vier Aufgaben\./);
   assert.match(html, /24 Stunden am Tag, 7 Tage die Woche erreichbar/);
   assert.match(html, /Drei Schritte\./);
+  assert.match(html, /Worauf Sie sich verlassen können\./);
+  assert.match(html, /Wobei können wir helfen\?/);
   assert.match(html, /id="kontakt"/);
+
+  const teamHtml = await readFile(
+    new URL("../dist/client/team/index.html", import.meta.url),
+    "utf8",
+  );
+  assert.match(teamHtml, /Ein Team\./);
+  assert.match(teamHtml, /Klare Verantwortung\./);
+  assert.match(teamHtml, /Woran gute Arbeit erkennbar wird\./);
 });
 
 test("keeps the Pages asset prefix, original motion, and natural skin wired in", async () => {
-  const [page, css, naturalCss, layout, nextConfig, viteConfig] = await Promise.all([
+  const [page, shell, team, css, naturalCss, layout, nextConfig, viteConfig] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/site-shell.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/team/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../app/natural.css", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
@@ -27,18 +39,22 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     readFile(new URL("../vite.config.ts", import.meta.url), "utf8"),
   ]);
 
-  assert.match(page, /NEXT_PUBLIC_BASE_PATH/);
+  assert.match(shell, /NEXT_PUBLIC_BASE_PATH/);
   assert.match(page, /data-scroll-parallax/);
-  assert.match(page, /Math\.min\(y \* 0\.44, 200\)/);
+  assert.match(shell, /Math\.min\(y \* 0\.58, 280\)/);
   assert.doesNotMatch(page, /Kompetenz durch Erfahrung/);
   assert.doesNotMatch(page, /hero-proof/);
   assert.match(page, /readiness-rail__track/);
-  assert.match(page, /classList\.toggle\(\s*"is-past"/);
-  assert.match(page, /handleHashNavigation/);
-  assert.match(page, /addEventListener\(\s*"click",\s*handleHashNavigation/);
-  assert.match(page, /__VINEXT_RSC_NAVIGATE__/);
-  assert.match(page, /const isSameDocument =/);
-  assert.match(page, /handleStaticHashNavigation/);
+  assert.match(shell, /classList\.toggle\(\s*"is-past"/);
+  assert.match(shell, /handleHashNavigation/);
+  assert.match(shell, /addEventListener\(\s*"click",\s*handleHashNavigation/);
+  assert.match(shell, /__VINEXT_RSC_NAVIGATE__/);
+  assert.match(shell, /const isSameDocument =/);
+  assert.match(shell, /handleStaticNavigation/);
+  assert.match(shell, /dataset\.season/);
+  assert.match(page, /data-season-story/);
+  assert.match(page, /service-picker__grid/);
+  assert.match(page, /selectedService/);
   assert.match(page, /function ServicesEmblem/);
   assert.match(page, /function FleetGlyph/);
   assert.match(page, /Vier Bereiche\. Ein Team\./);
@@ -52,9 +68,9 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(css, /\.hero-media\s*\{[\s\S]*?inset:\s*0/);
   assert.match(css, /\.services-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(12, 1fr\)/);
   assert.match(layout, /import "\.\/natural\.css"/);
-  assert.match(naturalCss, /natural-paper-texture\.png/);
-  assert.doesNotMatch(naturalCss, /natural-paint-stroke\.png/);
-  assert.match(naturalCss, /natural-grass-ornament\.png/);
+  assert.match(naturalCss, /natural-paper-texture\.webp/);
+  assert.doesNotMatch(naturalCss, /natural-paint-stroke/);
+  assert.match(naturalCss, /natural-grass-ornament\.webp/);
   assert.doesNotMatch(naturalCss, /\[data-reveal/);
   assert.doesNotMatch(naturalCss, /\.process-intro\s*\{[^}]*position:/);
   assert.doesNotMatch(naturalCss, /\.process-card\s*\{[^}]*position:/);
@@ -71,6 +87,29 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(nextConfig, /output:\s*"export"/);
   assert.match(viteConfig, /NEXT_PUBLIC_BASE_PATH/);
   assert.match(viteConfig, /base:/);
+  assert.match(team, /SiteHeader currentPage="team"/);
+  assert.match(team, /Gemeinsam im Einsatz/);
+  assert.match(team, /team-portrait__frame/);
+  assert.doesNotMatch(team, /Menschen\. Technik\. Ergebnis\./);
+  assert.doesNotMatch(team, /team-gallery/);
+  assert.match(shell, /<strong>24\/7 anrufen<\/strong>/);
+});
+
+test("ships optimized responsive visual assets", async () => {
+  const mediaRoot = new URL("../public/media/", import.meta.url);
+  const files = await readdir(mediaRoot);
+  assert.ok(files.includes("natural-paper-texture.webp"));
+  assert.ok(files.includes("natural-grass-ornament.webp"));
+  assert.ok(files.includes("gardener-trimming-1280.webp"));
+  assert.ok(files.includes("snow-clearing-1280.webp"));
+  assert.ok(files.includes("tree-shaping-1280.webp"));
+  assert.ok(!files.includes("natural-paper-texture.png"));
+  assert.ok(!files.includes("natural-paint-stroke.png"));
+
+  const paper = await stat(new URL("natural-paper-texture.webp", mediaRoot));
+  const grass = await stat(new URL("natural-grass-ornament.webp", mediaRoot));
+  assert.ok(paper.size < 100_000, `Paper texture is still too large: ${paper.size}`);
+  assert.ok(grass.size < 300_000, `Grass ornament is still too large: ${grass.size}`);
 });
 
 test("exports valid prefixed asset references", async () => {
