@@ -14,6 +14,7 @@ import {
 } from "./site-shell";
 import { ActiveIntroConcept } from "./concepts/active-intro";
 import { FleetScaleJourney } from "./concepts/fleet-scale-journey";
+import { ProcessImpulseJourney } from "./concepts/process-impulse-journey";
 import { serviceCatalog } from "./service-catalog";
 
 const situations = [
@@ -373,60 +374,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="process section" aria-labelledby="process-title">
-          <div className="container process-layout">
-            <div className="process-intro" data-reveal="left">
-              <p className="eyebrow eyebrow--dark">So arbeiten wir</p>
-              <h2 id="process-title">Drei Schritte.<br />Kein Umweg.</h2>
-              <p>
-                Sie geben den Startschuss. Danach halten wir Abstimmung,
-                Organisation und Umsetzung so einfach wie möglich.
-              </p>
-              <a className="text-link" href="#kontakt">
-                Projekt anfragen <span aria-hidden="true">→</span>
-              </a>
-            </div>
-
-            <ol className="process-stack">
-              <li className="process-card process-card--one" data-process-reveal>
-                <div className="process-card__top">
-                  <span>01</span><p>Anfrage</p><i>Start</i>
-                </div>
-                <div className="process-card__body">
-                  <h3>Sie erzählen.</h3>
-                  <p>Telefonisch, per E-Mail oder im Formular. Ein paar Eckdaten reichen für den Anfang.</p>
-                </div>
-                <div className="process-card__foot">
-                  <span>Telefon</span><span>E-Mail</span><span>Formular</span>
-                </div>
-              </li>
-              <li className="process-card process-card--two" data-process-reveal>
-                <div className="process-card__top">
-                  <span>02</span><p>Planung</p><i>Abstimmung</i>
-                </div>
-                <div className="process-card__body">
-                  <h3>Wir planen.</h3>
-                  <p>Wir prüfen die Aufgabe, stimmen Aufwand und Termin ab und stellen das passende Team zusammen.</p>
-                </div>
-                <div className="process-card__foot">
-                  <span>Umfang</span><span>Termin</span><span>Angebot</span>
-                </div>
-              </li>
-              <li className="process-card process-card--three" data-process-reveal>
-                <div className="process-card__top">
-                  <span>03</span><p>Umsetzung</p><i>Erledigt</i>
-                </div>
-                <div className="process-card__body">
-                  <h3>Wir erledigen.</h3>
-                  <p>Unser Team setzt fachgerecht um, kommuniziert klar und hinterlässt die Fläche sauber.</p>
-                </div>
-                <div className="process-card__foot">
-                  <span>Team</span><span>Technik</span><span>Saubere Übergabe</span>
-                </div>
-              </li>
-            </ol>
-          </div>
-        </section>
+        <ProcessImpulseJourney />
 
         <section className="contact" id="kontakt">
           <div className="container contact-grid">

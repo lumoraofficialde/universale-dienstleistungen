@@ -132,22 +132,8 @@ export function SiteMotion() {
       { threshold: 0.08, rootMargin: "-4% 0px -4% 0px" },
     );
 
-    const processObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add("is-visible");
-          processObserver.unobserve(entry.target);
-        });
-      },
-      { threshold: 0.24, rootMargin: "0px 0px -12% 0px" },
-    );
-
     document.querySelectorAll("[data-reveal]").forEach((element) =>
       observer.observe(element),
-    );
-    document.querySelectorAll("[data-process-reveal]").forEach((element) =>
-      processObserver.observe(element),
     );
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
@@ -155,7 +141,6 @@ export function SiteMotion() {
 
     return () => {
       observer.disconnect();
-      processObserver.disconnect();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       if (animationFrame) window.cancelAnimationFrame(animationFrame);

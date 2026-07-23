@@ -32,6 +32,10 @@ test("exports a complete static GitHub Pages site", async () => {
   assert.match(html, /Schnell vor Ort\./);
   assert.match(html, /Winter/);
   assert.match(html, /Drei Schritte\./);
+  assert.match(html, /Sie erzählen\./);
+  assert.match(html, /Wir planen\./);
+  assert.match(html, /Wir erledigen\./);
+  assert.doesNotMatch(html, /class="[^"]*\bundefined\b/);
   assert.doesNotMatch(html, /Worauf Sie sich verlassen können\./);
   assert.match(html, /Wobei können wir helfen\?/);
   assert.match(html, /id="kontakt"/);
@@ -55,6 +59,8 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     chronogartenCss,
     fleetJourney,
     fleetJourneyCss,
+    processImpulseJourney,
+    processImpulseJourneyCss,
     serviceCatalog,
     css,
     naturalCss,
@@ -70,6 +76,8 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     readFile(new URL("../app/concepts/chronogarten.module.css", import.meta.url), "utf8"),
     readFile(new URL("../app/concepts/fleet-scale-journey.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/concepts/fleet-scale-journey.module.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/concepts/process-impulse-journey.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/concepts/process-impulse-journey.module.css", import.meta.url), "utf8"),
     readFile(new URL("../app/service-catalog.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../app/natural.css", import.meta.url), "utf8"),
@@ -80,8 +88,8 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
 
   assert.match(shell, /NEXT_PUBLIC_BASE_PATH/);
   assert.match(page, /data-scroll-parallax/);
-  assert.match(page, /data-process-reveal/);
-  assert.match(shell, /processObserver/);
+  assert.doesNotMatch(page, /data-process-reveal/);
+  assert.doesNotMatch(shell, /processObserver/);
   assert.match(shell, /Math\.min\(y \* 0\.58, 280\)/);
   assert.doesNotMatch(page, /Kompetenz durch Erfahrung/);
   assert.doesNotMatch(page, /hero-proof/);
@@ -158,8 +166,8 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
   assert.doesNotMatch(css, /terraschnitt/);
   assert.match(css, /@keyframes readiness-marquee/);
-  assert.match(css, /\.process-intro\s*\{[\s\S]*?position:\s*sticky/);
-  assert.match(css, /\.process-card\s*\{[\s\S]*?position:\s*sticky/);
+  assert.doesNotMatch(css, /\.process-intro/);
+  assert.doesNotMatch(css, /\.process-card/);
   assert.match(css, /\.hero-media\s*\{[\s\S]*?inset:\s*0/);
   assert.match(css, /\.services-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(12, 1fr\)/);
   assert.match(
@@ -173,8 +181,8 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.doesNotMatch(naturalCss, /natural-paint-stroke/);
   assert.match(naturalCss, /natural-grass-ornament\.webp/);
   assert.doesNotMatch(naturalCss, /\[data-reveal/);
-  assert.doesNotMatch(naturalCss, /\.process-intro\s*\{[^}]*position:/);
-  assert.doesNotMatch(naturalCss, /\.process-card\s*\{[^}]*position:/);
+  assert.doesNotMatch(naturalCss, /\.process-intro/);
+  assert.doesNotMatch(naturalCss, /\.process-card/);
   assert.doesNotMatch(naturalCss, /\.hero-media\s*\{/);
   assert.doesNotMatch(naturalCss, /\.services-grid\s*\{/);
   assert.doesNotMatch(naturalCss, /\.services-heading/);
@@ -187,6 +195,24 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.doesNotMatch(naturalCss, /\.fleet-architect/);
   assert.doesNotMatch(css, /\.fleet-photo\s*\{/);
   assert.doesNotMatch(naturalCss, /\.fleet-item\s*\{/);
+  assert.match(page, /ProcessImpulseJourney/);
+  assert.match(processImpulseJourney, /gsap\.context/);
+  assert.match(processImpulseJourney, /ScrollTrigger/);
+  assert.match(processImpulseJourney, /MotionPathPlugin/);
+  assert.match(processImpulseJourney, /scrub:\s*isMobile\s*\?\s*0\.55\s*:\s*0\.65/);
+  assert.match(processImpulseJourney, /prefers-reduced-motion/);
+  assert.match(processImpulseJourney, /aria-labelledby="process-impulse-title"/);
+  assert.match(processImpulseJourney, /process-impulse-panorama\.webp/);
+  assert.match(processImpulseJourney, /Telefonisch, per E-Mail oder im Formular/);
+  assert.match(processImpulseJourney, /stellen das passende Team zusammen/);
+  assert.match(processImpulseJourney, /hinterlässt die Fläche sauber/);
+  assert.doesNotMatch(processImpulseJourney, /addEventListener\(\s*["']scroll/);
+  assert.doesNotMatch(processImpulseJourney, /killAll/);
+  assert.match(processImpulseJourneyCss, /min-height:\s*420dvh/);
+  assert.match(processImpulseJourneyCss, /min-height:\s*360dvh/);
+  assert.match(processImpulseJourneyCss, /position:\s*sticky/);
+  assert.match(processImpulseJourneyCss, /prefers-reduced-motion:\s*reduce/);
+  assert.match(processImpulseJourneyCss, /min-height:\s*auto/);
   assert.match(css, /\.readiness-rail span\s*\{\s*font-size:\s*clamp\(3\.25rem, 15vw, 4\.5rem\)/);
   assert.match(
     css,
@@ -232,6 +258,11 @@ test("ships optimized responsive visual assets", async () => {
     "chronogarten-winter.jpg",
   ];
   chronogartenAssets.forEach((file) => assert.ok(files.includes(file)));
+  const processImpulseAssets = [
+    "process-impulse-panorama.webp",
+    "process-impulse-panorama-960.webp",
+  ];
+  processImpulseAssets.forEach((file) => assert.ok(files.includes(file)));
   assert.ok(!files.includes("terraschnitt-finished.jpg"));
   assert.ok(!files.includes("terraschnitt-before.jpg"));
   assert.ok(!files.includes("natural-paper-texture.png"));
@@ -248,6 +279,10 @@ test("ships optimized responsive visual assets", async () => {
   for (const file of fleetJourneyAssets) {
     const asset = await stat(new URL(file, mediaRoot));
     assert.ok(asset.size < 750_000, `${file} is still too large: ${asset.size}`);
+  }
+  for (const file of processImpulseAssets) {
+    const asset = await stat(new URL(file, mediaRoot));
+    assert.ok(asset.size < 400_000, `${file} is still too large: ${asset.size}`);
   }
 });
 

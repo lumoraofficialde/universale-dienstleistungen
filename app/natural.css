@@ -275,62 +275,6 @@ body::after {
   color: var(--acid);
 }
 
-/* Sticky process sequence remains untouched structurally. */
-.process {
-  background-color: var(--sand);
-  background-image:
-    linear-gradient(rgba(232, 234, 215, 0.82), rgba(232, 234, 215, 0.82)),
-    url("/media/natural-paper-texture.webp");
-  background-size: auto, 760px auto;
-}
-
-.process-card {
-  border-color: rgba(24, 51, 40, 0.12);
-  box-shadow: 0 28px 70px rgba(39, 68, 51, 0.12);
-}
-
-.process-card--one {
-  background-color: var(--paper-bright);
-  background-image: url("/media/natural-paper-texture.webp");
-  background-size: 680px auto;
-  border-radius: 5px 5px 42px 5px;
-}
-
-.process-card--two {
-  background-color: var(--sage);
-  background-image:
-    linear-gradient(rgba(203, 210, 174, 0.9), rgba(203, 210, 174, 0.9)),
-    url("/media/natural-paper-texture.webp");
-  background-size: auto, 680px auto;
-  border-radius: 5px 42px 5px 38px;
-}
-
-.process-card--three {
-  background-color: var(--pine-deep);
-  background-image:
-    linear-gradient(rgba(16, 45, 35, 0.94), rgba(16, 45, 35, 0.94)),
-    url("/media/natural-grass-ornament.webp");
-  background-position: center, right bottom;
-  background-size: auto, 56% auto;
-  background-repeat: no-repeat;
-  border-radius: 42px 5px 38px 5px;
-}
-
-.process-card__top > span:first-child {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  color: #fff;
-  background: var(--moss-deep);
-  border-radius: 50%;
-}
-
-.process-card--three .process-card__top > span:first-child {
-  color: var(--pine-deep);
-  background: var(--acid);
-}
-
 /* Contact keeps its original two-column/sticky layout. */
 .contact {
   position: relative;
@@ -540,12 +484,6 @@ body::after {
 
   .service-card--clear img {
     object-position: 52% center;
-  }
-
-  .process-card--one,
-  .process-card--two,
-  .process-card--three {
-    border-radius: 5px 5px 30px 5px;
   }
 
   .site-header.is-scrolled {
