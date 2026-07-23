@@ -23,11 +23,6 @@ export function SiteMotion() {
     const parallaxElements = Array.from(
       document.querySelectorAll<HTMLElement>("[data-scroll-parallax]"),
     );
-    const rotatingElements = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-scroll-rotate]"),
-    );
-    const seasonStory = document.querySelector<HTMLElement>("[data-season-story]");
-    const seasons = ["spring", "summer", "autumn", "winter"] as const;
 
     const updateScrollEffects = () => {
       const y = window.scrollY;
@@ -62,35 +57,6 @@ export function SiteMotion() {
           `${Math.max(-44, Math.min(44, distanceFromCenter * -96))}px`,
         );
       });
-
-      rotatingElements.forEach((element) => {
-        const rect = element.getBoundingClientRect();
-        const progress = Math.max(
-          0,
-          Math.min(1, (viewportHeight - rect.top) / (viewportHeight + rect.height)),
-        );
-        element.style.setProperty("--scroll-turn", `${progress * 150 - 75}deg`);
-      });
-
-      if (seasonStory) {
-        const storyBounds = seasonStory.getBoundingClientRect();
-        // Begin as the artwork enters, then spread the four seasons across
-        // almost a full viewport of scrolling. Winter arrives near the top of
-        // the screen while the complete artwork is still visible.
-        const seasonEntryLine = viewportHeight * 0.78;
-        const seasonTravel = Math.max(viewportHeight * 0.92, 520);
-        const storyProgress = Math.max(
-          0,
-          Math.min(
-            0.999,
-            (seasonEntryLine - storyBounds.top) / seasonTravel,
-          ),
-        );
-        const seasonIndex = Math.min(3, Math.floor(storyProgress * 4));
-        seasonStory.dataset.season = seasons[seasonIndex];
-        seasonStory.style.setProperty("--season-progress", `${storyProgress}`);
-        seasonStory.style.setProperty("--season-step", `${seasonIndex}`);
-      }
 
       animationFrame = 0;
     };

@@ -8,6 +8,7 @@ import {
   SiteHeader,
   SiteMotion,
 } from "./site-shell";
+import { ActiveIntroConcept } from "./concepts/active-intro";
 
 const services = [
   {
@@ -149,31 +150,6 @@ function ServiceIllustration({ type }: { type: ServiceChoiceIcon }) {
     <svg {...common}>
       <path d="M22 19h28l-3 40H25l-3-40ZM18 19h36M29 19v-6h14v6M31 29v20M41 29v20" />
       <path d="m12 54 7-7m-1 11-6-4" />
-    </svg>
-  );
-}
-
-function SeasonsArtwork() {
-  return (
-    <svg className="season-art" viewBox="0 0 300 300" aria-hidden="true">
-      <g className="season-art__scene season-art__spring">
-        <path d="M31 190c42-8 67-42 78-92M67 142c-27 2-43-12-47-38 27-4 48 9 53 31M86 119c1-30 19-49 49-54 2 31-15 52-45 60" />
-        <path d="M23 215c54-12 104-11 151 5" className="season-art__ground" />
-        <circle cx="232" cy="66" r="5" /><circle cx="249" cy="91" r="3" />
-      </g>
-      <g className="season-art__scene season-art__summer">
-        <circle cx="224" cy="70" r="28" /><path d="M224 25v-13M224 128v-13M179 70h-13M282 70h-13M192 38l-10-10M266 112l-10-10M256 38l10-10M182 112l10-10" />
-        <path d="M27 221c35-9 75-8 118 2M41 219l-4-42m16 43 4-54m12 55-2-33m18 35 8-48m9 51-1-37m18 39 8-52m9 55 2-35" className="season-art__ground" />
-      </g>
-      <g className="season-art__scene season-art__autumn">
-        <path d="M28 218c42-10 86-7 131 7" className="season-art__ground" />
-        <path d="M61 69c22 7 37 22 46 44-25 2-43-8-54-30 3-6 5-10 8-14ZM179 48c18 12 27 29 29 51-22-4-37-17-44-38 5-5 10-9 15-13ZM221 137c18 5 31 17 39 35-20 2-35-6-44-23 1-5 3-9 5-12Z" />
-        <path d="M50 56c43 47 76 90 100 150M180 43c-9 62-21 112-37 163M223 127c-26 35-52 62-80 82" />
-      </g>
-      <g className="season-art__scene season-art__winter">
-        <path d="M31 222c52-18 100-16 145 6M44 188c28-13 56-12 84 3" className="season-art__ground" />
-        <path d="M221 51v111M173 79l96 55M269 79l-96 55M221 51l-12 14m12-14 12 14M173 79l21 4m-21-4 7 20M269 79l-21 4m21-4-7 20M173 134l21-4m-21 4 7-20M269 134l-21-4m21 4-7-20M221 162l-12-14m12 14 12-14" />
-      </g>
     </svg>
   );
 }
@@ -352,48 +328,7 @@ export default function Home() {
           </div>
         </div>
 
-        <section className="intro section" id="unternehmen">
-          <div className="container intro-stage">
-            <div className="intro-statement" data-reveal="left">
-              <p className="eyebrow eyebrow--dark">Rund um Haus & Grundstück</p>
-              <h2>
-                <span>Vier Aufgaben.</span>
-                <span>Eine klare</span>
-                <em>Verantwortung.</em>
-              </h2>
-            </div>
-
-            <div
-              className="season-story"
-              data-season-story
-              data-season="spring"
-              data-reveal="scale"
-              aria-label="365 Tage im Jahr: Frühling, Sommer, Herbst und Winter"
-            >
-              <div className="season-story__sticky">
-                <div className="intro-orbit" data-scroll-rotate>
-                  <SeasonsArtwork />
-                  <div className="intro-orbit__core" aria-hidden="true">
-                    <strong>365</strong>
-                    <span>Tage im Jahr</span>
-                  </div>
-                  <i aria-hidden="true">ganzjährig · einsatzbereit</i>
-                </div>
-
-                <div className="season-index" aria-hidden="true">
-                  <span data-season-name="spring"><b>01</b>Frühling</span>
-                  <span data-season-name="summer"><b>02</b>Sommer</span>
-                  <span data-season-name="autumn"><b>03</b>Herbst</span>
-                  <span data-season-name="winter"><b>04</b>Winter</span>
-                </div>
-                <p className="season-caption">
-                  <span>Wachsen.</span><span>Pflegen.</span><span>Sichern.</span><span>Räumen.</span>
-                </p>
-              </div>
-            </div>
-
-          </div>
-        </section>
+        <ActiveIntroConcept />
 
         <section className="services section" id="leistungen">
           <div className="container">

@@ -11,7 +11,9 @@ test("exports a complete static GitHub Pages site", async () => {
   assert.match(html, /<html lang="de">/i);
   assert.match(html, /<title>Universale Dienstleistungen/i);
   assert.match(html, /Alles im Griff\./);
-  assert.match(html, /Vier Aufgaben\./);
+  assert.match(html, /Was oben/);
+  assert.match(html, /beginnt darunter\./);
+  assert.match(html, /Vorher-Nachher-Vergleich/);
   assert.doesNotMatch(html, /Arbeit, die man sieht\./);
   assert.doesNotMatch(html, /Wir halten Immobilien/);
   assert.match(html, /24 Stunden am Tag, 7 Tage die Woche erreichbar/);
@@ -30,10 +32,11 @@ test("exports a complete static GitHub Pages site", async () => {
 });
 
 test("keeps the Pages asset prefix, original motion, and natural skin wired in", async () => {
-  const [page, shell, team, css, naturalCss, layout, nextConfig, viteConfig] = await Promise.all([
+  const [page, shell, team, terraSchnitt, css, naturalCss, layout, nextConfig, viteConfig] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/site-shell.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/team/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/concepts/terraschnitt.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../app/natural.css", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
@@ -55,8 +58,14 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(shell, /__VINEXT_RSC_NAVIGATE__/);
   assert.match(shell, /const isSameDocument =/);
   assert.match(shell, /handleStaticNavigation/);
-  assert.match(shell, /dataset\.season/);
-  assert.match(page, /data-season-story/);
+  assert.doesNotMatch(shell, /dataset\.season/);
+  assert.doesNotMatch(page, /data-season-story/);
+  assert.match(page, /ActiveIntroConcept/);
+  assert.match(terraSchnitt, /data-terra-chapter/);
+  assert.match(terraSchnitt, /IntersectionObserver/);
+  assert.match(terraSchnitt, /prefers-reduced-motion/);
+  assert.match(terraSchnitt, /terraschnitt-finished\.jpg/);
+  assert.match(terraSchnitt, /terraschnitt-before\.jpg/);
   assert.match(page, /service-picker__grid/);
   assert.match(page, /selectedService/);
   assert.doesNotMatch(page, /function ServicesEmblem/);
@@ -109,13 +118,19 @@ test("ships optimized responsive visual assets", async () => {
   assert.ok(files.includes("gardener-trimming-1280.webp"));
   assert.ok(files.includes("snow-clearing-1280.webp"));
   assert.ok(files.includes("tree-shaping-1280.webp"));
+  assert.ok(files.includes("terraschnitt-finished.jpg"));
+  assert.ok(files.includes("terraschnitt-before.jpg"));
   assert.ok(!files.includes("natural-paper-texture.png"));
   assert.ok(!files.includes("natural-paint-stroke.png"));
 
   const paper = await stat(new URL("natural-paper-texture.webp", mediaRoot));
   const grass = await stat(new URL("natural-grass-ornament.webp", mediaRoot));
+  const terraFinished = await stat(new URL("terraschnitt-finished.jpg", mediaRoot));
+  const terraBefore = await stat(new URL("terraschnitt-before.jpg", mediaRoot));
   assert.ok(paper.size < 100_000, `Paper texture is still too large: ${paper.size}`);
   assert.ok(grass.size < 300_000, `Grass ornament is still too large: ${grass.size}`);
+  assert.ok(terraFinished.size < 600_000, `Terraschnitt result is still too large: ${terraFinished.size}`);
+  assert.ok(terraBefore.size < 600_000, `Terraschnitt before is still too large: ${terraBefore.size}`);
 });
 
 test("exports valid prefixed asset references", async () => {
