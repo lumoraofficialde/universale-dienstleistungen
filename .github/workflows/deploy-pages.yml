@@ -33,8 +33,10 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install dependencies for runner platform
+        # npm can omit optional WASM fallbacks when a lockfile is generated on macOS.
+        # Installing on the runner resolves the correct Linux-native dependency set.
+        run: npm install --include=optional --no-audit --no-fund
 
       - name: Build and test static site
         run: npm test
