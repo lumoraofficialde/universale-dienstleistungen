@@ -1,6 +1,13 @@
 "use client";
 
-import { FormEvent, PointerEvent, useState } from "react";
+import {
+  CSSProperties,
+  FormEvent,
+  KeyboardEvent,
+  PointerEvent,
+  useRef,
+  useState,
+} from "react";
 import {
   assetPath,
   MobileCall,
@@ -118,6 +125,69 @@ const fleet = [
 
 type FleetIcon = (typeof fleet)[number]["icon"];
 
+const fleetScenarios = [
+  {
+    id: "eigenheim",
+    label: "Eigenheim",
+    title: "Präzise am Objekt.",
+    text: "Mähwerke für Eigenheime passen zu kleineren Grundstücken und klar begrenzten Grünflächen.",
+    equipment: [fleet[3]],
+    hotspotIcon: "residential",
+    season: "summer",
+    focusX: "-2%",
+    focusY: "-3%",
+    focusScale: "1.06",
+    mobileX: "12%",
+    zoneX: "43%",
+    zoneY: "61%",
+  },
+  {
+    id: "grossflaeche",
+    label: "Großfläche",
+    title: "Effizient auf Fläche.",
+    text: "Mähwerke für Großflächen sind für weitläufige Grünbereiche vorgesehen.",
+    equipment: [fleet[2]],
+    hotspotIcon: "acreage",
+    season: "summer",
+    focusX: "5%",
+    focusY: "5%",
+    focusScale: "1.12",
+    mobileX: "28%",
+    zoneX: "24%",
+    zoneY: "26%",
+  },
+  {
+    id: "rueckschnitt",
+    label: "Rückschnitt",
+    title: "Saubere Konturen.",
+    text: "Technik für Hecken- und Rückschnitt unterstützt kontrollierte Arbeiten entlang von Grundstück und Bepflanzung.",
+    equipment: [fleet[4]],
+    hotspotIcon: "hedge",
+    season: "summer",
+    focusX: "6%",
+    focusY: "-5%",
+    focusScale: "1.12",
+    mobileX: "29%",
+    zoneX: "23%",
+    zoneY: "62%",
+  },
+  {
+    id: "winter",
+    label: "Winter",
+    title: "Räumen und streuen.",
+    text: "Räumfahrzeuge mit Streusystem bearbeiten größere Flächen. Mobile Schneefräsen bleiben im Nahbereich wendig.",
+    equipment: [fleet[0], fleet[1]],
+    hotspotIcon: "plow",
+    season: "winter",
+    focusX: "-5%",
+    focusY: "1%",
+    focusScale: "1.08",
+    mobileX: "-24%",
+    zoneX: "78%",
+    zoneY: "50%",
+  },
+] as const;
+
 function ServiceIllustration({ type }: { type: ServiceChoiceIcon }) {
   const common = {
     className: "service-choice__icon",
@@ -214,6 +284,61 @@ function FleetGlyph({ type }: { type: FleetIcon }) {
 export default function Home() {
   const [formStatus, setFormStatus] = useState("");
   const [selectedService, setSelectedService] = useState("");
+  const [activeFleetScenario, setActiveFleetScenario] = useState(0);
+  const fleetSwipeStart = useRef<{ x: number; y: number } | null>(null);
+  const activeFleet = fleetScenarios[activeFleetScenario];
+
+  const handleFleetTabKeyDown = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    index: number,
+  ) => {
+    let nextIndex = index;
+
+    if (event.key === "ArrowRight") {
+      nextIndex = Math.min(fleetScenarios.length - 1, index + 1);
+    } else if (event.key === "ArrowLeft") {
+      nextIndex = Math.max(0, index - 1);
+    } else if (event.key === "Home") {
+      nextIndex = 0;
+    } else if (event.key === "End") {
+      nextIndex = fleetScenarios.length - 1;
+    } else {
+      return;
+    }
+
+    event.preventDefault();
+    setActiveFleetScenario(nextIndex);
+    event.currentTarget
+      .closest('[role="tablist"]')
+      ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
+      [nextIndex]?.focus();
+  };
+
+  const handleFleetPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    fleetSwipeStart.current = { x: event.clientX, y: event.clientY };
+  };
+
+  const handleFleetPointerUp = (event: PointerEvent<HTMLDivElement>) => {
+    const start = fleetSwipeStart.current;
+    fleetSwipeStart.current = null;
+    if (!start) return;
+
+    const deltaX = event.clientX - start.x;
+    const deltaY = event.clientY - start.y;
+    if (Math.abs(deltaX) < 46 || Math.abs(deltaX) < Math.abs(deltaY) * 1.15) {
+      return;
+    }
+
+    setActiveFleetScenario((current) =>
+      Math.max(
+        0,
+        Math.min(
+          fleetScenarios.length - 1,
+          current + (deltaX < 0 ? 1 : -1),
+        ),
+      ),
+    );
+  };
 
   const handleSpotlight = (event: PointerEvent<HTMLElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -428,53 +553,190 @@ export default function Home() {
             <div className="readiness-rail__track">
               {[0, 1].map((copy) => (
                 <div className="readiness-rail__set" key={copy}>
-                  <span>Räumen</span><i>—</i>
-                  <span>Streuen</span><i>—</i>
-                  <span>Sichern</span><i>—</i>
-                  <span>Betreuen</span><i>—</i>
+                  <span>Räumen</span><i>-</i>
+                  <span>Streuen</span><i>-</i>
+                  <span>Sichern</span><i>-</i>
+                  <span>Betreuen</span><i>-</i>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="fleet section" id="fuhrpark">
+        <section
+          className="fleet section"
+          id="fuhrpark"
+          aria-labelledby="fleet-title"
+        >
           <div className="container">
-            <div className="fleet-top">
-              <div className="fleet-title" data-reveal="right">
-                <p className="eyebrow eyebrow--dark">Technik, die mitarbeitet</p>
-                <h2>
-                  <span>Für jede Fläche</span>
-                  <span>das richtige Gerät.</span>
-                </h2>
-                <p>
-                  Eigener Fuhrpark, passend zur Aufgabe — flexibel und
-                  kurzfristig einsatzbereit.
-                </p>
-              </div>
+            <div className="fleet-architect__intro" data-reveal="right">
+              <h2 id="fleet-title">
+                <span>Nicht irgendein Gerät.</span>
+                <span>Das richtige Setup.</span>
+              </h2>
+              <p>
+                Eigener Fuhrpark, passend zu Fläche, Zugang und Wetter
+                zusammengestellt.
+              </p>
             </div>
 
-            <div className="fleet-showcase">
-              <figure className="fleet-photo" data-reveal="scale">
-                <img
-                  src={assetPath("/media/winter-team.webp")}
-                  alt="Universale Mitarbeiter beim Winterdiensteinsatz"
-                  loading="lazy"
-                  data-scroll-parallax
-                />
-              </figure>
+            <div className="fleet-architect" data-reveal="scale">
+              <div
+                className={`fleet-architect__stage fleet-architect__stage--${activeFleet.id}`}
+                style={
+                  {
+                    "--fleet-focus-x": activeFleet.focusX,
+                    "--fleet-focus-y": activeFleet.focusY,
+                    "--fleet-focus-scale": activeFleet.focusScale,
+                    "--fleet-mobile-x": activeFleet.mobileX,
+                    "--fleet-zone-x": activeFleet.zoneX,
+                    "--fleet-zone-y": activeFleet.zoneY,
+                  } as CSSProperties
+                }
+              >
+                <div
+                  className="fleet-architect__media"
+                  onPointerDown={handleFleetPointerDown}
+                  onPointerUp={handleFleetPointerUp}
+                  onPointerCancel={() => {
+                    fleetSwipeStart.current = null;
+                  }}
+                >
+                  <picture
+                    className={`fleet-architect__scene fleet-architect__scene--summer${
+                      activeFleet.season === "summer" ? " is-active" : ""
+                    }`}
+                  >
+                    <source
+                      media="(max-width: 780px)"
+                      srcSet={assetPath(
+                        "/media/einsatzlandschaft-sommer-960.webp",
+                      )}
+                    />
+                    <img
+                      src={assetPath("/media/einsatzlandschaft-sommer.webp")}
+                      alt=""
+                      loading="lazy"
+                    />
+                  </picture>
+                  <picture
+                    className={`fleet-architect__scene fleet-architect__scene--winter${
+                      activeFleet.season === "winter" ? " is-active" : ""
+                    }`}
+                  >
+                    <source
+                      media="(max-width: 780px)"
+                      srcSet={assetPath(
+                        "/media/einsatzlandschaft-winter-960.webp",
+                      )}
+                    />
+                    <img
+                      src={assetPath("/media/einsatzlandschaft-winter.webp")}
+                      alt=""
+                      loading="lazy"
+                    />
+                  </picture>
+                  <div className="fleet-architect__focus" aria-hidden="true" />
+                </div>
 
-              <div className="fleet-list" data-reveal="right">
-                {fleet.map((item, index) => (
-                  <div className={`fleet-item fleet-item--${item.icon}`} key={item.name}>
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    <div className="fleet-item__copy">
-                      <p>{item.name}</p>
-                      <small>{item.note}</small>
-                    </div>
-                    <i><FleetGlyph type={item.icon} /></i>
+                <div
+                  className="fleet-architect__hotspots"
+                  role="group"
+                  aria-label="Bereiche der Einsatzlandschaft"
+                >
+                  {fleetScenarios.map((scenario, index) => (
+                    <button
+                      className={`fleet-architect__hotspot${
+                        index === activeFleetScenario ? " is-active" : ""
+                      }`}
+                      style={
+                        {
+                          "--hotspot-x": scenario.zoneX,
+                          "--hotspot-y": scenario.zoneY,
+                        } as CSSProperties
+                      }
+                      type="button"
+                      aria-label={`${scenario.label} anzeigen`}
+                      aria-pressed={index === activeFleetScenario}
+                      onClick={() => setActiveFleetScenario(index)}
+                      onFocus={() => setActiveFleetScenario(index)}
+                      onMouseEnter={() => setActiveFleetScenario(index)}
+                      key={scenario.id}
+                    >
+                      <FleetGlyph type={scenario.hotspotIcon} />
+                    </button>
+                  ))}
+                </div>
+
+                <div
+                  className="fleet-architect__panel"
+                  id="fleet-scenario-panel"
+                  role="tabpanel"
+                  aria-labelledby={`fleet-tab-${activeFleet.id}`}
+                  aria-live="polite"
+                >
+                  <div
+                    className="fleet-architect__panel-content"
+                    key={activeFleet.id}
+                  >
+                    <p>{activeFleet.label}</p>
+                    <h3>{activeFleet.title}</h3>
+                    <span>{activeFleet.text}</span>
+                    <ul aria-label="Passende Technik">
+                      {activeFleet.equipment.map((item) => (
+                        <li key={item.name}>
+                          <i>
+                            <FleetGlyph type={item.icon} />
+                          </i>
+                          <strong>{item.name}</strong>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
+                </div>
+              </div>
+
+              <div
+                className="fleet-architect__tabs"
+                role="tablist"
+                aria-label="Einsatzsituation auswählen"
+              >
+                {fleetScenarios.map((scenario, index) => (
+                  <button
+                    type="button"
+                    role="tab"
+                    id={`fleet-tab-${scenario.id}`}
+                    aria-controls="fleet-scenario-panel"
+                    aria-selected={index === activeFleetScenario}
+                    aria-label={`${scenario.label}: ${scenario.equipment
+                      .map((item) => item.name)
+                      .join(", ")}`}
+                    tabIndex={index === activeFleetScenario ? 0 : -1}
+                    onClick={() => setActiveFleetScenario(index)}
+                    onFocus={() => setActiveFleetScenario(index)}
+                    onKeyDown={(event) =>
+                      handleFleetTabKeyDown(event, index)
+                    }
+                    key={scenario.id}
+                  >
+                    <span>{scenario.label}</span>
+                    <small>{scenario.title}</small>
+                  </button>
                 ))}
+              </div>
+
+              <div className="fleet-architect__response">
+                <i>
+                  <FleetGlyph type="response" />
+                </i>
+                <div>
+                  <strong>{fleet[5].name}</strong>
+                  <span>{fleet[5].note}</span>
+                </div>
+                <p>
+                  Schnell vor Ort, unabhängig davon, welche Technik zur
+                  Aufgabe passt.
+                </p>
               </div>
             </div>
           </div>

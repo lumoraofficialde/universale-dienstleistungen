@@ -259,7 +259,7 @@ body::after {
   box-shadow: 0 0 0 7px rgba(220, 233, 154, 0.08);
 }
 
-/* Fleet: original sticky photo/list layout with reference-inspired paint. */
+/* Fleet: interactive Einsatz-Architekt with the same natural material system. */
 .fleet {
   position: relative;
   background-color: var(--paper);
@@ -269,12 +269,13 @@ body::after {
 
 .fleet::before {
   position: absolute;
-  top: 33%;
-  left: -9vw;
-  width: min(48vw, 760px);
-  height: 48%;
+  top: 28%;
+  left: -11vw;
+  width: min(56vw, 900px);
+  height: 55%;
   content: "";
-  background: rgba(190, 199, 151, 0.34);
+  opacity: 0.82;
+  background: rgba(190, 199, 151, 0.3);
   border-radius: 14% 36% 12% 31% / 27% 10% 32% 8%;
   transform: rotate(2deg);
   pointer-events: none;
@@ -285,186 +286,29 @@ body::after {
   z-index: 1;
 }
 
-.fleet-photo {
+.fleet-architect__stage {
   border-radius: 38px 5px 42px 5px;
-  box-shadow: 0 30px 68px rgba(39, 68, 51, 0.13);
+  box-shadow: 0 34px 82px rgba(39, 68, 51, 0.18);
 }
 
-.fleet-photo img {
-  filter: saturate(0.75) contrast(1) sepia(0.055);
+.fleet-architect__stage::after {
+  border-radius: 29px 3px 33px 3px;
 }
 
-.fleet-list {
-  display: grid;
-  gap: 0.42rem;
-  border-top: 0;
+.fleet-architect__scene img {
+  filter: saturate(0.82) contrast(1.04) sepia(0.025);
 }
 
-.fleet-item {
-  --fleet-wash: rgba(220, 225, 195, 0.74);
-  --fleet-pattern: repeating-linear-gradient(135deg, rgba(72, 98, 76, 0.1) 0 1px, transparent 1px 12px);
-  position: relative;
-  isolation: isolate;
-  min-height: 98px;
-  overflow: hidden;
-  padding: 1rem 0.75rem;
-  grid-template-columns: 46px minmax(0, 1fr) 58px;
-  gap: 1rem;
-  border: 1px solid transparent;
-  border-bottom-color: var(--line);
-  transition: border-color 240ms ease, transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.fleet-item::before {
-  position: absolute;
-  z-index: -1;
-  inset: 0.18rem 0;
-  content: "";
-  opacity: 0;
-  background-color: var(--fleet-wash);
-  background-image: var(--fleet-pattern);
-  clip-path: polygon(0.5% 7%, 99.5% 0, 98.5% 94%, 1.2% 100%);
-  transform: translate3d(-1.6%, 0, 0) scaleX(0.985);
-  transition: opacity 240ms ease, transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.fleet-item::after {
-  position: absolute;
-  top: 18%;
-  bottom: 18%;
-  left: 0.25rem;
-  width: 3px;
-  content: "";
-  background: var(--moss-deep);
-  border-radius: 4px;
-  transform: scaleY(0);
-  transform-origin: bottom;
-  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.fleet-item:hover {
-  padding-inline: 0.75rem;
-  color: var(--ink);
-  background: transparent;
-  border-color: rgba(24, 51, 40, 0.08);
-  transform: translateX(3px);
-}
-
-.fleet-item:hover::before {
-  opacity: 1;
-  transform: translate3d(0, 0, 0) scaleX(1);
-}
-
-.fleet-item:hover::after {
-  transform: scaleY(1);
-}
-
-.fleet-item > span {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 42px;
-  color: var(--moss-deep);
-  background: rgba(251, 248, 239, 0.74);
-  border: 1px solid rgba(24, 51, 40, 0.13);
-  border-radius: 2px 11px 2px 9px;
-  font-size: 0.72rem;
-  font-weight: 750;
-}
-
-.fleet-item__copy {
-  position: relative;
-  z-index: 1;
-}
-
-.fleet-item__copy p {
-  font-size: clamp(1.55rem, 2.45vw, 2.45rem);
-}
-
-.fleet-item__copy small {
-  display: block;
-  margin-top: 0.45rem;
-  color: var(--muted);
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.11em;
-  line-height: 1;
-  text-transform: uppercase;
-  transition: color 240ms ease;
-}
-
-.fleet-item:hover .fleet-item__copy small {
-  color: var(--pine-soft);
-}
-
-.fleet-item i {
-  position: relative;
-  z-index: 1;
-  width: 52px;
-  height: 52px;
-  color: var(--pine);
-  background: rgba(251, 248, 239, 0.68);
-  border: 1px solid rgba(24, 51, 40, 0.12);
+.fleet-architect__hotspot {
   border-radius: 34% 66% 42% 58% / 58% 37% 63% 42%;
-  transition: color 240ms ease, background-color 240ms ease, transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.fleet-item:hover i {
-  color: var(--pine-deep);
-  background: var(--acid);
-  border-color: rgba(24, 51, 40, 0.16);
-  transform: translateX(3px) rotate(0deg);
+.fleet-architect__tabs {
+  background: rgba(251, 248, 239, 0.54);
 }
 
-.fleet-glyph {
-  width: 31px;
-  height: 31px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.fleet-item--blower {
-  --fleet-wash: rgba(218, 228, 216, 0.78);
-  --fleet-pattern: radial-gradient(circle, rgba(71, 104, 91, 0.14) 0 1px, transparent 1.3px);
-}
-
-.fleet-item--acreage {
-  --fleet-wash: rgba(220, 226, 195, 0.8);
-  --fleet-pattern: repeating-linear-gradient(0deg, rgba(92, 113, 61, 0.1) 0 1px, transparent 1px 11px);
-}
-
-.fleet-item--residential {
-  --fleet-wash: rgba(231, 228, 204, 0.82);
-  --fleet-pattern:
-    linear-gradient(rgba(92, 113, 61, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(92, 113, 61, 0.07) 1px, transparent 1px);
-}
-
-.fleet-item--hedge {
-  --fleet-wash: rgba(211, 224, 194, 0.78);
-  --fleet-pattern: linear-gradient(135deg, transparent 45%, rgba(75, 103, 72, 0.1) 46% 51%, transparent 52%);
-}
-
-.fleet-item--response {
-  --fleet-wash: rgba(226, 225, 199, 0.82);
-  --fleet-pattern: repeating-linear-gradient(90deg, rgba(92, 113, 61, 0.08) 0 13px, transparent 13px 24px);
-}
-
-.fleet-item--blower::before {
-  background-size: 13px 13px;
-}
-
-.fleet-item--residential::before {
-  background-size: 18px 18px;
-}
-
-.fleet-item--hedge::before {
-  background-size: 20px 20px;
+.fleet-architect__response > i {
+  border-radius: 34% 66% 42% 58% / 58% 37% 63% 42%;
 }
 
 /* Original full-width quality image. */
@@ -719,49 +563,18 @@ body::after {
   }
 
   .fleet::before {
-    top: 31%;
+    top: 29%;
     left: -38vw;
     width: 118vw;
     opacity: 0.72;
   }
 
-  .fleet-photo {
+  .fleet-architect__stage {
     border-radius: 28px 5px 32px 5px;
   }
 
-  .fleet-item {
-    min-height: 88px;
-    padding: 0.78rem 0.4rem;
-    grid-template-columns: 38px minmax(0, 1fr) 46px;
-    gap: 0.7rem;
-  }
-
-  .fleet-item:hover {
-    padding-inline: 0.4rem;
-    transform: none;
-  }
-
-  .fleet-item > span {
-    width: 32px;
-    height: 38px;
-  }
-
-  .fleet-item__copy p {
-    font-size: 1.55rem;
-  }
-
-  .fleet-item__copy small {
-    font-size: 0.52rem;
-  }
-
-  .fleet-item i {
-    width: 44px;
-    height: 44px;
-  }
-
-  .fleet-glyph {
-    width: 27px;
-    height: 27px;
+  .fleet-architect__tabs {
+    background: rgba(251, 248, 239, 0.7);
   }
 
   .service-card--garden {

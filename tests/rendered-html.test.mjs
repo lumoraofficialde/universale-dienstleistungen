@@ -25,6 +25,12 @@ test("exports a complete static GitHub Pages site", async () => {
   assert.doesNotMatch(html, /Arbeit, die man sieht\./);
   assert.doesNotMatch(html, /Wir halten Immobilien/);
   assert.match(html, /24 Stunden am Tag, 7 Tage die Woche erreichbar/);
+  assert.match(html, /Nicht irgendein Gerät\./);
+  assert.match(html, /Das richtige Setup\./);
+  assert.match(html, /Eigenheim/);
+  assert.match(html, /Großfläche/);
+  assert.match(html, /Rückschnitt/);
+  assert.match(html, /Winter/);
   assert.match(html, /Drei Schritte\./);
   assert.doesNotMatch(html, /Worauf Sie sich verlassen können\./);
   assert.match(html, /Wobei können wir helfen\?/);
@@ -121,8 +127,26 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.doesNotMatch(page, /Wir halten Immobilien/);
   assert.doesNotMatch(page, /services-heading/);
   assert.match(page, /function FleetGlyph/);
-  assert.match(page, /<span>Für jede Fläche<\/span>/);
-  assert.match(page, /<span>das richtige Gerät\.<\/span>/);
+  assert.match(page, /Nicht irgendein Gerät\./);
+  assert.match(page, /Das richtige Setup\./);
+  assert.match(page, /fleetScenarios/);
+  assert.match(page, /fleet-architect__stage/);
+  assert.match(page, /fleet-architect__hotspot/);
+  assert.match(page, /role="tablist"/);
+  assert.match(page, /aria-pressed/);
+  assert.match(page, /einsatzlandschaft-sommer\.webp/);
+  assert.match(page, /einsatzlandschaft-winter\.webp/);
+  assert.doesNotMatch(page, /fleet-showcase/);
+  for (const fleetName of [
+    "Räumfahrzeuge mit Streusystem",
+    "Mobile Schneefräsen",
+    "Mähwerke für Großflächen",
+    "Mähwerke für Eigenheime",
+    "Technik für Hecken- und Rückschnitt",
+    "3,5-t-Einsatzfahrzeug",
+  ]) {
+    assert.ok(page.includes(fleetName));
+  }
   assert.doesNotMatch(page, /<figcaption>/);
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
   assert.doesNotMatch(css, /terraschnitt/);
@@ -147,8 +171,15 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.doesNotMatch(naturalCss, /\.hero-media\s*\{/);
   assert.doesNotMatch(naturalCss, /\.services-grid\s*\{/);
   assert.doesNotMatch(naturalCss, /\.services-heading/);
-  assert.match(naturalCss, /\.fleet-glyph\s*\{/);
-  assert.match(css, /\.fleet-title h2 span\s*\{[\s\S]*?white-space:\s*nowrap/);
+  assert.match(css, /\.fleet-glyph\s*\{/);
+  assert.match(css, /\.fleet-architect__stage\s*\{/);
+  assert.match(css, /\.fleet-architect__tabs\s*\{/);
+  assert.match(
+    css,
+    /@media \(max-width: 780px\)[\s\S]*?--fleet-mobile-x/,
+  );
+  assert.doesNotMatch(css, /\.fleet-photo\s*\{/);
+  assert.doesNotMatch(naturalCss, /\.fleet-item\s*\{/);
   assert.match(css, /\.readiness-rail span\s*\{\s*font-size:\s*clamp\(3\.25rem, 15vw, 4\.5rem\)/);
   assert.match(
     css,
@@ -173,6 +204,13 @@ test("ships optimized responsive visual assets", async () => {
   assert.ok(files.includes("gardener-trimming-1280.webp"));
   assert.ok(files.includes("snow-clearing-1280.webp"));
   assert.ok(files.includes("tree-shaping-1280.webp"));
+  const fleetArchitectAssets = [
+    "einsatzlandschaft-sommer.webp",
+    "einsatzlandschaft-winter.webp",
+    "einsatzlandschaft-sommer-960.webp",
+    "einsatzlandschaft-winter-960.webp",
+  ];
+  fleetArchitectAssets.forEach((file) => assert.ok(files.includes(file)));
   const chronogartenAssets = [
     "chronogarten-intro.jpg",
     "chronogarten-garten.jpg",
@@ -193,6 +231,10 @@ test("ships optimized responsive visual assets", async () => {
   for (const file of chronogartenAssets) {
     const asset = await stat(new URL(file, mediaRoot));
     assert.ok(asset.size < 500_000, `${file} is still too large: ${asset.size}`);
+  }
+  for (const file of fleetArchitectAssets) {
+    const asset = await stat(new URL(file, mediaRoot));
+    assert.ok(asset.size < 750_000, `${file} is still too large: ${asset.size}`);
   }
 });
 
