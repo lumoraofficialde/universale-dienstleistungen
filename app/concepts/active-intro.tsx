@@ -1,9 +1,13 @@
-import { TerraSchnitt } from "./terraschnitt";
+import { Chronogarten } from "./chronogarten";
 
 /*
  * All concept tests enter the page through this boundary. Future variants can
- * replace TerraSchnitt here without touching the surrounding page structure.
+ * replace Chronogarten here without touching the surrounding page structure.
  */
-export function ActiveIntroConcept() {
-  return <TerraSchnitt />;
+export function ActiveIntroConcept({
+  onChooseService,
+}: {
+  onChooseService?: (service: string) => void;
+}) {
+  return <Chronogarten onChooseService={onChooseService} />;
 }

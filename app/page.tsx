@@ -9,72 +9,61 @@ import {
   SiteMotion,
 } from "./site-shell";
 import { ActiveIntroConcept } from "./concepts/active-intro";
+import { serviceCatalog } from "./service-catalog";
 
 const services = [
   {
-    number: "01",
-    title: "Garten & Grundstück",
-    formValue: "Gartenpflege",
-    text: "Pflege, Rückschnitt und saubere Außenflächen — regelmäßig oder genau dann, wenn Unterstützung gebraucht wird.",
+    ...serviceCatalog[0],
     image: assetPath("/media/gardener-trimming.webp"),
     srcSet: `${assetPath("/media/gardener-trimming-1280.webp")} 1280w, ${assetPath("/media/gardener-trimming.webp")} 2560w`,
     alt: "Mitarbeiter bei der professionellen Pflege einer Gartenanlage",
     className: "service-card--garden",
   },
   {
-    number: "02",
-    title: "Winterdienst",
-    formValue: "Winterdienst",
-    text: "Schnee räumen, Flächen streuen und Wege sichern. Abrufbereit bei plötzlichem Wintereinbruch.",
+    ...serviceCatalog[1],
     image: assetPath("/media/snow-clearing.webp"),
     srcSet: `${assetPath("/media/snow-clearing-1280.webp")} 1280w, ${assetPath("/media/snow-clearing.webp")} 2560w`,
     alt: "Winterdienst beim Räumen einer verschneiten Fläche",
     className: "service-card--winter",
   },
   {
-    number: "03",
-    title: "Hausmeisterservice",
-    formValue: "Hausmeisterservice",
-    text: "Kontrolle, Pflege, Koordination und kleinere Reparaturen für private und gewerbliche Immobilien.",
+    ...serviceCatalog[2],
     image: assetPath("/media/grass-cutting.webp"),
     srcSet: `${assetPath("/media/grass-cutting-1280.webp")} 1280w, ${assetPath("/media/grass-cutting.webp")} 1920w`,
     alt: "Professionelle Grünpflege auf einer weitläufigen Außenfläche",
     className: "service-card--house",
   },
   {
-    number: "04",
-    title: "Entrümpelung",
-    formValue: "Entrümpelung",
-    text: "Wohnungsauflösung, Betriebsauflösung, Demontage und besenreine Übergabe — diskret und gut geplant.",
+    ...serviceCatalog[3],
     image: assetPath("/media/winter-vehicle.webp"),
     srcSet: undefined,
-    alt: "Einsatzfahrzeug von Universale Dienstleistungen",
+    alt: "Team bei einer professionell geplanten Entrümpelung",
     className: "service-card--clear",
   },
 ];
 
 const serviceChoices = [
   {
-    value: "Gartenpflege",
-    label: "Gartenpflege",
+    value: serviceCatalog[0].formValue,
+    label: serviceCatalog[0].title,
     note: "Pflege & Rückschnitt",
     icon: "garden",
   },
   {
-    value: "Winterdienst",
-    label: "Winterdienst",
+    value: serviceCatalog[1].formValue,
+    label: serviceCatalog[1].title,
     note: "Räumen & sichern",
     icon: "winter",
   },
   {
-    value: "Hausmeisterservice",
-    label: "Objektservice",
+    value: serviceCatalog[2].formValue,
+    label: serviceCatalog[2].title,
     note: "Kontrolle & Pflege",
     icon: "property",
   },
   {
-    value: "Entrümpelung",
-    label: "Entrümpelung",
+    value: serviceCatalog[3].formValue,
+    label: serviceCatalog[3].title,
     note: "Räumen & übergeben",
     icon: "clear",
   },
@@ -292,8 +281,8 @@ export default function Home() {
 
               <aside className="hero-panel" aria-label="Direktanfrage">
                 <p>
-                  Gartenpflege, Winterdienst und Objektservice aus einer Hand.
-                  Schnell vor Ort, sauber geplant, zuverlässig erledigt.
+                  Garten & Grundstück, Winterdienst, Hausmeisterservice und
+                  Entrümpelung aus einer Hand.
                 </p>
                 <div className="hero-actions">
                   <a className="button button--accent" href="#kontakt">
@@ -315,20 +304,7 @@ export default function Home() {
           </div>
         </section>
 
-        <div className="service-marquee" aria-label="Leistungsbereiche">
-          <div className="service-marquee__track">
-            {[0, 1].map((copy) => (
-              <div className="service-marquee__set" aria-hidden={copy === 1} key={copy}>
-                <span>Winterdienst</span><i>✳</i>
-                <span>Gartenpflege</span><i>✳</i>
-                <span>Hausmeisterservice</span><i>✳</i>
-                <span>Entrümpelung</span><i>✳</i>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <ActiveIntroConcept />
+        <ActiveIntroConcept onChooseService={chooseService} />
 
         <section className="services section" id="leistungen">
           <div className="container">

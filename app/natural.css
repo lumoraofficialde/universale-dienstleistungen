@@ -167,20 +167,6 @@ body::after {
   box-shadow: 0 0 0 5px rgba(220, 233, 154, 0.08);
 }
 
-/* Moving service banner */
-.service-marquee {
-  color: var(--paper-bright);
-  background-color: var(--moss-deep);
-  background-image: url("/media/natural-paper-texture.webp");
-  background-size: 620px auto;
-  background-blend-mode: soft-light;
-  border-block: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.service-marquee i {
-  color: var(--acid);
-}
-
 /* Original bento service layout, natural surfaces. */
 .services {
   position: relative;

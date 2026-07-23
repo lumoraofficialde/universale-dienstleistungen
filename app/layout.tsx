@@ -10,7 +10,7 @@ const logoPath = `${basePath}/media/universale-logo.png`;
 
 export const metadata = {
   metadataBase: new URL(`${siteUrl}/`),
-  title: "Universale Dienstleistungen | Garten, Winterdienst & Objektservice",
+  title: "Universale Dienstleistungen | Garten, Winterdienst & Hausmeisterservice",
   description:
     "Gartenpflege, Winterdienst, Hausmeisterservice und Entrümpelung aus Büsum. Persönlich, zuverlässig und rund um die Uhr erreichbar.",
   icons: {
