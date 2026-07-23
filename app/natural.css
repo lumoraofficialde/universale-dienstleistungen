@@ -259,58 +259,6 @@ body::after {
   box-shadow: 0 0 0 7px rgba(220, 233, 154, 0.08);
 }
 
-/* Fleet: interactive Einsatz-Architekt with the same natural material system. */
-.fleet {
-  position: relative;
-  background-color: var(--paper);
-  background-image: url("/media/natural-paper-texture.webp");
-  background-size: 760px auto;
-}
-
-.fleet::before {
-  position: absolute;
-  top: 28%;
-  left: -11vw;
-  width: min(56vw, 900px);
-  height: 55%;
-  content: "";
-  opacity: 0.82;
-  background: rgba(190, 199, 151, 0.3);
-  border-radius: 14% 36% 12% 31% / 27% 10% 32% 8%;
-  transform: rotate(2deg);
-  pointer-events: none;
-}
-
-.fleet .container {
-  position: relative;
-  z-index: 1;
-}
-
-.fleet-architect__stage {
-  border-radius: 38px 5px 42px 5px;
-  box-shadow: 0 34px 82px rgba(39, 68, 51, 0.18);
-}
-
-.fleet-architect__stage::after {
-  border-radius: 29px 3px 33px 3px;
-}
-
-.fleet-architect__scene img {
-  filter: saturate(0.82) contrast(1.04) sepia(0.025);
-}
-
-.fleet-architect__hotspot {
-  border-radius: 34% 66% 42% 58% / 58% 37% 63% 42%;
-}
-
-.fleet-architect__tabs {
-  background: rgba(251, 248, 239, 0.54);
-}
-
-.fleet-architect__response > i {
-  border-radius: 34% 66% 42% 58% / 58% 37% 63% 42%;
-}
-
 /* Original full-width quality image. */
 .image-break > img {
   filter: saturate(0.74) contrast(1.03) sepia(0.045);
@@ -560,21 +508,6 @@ body::after {
   .contact::after {
     right: 0;
     width: min(64vw, 420px);
-  }
-
-  .fleet::before {
-    top: 29%;
-    left: -38vw;
-    width: 118vw;
-    opacity: 0.72;
-  }
-
-  .fleet-architect__stage {
-    border-radius: 28px 5px 32px 5px;
-  }
-
-  .fleet-architect__tabs {
-    background: rgba(251, 248, 239, 0.7);
   }
 
   .service-card--garden {
