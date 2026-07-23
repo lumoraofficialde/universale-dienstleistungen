@@ -23,6 +23,14 @@ export function SiteMotion() {
     const parallaxElements = Array.from(
       document.querySelectorAll<HTMLElement>("[data-scroll-parallax]"),
     );
+    const stackCards = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-stack-card]"),
+    );
+    const stackSegments = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-stack-segment]"),
+    );
+    const stackCurrent = document.querySelector<HTMLElement>("[data-stack-current]");
+    const mobileStack = window.matchMedia("(max-width: 780px)");
 
     const updateScrollEffects = () => {
       const y = window.scrollY;
@@ -57,6 +65,45 @@ export function SiteMotion() {
           `${Math.max(-44, Math.min(44, distanceFromCenter * -96))}px`,
         );
       });
+
+      if (stackCards.length) {
+        let activeStackIndex = 0;
+
+        if (mobileStack.matches) {
+          const activationOffset = Math.min(96, viewportHeight * 0.12);
+          stackCards.forEach((card, index) => {
+            const stickyTop =
+              Number.parseFloat(card.style.getPropertyValue("--stack-top")) || 132;
+            if (
+              card.getBoundingClientRect().top <=
+              stickyTop + activationOffset
+            ) {
+              activeStackIndex = index;
+            }
+          });
+        }
+
+        stackCards.forEach((card, index) => {
+          card.classList.toggle("is-stack-active", index === activeStackIndex);
+          card.classList.toggle("is-stack-past", index < activeStackIndex);
+        });
+
+        stackSegments.forEach((segment, index) => {
+          const isActive = index === activeStackIndex;
+          segment.classList.toggle("is-active", isActive);
+          segment.classList.toggle("is-complete", index < activeStackIndex);
+          if (isActive) {
+            segment.setAttribute("aria-current", "step");
+          } else {
+            segment.removeAttribute("aria-current");
+          }
+        });
+
+        if (stackCurrent) {
+          stackCurrent.textContent =
+            stackCards[activeStackIndex]?.dataset.stackTitle ?? "";
+        }
+      }
 
       animationFrame = 0;
     };
@@ -112,6 +159,9 @@ export function SiteMotion() {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       if (animationFrame) window.cancelAnimationFrame(animationFrame);
+      stackCards.forEach((card) =>
+        card.classList.remove("is-stack-active", "is-stack-past"),
+      );
       document.documentElement.classList.remove("motion-ready");
     };
   }, []);

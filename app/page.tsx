@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, MouseEvent, useState } from "react";
+import { FormEvent, PointerEvent, useState } from "react";
 import {
   assetPath,
   MobileCall,
@@ -11,33 +11,45 @@ import {
 import { ActiveIntroConcept } from "./concepts/active-intro";
 import { serviceCatalog } from "./service-catalog";
 
-const services = [
+const situations = [
   {
-    ...serviceCatalog[0],
+    number: "01",
+    title: "Regelmäßig betreut.",
+    text: "Für Außenflächen, die dauerhaft ordentlich bleiben sollen. Feste Abstimmung statt immer wieder neu organisieren.",
+    formValue: serviceCatalog[0].formValue,
     image: assetPath("/media/gardener-trimming.webp"),
     srcSet: `${assetPath("/media/gardener-trimming-1280.webp")} 1280w, ${assetPath("/media/gardener-trimming.webp")} 2560w`,
-    alt: "Mitarbeiter bei der professionellen Pflege einer Gartenanlage",
+    alt: "Regelmäßige Pflege einer Gartenanlage",
     className: "service-card--garden",
   },
   {
-    ...serviceCatalog[1],
+    number: "02",
+    title: "Saisonal bereit.",
+    text: "Kapazitäten passend zu Wetter und Jahreszeit planen, bevor daraus Zeitdruck entsteht.",
+    formValue: serviceCatalog[1].formValue,
     image: assetPath("/media/snow-clearing.webp"),
     srcSet: `${assetPath("/media/snow-clearing-1280.webp")} 1280w, ${assetPath("/media/snow-clearing.webp")} 2560w`,
-    alt: "Winterdienst beim Räumen einer verschneiten Fläche",
+    alt: "Vorbereiteter Einsatz auf einer verschneiten Fläche",
     className: "service-card--winter",
   },
   {
-    ...serviceCatalog[2],
+    number: "03",
+    title: "Alles im Blick.",
+    text: "Kontrolle, Pflege und kleine Aufgaben bleiben bei einem Ansprechpartner gebündelt.",
+    formValue: serviceCatalog[2].formValue,
     image: assetPath("/media/grass-cutting.webp"),
     srcSet: `${assetPath("/media/grass-cutting-1280.webp")} 1280w, ${assetPath("/media/grass-cutting.webp")} 1920w`,
-    alt: "Professionelle Grünpflege auf einer weitläufigen Außenfläche",
+    alt: "Laufende Betreuung einer weitläufigen Außenfläche",
     className: "service-card--house",
   },
   {
-    ...serviceCatalog[3],
+    number: "04",
+    title: "Sauber übergeben.",
+    text: "Eine klar umrissene Aufgabe vom ersten Überblick bis zum geordneten Abschluss.",
+    formValue: serviceCatalog[3].formValue,
     image: assetPath("/media/winter-vehicle.webp"),
     srcSet: undefined,
-    alt: "Team bei einer professionell geplanten Entrümpelung",
+    alt: "Geordnete Übergabe nach einer Entrümpelung",
     className: "service-card--clear",
   },
 ];
@@ -203,7 +215,7 @@ export default function Home() {
   const [formStatus, setFormStatus] = useState("");
   const [selectedService, setSelectedService] = useState("");
 
-  const handleSpotlight = (event: MouseEvent<HTMLElement>) => {
+  const handleSpotlight = (event: PointerEvent<HTMLElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
     event.currentTarget.style.setProperty(
       "--spot-x",
@@ -244,6 +256,17 @@ export default function Home() {
   const chooseService = (service: string) => {
     setSelectedService(service);
     setFormStatus("");
+  };
+
+  const showSituation = (index: number) => {
+    const target = document.querySelectorAll<HTMLElement>("[data-stack-card]")[index];
+    if (!target) return;
+    target.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+      block: "start",
+    });
   };
 
   return (
@@ -308,36 +331,58 @@ export default function Home() {
 
         <section className="services section" id="leistungen">
           <div className="container">
+            <nav className="services-stack-nav" aria-label="Einsatzmodelle">
+              <div className="services-stack-nav__segments">
+                {situations.map((situation, index) => (
+                  <button
+                    type="button"
+                    data-stack-segment
+                    aria-current={index === 0 ? "step" : undefined}
+                    aria-label={`${situation.title} anzeigen`}
+                    onClick={() => showSituation(index)}
+                    key={situation.title}
+                  />
+                ))}
+              </div>
+              <p data-stack-current>{situations[0].title}</p>
+            </nav>
+
             <div className="services-grid">
-              {services.map((service, index) => (
+              {situations.map((situation, index) => (
                 <article
-                  className={`service-card ${service.className}`}
+                  className={`service-card ${situation.className}`}
                   data-reveal={index % 2 === 0 ? "left" : "right"}
-                  style={{ "--delay": `${index * 70}ms` } as React.CSSProperties}
-                  onMouseMove={handleSpotlight}
-                  key={service.title}
+                  data-stack-card
+                  data-stack-title={situation.title}
+                  style={{
+                    "--delay": `${index * 70}ms`,
+                    "--stack-top": `${132 + index * 8}px`,
+                    "--stack-z": index + 10,
+                  } as React.CSSProperties}
+                  onPointerMove={handleSpotlight}
+                  key={situation.title}
                 >
                   <img
-                    src={service.image}
-                    srcSet={service.srcSet}
+                    src={situation.image}
+                    srcSet={situation.srcSet}
                     sizes="(max-width: 780px) calc(100vw - 36px), (max-width: 1100px) 55vw, 50vw"
-                    alt={service.alt}
+                    alt={situation.alt}
                     loading="lazy"
                   />
                   <div className="service-card__shade" aria-hidden="true" />
                   <div className="service-card__top">
-                    <span>{service.number}</span>
-                    <span>Leistungsbereich</span>
+                    <span>{situation.number}</span>
+                    <span>Einsatzmodell</span>
                   </div>
                   <div className="service-card__body">
-                    <h3>{service.title}</h3>
-                    <p>{service.text}</p>
+                    <h3>{situation.title}</h3>
+                    <p>{situation.text}</p>
                     <a
                       href="#kontakt"
-                      aria-label={`${service.title} anfragen`}
-                      onClick={() => chooseService(service.formValue)}
+                      aria-label={`${situation.title} Situation besprechen`}
+                      onClick={() => chooseService(situation.formValue)}
                     >
-                      Leistung anfragen <span aria-hidden="true">↗</span>
+                      Situation besprechen <span aria-hidden="true">↗</span>
                     </a>
                   </div>
                 </article>

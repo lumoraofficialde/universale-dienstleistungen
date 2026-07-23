@@ -15,6 +15,11 @@ test("exports a complete static GitHub Pages site", async () => {
   assert.match(html, /Vier Leistungen\./);
   assert.match(html, /Das ganze Jahr\./);
   assert.match(html, /Vier Leistungsbereiche/);
+  assert.match(html, /Regelmäßig betreut\./);
+  assert.match(html, /Saisonal bereit\./);
+  assert.match(html, /Alles im Blick\./);
+  assert.match(html, /Sauber übergeben\./);
+  assert.match(html, /Situation besprechen/);
   assert.doesNotMatch(html, /Was oben/);
   assert.doesNotMatch(html, /Vorher-Nachher-Vergleich/);
   assert.doesNotMatch(html, /Arbeit, die man sieht\./);
@@ -102,6 +107,13 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   }
   assert.match(page, /service-picker__grid/);
   assert.match(page, /selectedService/);
+  assert.match(page, /services-stack-nav/);
+  assert.match(page, /data-stack-card/);
+  assert.match(page, /data-stack-segment/);
+  assert.match(page, /Einsatzmodell/);
+  assert.match(page, /Situation besprechen/);
+  assert.match(shell, /is-stack-active/);
+  assert.match(shell, /data-stack-current/);
   assert.doesNotMatch(page, /service-marquee/);
   assert.doesNotMatch(page, /Objektservice/);
   assert.doesNotMatch(page, /function ServicesEmblem/);
@@ -119,6 +131,12 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(css, /\.process-card\s*\{[\s\S]*?position:\s*sticky/);
   assert.match(css, /\.hero-media\s*\{[\s\S]*?inset:\s*0/);
   assert.match(css, /\.services-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(12, 1fr\)/);
+  assert.match(
+    css,
+    /@media \(max-width: 780px\)[\s\S]*?\.service-card,[\s\S]*?position:\s*sticky/,
+  );
+  assert.match(css, /\.services-stack-nav__segments/);
+  assert.match(css, /\.is-stack-past/);
   assert.match(layout, /import "\.\/natural\.css"/);
   assert.match(naturalCss, /natural-paper-texture\.webp/);
   assert.doesNotMatch(naturalCss, /natural-paint-stroke/);

@@ -764,11 +764,36 @@ body::after {
     height: 27px;
   }
 
-  .service-card--garden,
-  .service-card--winter,
-  .service-card--house,
+  .service-card--garden {
+    border-radius: 5px 30px 6px 34px;
+  }
+
+  .service-card--winter {
+    border-radius: 30px 5px 34px 6px;
+  }
+
+  .service-card--house {
+    border-radius: 6px 34px 5px 30px;
+  }
+
   .service-card--clear {
-    border-radius: 28px 5px 32px 5px;
+    border-radius: 34px 6px 30px 5px;
+  }
+
+  .service-card--garden img {
+    object-position: 64% center;
+  }
+
+  .service-card--winter img {
+    object-position: 54% center;
+  }
+
+  .service-card--house img {
+    object-position: 58% center;
+  }
+
+  .service-card--clear img {
+    object-position: 52% center;
   }
 
   .process-card--one,
