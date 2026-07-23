@@ -31,10 +31,10 @@ test("exports a complete static GitHub Pages site", async () => {
   assert.match(html, /Effizient auf Fläche\./);
   assert.match(html, /Schnell vor Ort\./);
   assert.match(html, /Winter/);
-  assert.match(html, /Drei Schritte\./);
-  assert.match(html, /Sie erzählen\./);
-  assert.match(html, /Wir planen\./);
-  assert.match(html, /Wir erledigen\./);
+  assert.match(html, /Von der Anfrage bis zur Umsetzung\./);
+  assert.match(html, /Aufgabe schildern\./);
+  assert.match(html, /Einsatz abstimmen\./);
+  assert.match(html, /Vor Ort umsetzen\./);
   assert.doesNotMatch(html, /class="[^"]*\bundefined\b/);
   assert.doesNotMatch(html, /Worauf Sie sich verlassen können\./);
   assert.match(html, /Wobei können wir helfen\?/);
@@ -59,6 +59,9 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     chronogartenCss,
     fleetJourney,
     fleetJourneyCss,
+    activeProcess,
+    processFloatingProperty,
+    processFloatingPropertyCss,
     processImpulseJourney,
     processImpulseJourneyCss,
     serviceCatalog,
@@ -76,6 +79,9 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     readFile(new URL("../app/concepts/chronogarten.module.css", import.meta.url), "utf8"),
     readFile(new URL("../app/concepts/fleet-scale-journey.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/concepts/fleet-scale-journey.module.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/concepts/active-process.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/concepts/process-floating-property.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/concepts/process-floating-property.module.css", import.meta.url), "utf8"),
     readFile(new URL("../app/concepts/process-impulse-journey.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/concepts/process-impulse-journey.module.css", import.meta.url), "utf8"),
     readFile(new URL("../app/service-catalog.ts", import.meta.url), "utf8"),
@@ -195,7 +201,29 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.doesNotMatch(naturalCss, /\.fleet-architect/);
   assert.doesNotMatch(css, /\.fleet-photo\s*\{/);
   assert.doesNotMatch(naturalCss, /\.fleet-item\s*\{/);
-  assert.match(page, /ProcessImpulseJourney/);
+  assert.match(page, /ActiveProcessConcept/);
+  assert.doesNotMatch(page, /ProcessImpulseJourney/);
+  assert.match(activeProcess, /ProcessFloatingProperty/);
+  assert.doesNotMatch(activeProcess, /ProcessImpulseJourney/);
+  assert.match(processFloatingProperty, /gsap\.context/);
+  assert.match(processFloatingProperty, /ScrollTrigger/);
+  assert.match(processFloatingProperty, /gsap\.matchMedia/);
+  assert.match(processFloatingProperty, /scrub:\s*isMobile\s*\?\s*0\.52\s*:\s*0\.68/);
+  assert.match(processFloatingProperty, /prefers-reduced-motion/);
+  assert.match(processFloatingProperty, /aria-labelledby="floating-property-title"/);
+  assert.match(processFloatingProperty, /process-floating-property-complete\.jpg/);
+  assert.match(processFloatingProperty, /process-floating-property-plan\.jpg/);
+  assert.match(processFloatingProperty, /process-floating-property-layers\.jpg/);
+  assert.match(processFloatingProperty, /Aufgabe schildern\./);
+  assert.match(processFloatingProperty, /Einsatz abstimmen\./);
+  assert.match(processFloatingProperty, /Vor Ort umsetzen\./);
+  assert.doesNotMatch(processFloatingProperty, /addEventListener\(\s*["']scroll/);
+  assert.doesNotMatch(processFloatingProperty, /killAll/);
+  assert.match(processFloatingPropertyCss, /min-height:\s*430dvh/);
+  assert.match(processFloatingPropertyCss, /min-height:\s*360dvh/);
+  assert.match(processFloatingPropertyCss, /position:\s*sticky/);
+  assert.match(processFloatingPropertyCss, /prefers-reduced-motion:\s*reduce/);
+  assert.match(processFloatingPropertyCss, /min-height:\s*auto/);
   assert.match(processImpulseJourney, /gsap\.context/);
   assert.match(processImpulseJourney, /ScrollTrigger/);
   assert.match(processImpulseJourney, /MotionPathPlugin/);
@@ -263,6 +291,15 @@ test("ships optimized responsive visual assets", async () => {
     "process-impulse-panorama-960.webp",
   ];
   processImpulseAssets.forEach((file) => assert.ok(files.includes(file)));
+  const processFloatingPropertyAssets = [
+    "process-floating-property-complete.jpg",
+    "process-floating-property-complete-960.jpg",
+    "process-floating-property-plan.jpg",
+    "process-floating-property-plan-960.jpg",
+    "process-floating-property-layers.jpg",
+    "process-floating-property-layers-960.jpg",
+  ];
+  processFloatingPropertyAssets.forEach((file) => assert.ok(files.includes(file)));
   assert.ok(!files.includes("terraschnitt-finished.jpg"));
   assert.ok(!files.includes("terraschnitt-before.jpg"));
   assert.ok(!files.includes("natural-paper-texture.png"));
@@ -283,6 +320,10 @@ test("ships optimized responsive visual assets", async () => {
   for (const file of processImpulseAssets) {
     const asset = await stat(new URL(file, mediaRoot));
     assert.ok(asset.size < 400_000, `${file} is still too large: ${asset.size}`);
+  }
+  for (const file of processFloatingPropertyAssets) {
+    const asset = await stat(new URL(file, mediaRoot));
+    assert.ok(asset.size < 750_000, `${file} is still too large: ${asset.size}`);
   }
 });
 
