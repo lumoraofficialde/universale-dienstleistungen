@@ -13,8 +13,8 @@ import {
   SiteMotion,
 } from "./site-shell";
 import { ActiveIntroConcept } from "./concepts/active-intro";
-import { ActiveProcessConcept } from "./concepts/active-process";
 import { FleetScaleJourney } from "./concepts/fleet-scale-journey";
+import { ProcessImpulseJourney } from "./concepts/process-impulse-journey";
 import { serviceCatalog } from "./service-catalog";
 
 const situations = [
@@ -374,7 +374,7 @@ export default function Home() {
           </div>
         </section>
 
-        <ActiveProcessConcept />
+        <ProcessImpulseJourney />
 
         <section className="contact" id="kontakt">
           <div className="container contact-grid">
