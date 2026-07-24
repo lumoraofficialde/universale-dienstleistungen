@@ -116,8 +116,8 @@
   stroke-width: 2.2;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
+  visibility: hidden;
+  opacity: 0;
   vector-effect: non-scaling-stroke;
 }
 

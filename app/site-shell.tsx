@@ -264,8 +264,8 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
   const closeMenu = () => setMenuOpen(false);
   const teamHref = currentPage === "team" ? "#top" : `${basePath}/team/`;
   const links = [
-    ["Leistungen", homeHref("#leistungen", currentPage)],
-    ["Über uns", homeHref("#unternehmen", currentPage)],
+    ["Leistungen", homeHref("#unternehmen", currentPage)],
+    ["Einsatzarten", homeHref("#leistungen", currentPage)],
     ["Fuhrpark", homeHref("#fuhrpark", currentPage)],
     ["Team", teamHref],
     ["Kontakt", homeHref("#kontakt", currentPage)],
@@ -341,8 +341,8 @@ export function SiteFooter({ currentPage = "home" }: { currentPage?: SitePage })
         </a>
         <p>Gepflegte Flächen. Sichere Wege.<br />Ein zuverlässiger Partner.</p>
         <div className="footer-links">
-          <a href={homeHref("#leistungen", currentPage)}>Leistungen</a>
-          <a href={homeHref("#unternehmen", currentPage)}>Über uns</a>
+          <a href={homeHref("#unternehmen", currentPage)}>Leistungen</a>
+          <a href={homeHref("#leistungen", currentPage)}>Einsatzarten</a>
           <a href={`${basePath}/team/`}>Team</a>
           <a href={homeHref("#fuhrpark", currentPage)}>Fuhrpark</a>
           <a href={homeHref("#kontakt", currentPage)}>Kontakt</a>

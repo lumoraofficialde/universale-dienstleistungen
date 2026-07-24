@@ -161,6 +161,10 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   }
   assert.match(page, /service-picker__grid/);
   assert.match(page, /selectedService/);
+  assert.match(
+    page,
+    /import\s*\{[\s\S]*?\bbasePath\b[\s\S]*?\}\s*from\s*["']\.\/site-shell["']/,
+  );
   assert.match(page, /services-stack-nav/);
   assert.match(page, /data-stack-card/);
   assert.match(page, /data-stack-segment/);
@@ -248,6 +252,8 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(processImpulseJourney, /gsap\.context/);
   assert.match(processImpulseJourney, /ScrollTrigger/);
   assert.match(processImpulseJourney, /MotionPathPlugin/);
+  assert.match(processImpulseJourney, /getTotalLength\(\)/);
+  assert.match(processImpulseJourney, /strokeDasharray/);
   assert.match(processImpulseJourney, /scrub:\s*isMobile\s*\?\s*0\.55\s*:\s*0\.65/);
   assert.match(processImpulseJourney, /prefers-reduced-motion/);
   assert.match(processImpulseJourney, /aria-labelledby="process-impulse-title"/);
@@ -276,6 +282,15 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.doesNotMatch(team, /Menschen\. Technik\. Ergebnis\./);
   assert.doesNotMatch(team, /team-gallery/);
   assert.match(shell, /<strong>24\/7 anrufen<\/strong>/);
+  assert.match(
+    shell,
+    /\["Leistungen",\s*homeHref\("#unternehmen",\s*currentPage\)\]/,
+  );
+  assert.match(
+    shell,
+    /\["Einsatzarten",\s*homeHref\("#leistungen",\s*currentPage\)\]/,
+  );
+  assert.doesNotMatch(shell, /\["Über uns",/);
 });
 
 test("ships optimized responsive visual assets", async () => {

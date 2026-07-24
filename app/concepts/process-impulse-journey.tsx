@@ -102,6 +102,8 @@ export function ProcessImpulseJourney() {
           const topOffset = isMobile ? 68 : 76;
           const activePath = isMobile ? mobilePath : desktopPath;
           const inactivePath = isMobile ? desktopPath : mobilePath;
+          const activePathLength = activePath.getTotalLength();
+          const inactivePathLength = inactivePath.getTotalLength();
           const camera = isMobile
             ? {
                 introX: -42,
@@ -140,8 +142,13 @@ export function ProcessImpulseJourney() {
           });
           gsap.set(copies, { autoAlpha: 0, y: 22 });
           gsap.set(copies[0], { autoAlpha: 1, y: 0 });
-          gsap.set([desktopPath, mobilePath], {
-            strokeDashoffset: 1,
+          gsap.set(activePath, {
+            strokeDasharray: `${activePathLength} ${activePathLength}`,
+            strokeDashoffset: activePathLength,
+          });
+          gsap.set(inactivePath, {
+            strokeDasharray: `${inactivePathLength} ${inactivePathLength}`,
+            strokeDashoffset: inactivePathLength,
           });
           gsap.set(inactivePath, { autoAlpha: 0 });
           gsap.set(activePath, { autoAlpha: 1 });
@@ -176,6 +183,7 @@ export function ProcessImpulseJourney() {
               {
                 strokeDashoffset: 0,
                 duration: 3.36,
+                ease: "none",
               },
               0.16,
             )
@@ -192,6 +200,7 @@ export function ProcessImpulseJourney() {
                   end: 1,
                 },
                 duration: 3.36,
+                ease: "none",
               },
               0.16,
             )
@@ -372,7 +381,6 @@ export function ProcessImpulseJourney() {
           <path
             ref={desktopPathRef}
             d="M 126 690 C 272 650 304 510 448 494 C 596 478 642 605 790 544 C 936 484 925 313 1086 306 C 1244 300 1280 431 1491 356"
-            pathLength="1"
           />
         </svg>
 
@@ -385,7 +393,6 @@ export function ProcessImpulseJourney() {
           <path
             ref={mobilePathRef}
             d="M 52 690 C 66 587 286 606 289 476 C 291 353 76 372 91 238 C 104 129 243 144 329 82"
-            pathLength="1"
           />
         </svg>
 
