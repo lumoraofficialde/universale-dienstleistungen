@@ -452,7 +452,7 @@ export default function Home() {
                   <label className="privacy-check">
                     <input name="privacy" type="checkbox" required />
                     <span>
-                      Ich habe die <a href="https://universale-dienstleistungen.de/datenschutz/" target="_blank" rel="noreferrer">Datenschutzerklärung</a> gelesen und stimme der Kontaktaufnahme zu.
+                      Ich habe die <a href={`${basePath}/datenschutz/`}>Datenschutzerklärung</a> gelesen und stimme der Kontaktaufnahme zu.
                     </span>
                   </label>
 

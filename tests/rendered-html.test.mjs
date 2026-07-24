@@ -50,6 +50,33 @@ test("exports a complete static GitHub Pages site", async () => {
   assert.match(teamHtml, /Ein Team\./);
   assert.match(teamHtml, /Klare Verantwortung\./);
   assert.match(teamHtml, /Woran gute Arbeit erkennbar wird\./);
+
+  const impressumHtml = await readFile(
+    new URL("../dist/client/impressum/index.html", import.meta.url),
+    "utf8",
+  );
+  assert.match(impressumHtml, /Angaben gem\u00e4\u00df \u00a7 5 DDG/);
+  assert.match(impressumHtml, /Amtsgericht Pinneberg/);
+  assert.match(impressumHtml, /HRB 18480 PI/);
+  assert.match(impressumHtml, /Verbraucherstreitbeilegung/);
+
+  const datenschutzHtml = await readFile(
+    new URL("../dist/client/datenschutz/index.html", import.meta.url),
+    "utf8",
+  );
+  assert.match(datenschutzHtml, /Hosting \u00fcber GitHub Pages/);
+  assert.match(datenschutzHtml, /keine eigenen Analyse-, Marketing- oder Trackingdienste/);
+  assert.match(datenschutzHtml, /ausschlie\u00dflich lokal in Ihrem Browser/);
+  assert.match(datenschutzHtml, /Ihre Datenschutzrechte/);
+
+  assert.match(
+    html,
+    /href="(?:\/universale-dienstleistungen)?\/datenschutz\/"/,
+  );
+  assert.match(
+    html,
+    /href="(?:\/universale-dienstleistungen)?\/impressum\/"/,
+  );
 });
 
 test("keeps the Pages asset prefix, original motion, and natural skin wired in", async () => {

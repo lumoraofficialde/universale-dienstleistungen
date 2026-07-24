@@ -10,7 +10,7 @@ type VinextNavigate = (
   ...navigationArguments: unknown[]
 ) => Promise<unknown>;
 
-type SitePage = "home" | "team";
+export type SitePage = "home" | "team" | "impressum" | "datenschutz";
 
 const homeHref = (hash: string, currentPage: SitePage) =>
   currentPage === "home" ? hash : `${basePath}/${hash}`;
@@ -351,8 +351,18 @@ export function SiteFooter({ currentPage = "home" }: { currentPage?: SitePage })
       <div className="container footer-meta">
         <span>© {new Date().getFullYear()} Universale Dienstleistungen GmbH</span>
         <div>
-          <a href="https://universale-dienstleistungen.de/datenschutz/" target="_blank" rel="noreferrer">Datenschutz</a>
-          <a href="https://universale-dienstleistungen.de/impressum/" target="_blank" rel="noreferrer">Impressum</a>
+          <a
+            href={`${basePath}/datenschutz/`}
+            aria-current={currentPage === "datenschutz" ? "page" : undefined}
+          >
+            Datenschutz
+          </a>
+          <a
+            href={`${basePath}/impressum/`}
+            aria-current={currentPage === "impressum" ? "page" : undefined}
+          >
+            Impressum
+          </a>
         </div>
         <a href="#top">Nach oben ↑</a>
       </div>
