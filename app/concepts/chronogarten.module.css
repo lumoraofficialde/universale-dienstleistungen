@@ -3,7 +3,7 @@
   --chrono-ivory: #f5f1e7;
   --chrono-lens-x: 72%;
   --chrono-lens-y: 48%;
-  --chrono-top: 92px;
+  --chrono-top: 76px;
   position: relative;
   min-height: 500dvh;
   overflow: clip;
@@ -527,7 +527,7 @@
 
 @media (max-width: 780px) {
   .root {
-    --chrono-top: 72px;
+    --chrono-top: 68px;
     min-height: 500dvh;
   }
 

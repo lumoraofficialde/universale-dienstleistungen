@@ -11,28 +11,28 @@ const stages = [
     id: "kante",
     label: "Kante",
     title: "Saubere Konturen.",
-    text: "Für klar geführte Schnitte an Hecken und Gehölzen.",
+    text: "Für Form- und Rückschnitt an Hecken und Gehölzen — auch in unterschiedlichen Größenbereichen.",
     equipment: ["Technik für Hecken- und Rückschnitt"],
   },
   {
     id: "objekt",
     label: "Objekt",
     title: "Präzise am Objekt.",
-    text: "Für die Pflege von Grünflächen rund ums Eigenheim.",
+    text: "Für wendige, saubere Grünpflege rund um Eigenheime und kleinere Objekte.",
     equipment: ["Mähwerke für Eigenheime"],
   },
   {
     id: "flaeche",
     label: "Fläche",
     title: "Effizient auf Fläche.",
-    text: "Für die Pflege weitläufiger Grünbereiche.",
+    text: "Für gleichmäßige Pflege größerer Grünflächen mit dafür ausgelegten Mähwerken.",
     equipment: ["Mähwerke für Großflächen"],
   },
   {
     id: "winter",
     label: "Winter",
     title: "Bereit, wenn Winter einsetzt.",
-    text: "Für Räumen und Streuen auf Flächen sowie Schneebeseitigung im Nahbereich.",
+    text: "Für Treppen, Wege, Zufahrten, Parkplätze und Höfe — räumen, streuen und Schnee gezielt beseitigen.",
     equipment: [
       "Räumfahrzeuge mit Streusystem",
       "Mobile Schneefräsen",
@@ -42,7 +42,7 @@ const stages = [
     id: "einsatz",
     label: "Einsatz",
     title: "Schnell vor Ort.",
-    text: "Die passende Technik kommt zum Einsatzort.",
+    text: "Das 3,5-t-Einsatzfahrzeug bringt Personal und benötigte Technik abgestimmt zum Einsatzort.",
     equipment: ["3,5-t-Einsatzfahrzeug"],
   },
 ] as const;
@@ -399,7 +399,7 @@ export function FleetScaleJourney() {
               )}
               <p>
                 {index === 0
-                  ? "Die Aufgabe bestimmt den Maßstab. Von präzisem Rückschnitt bis zur Pflege weitläufiger Flächen."
+                  ? "Nicht jedes Grundstück braucht dieselbe Maschine. Wir wählen Technik nach Fläche, Zugänglichkeit und Aufgabe."
                   : stage.text}
               </p>
               <ul aria-label="Passende Technik">
@@ -446,8 +446,8 @@ export function FleetScaleJourney() {
       <div className={styles.staticStory}>
         <h2 id="fleet-journey-title">Von der Kante bis zur Großfläche.</h2>
         <p>
-          Die Aufgabe bestimmt den Maßstab. Unsere Technik reicht vom
-          präzisen Rückschnitt bis zur Pflege weitläufiger Flächen.
+          Nicht jedes Grundstück braucht dieselbe Maschine. Wir wählen Technik
+          nach Fläche, Zugänglichkeit und Aufgabe.
         </p>
         <ol>
           {stages.map((stage, index) => (

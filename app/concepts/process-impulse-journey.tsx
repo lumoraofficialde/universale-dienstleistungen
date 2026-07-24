@@ -12,22 +12,22 @@ const processSteps = [
     id: "anfrage",
     label: "Anfrage",
     title: "Sie erzählen.",
-    text: "Telefonisch, per E-Mail oder im Formular. Ein paar Eckdaten reichen für den Anfang.",
-    detail: "Telefon, E-Mail oder Formular",
+    text: "Nennen Sie uns Einsatzort, Aufgabe und gewünschten Zeitraum — telefonisch, per E-Mail oder im Formular.",
+    detail: "Ort, Aufgabe und Zeitraum",
   },
   {
     id: "planung",
     label: "Planung",
     title: "Wir planen.",
-    text: "Wir prüfen die Aufgabe, stimmen Aufwand und Termin ab und stellen das passende Team zusammen.",
-    detail: "Umfang, Termin und Angebot",
+    text: "Wenn nötig besichtigen wir die Fläche. Danach stimmen wir Umfang, Termin, Personal und Technik mit Ihnen ab.",
+    detail: "Besichtigung, Aufwand und Termin",
   },
   {
     id: "umsetzung",
     label: "Umsetzung",
     title: "Wir erledigen.",
-    text: "Unser Team setzt fachgerecht um, kommuniziert klar und hinterlässt die Fläche sauber.",
-    detail: "Team, Technik und saubere Übergabe",
+    text: "Wir setzen den vereinbarten Umfang fachgerecht um, melden Änderungen zurück und übergeben den Bereich geordnet.",
+    detail: "Umsetzung, Rückmeldung und Übergabe",
   },
 ] as const;
 
@@ -319,8 +319,8 @@ export function ProcessImpulseJourney() {
         <p className={styles.staticChapter}>So arbeiten wir</p>
         <h2 id="process-impulse-title">Drei Schritte. Kein Umweg.</h2>
         <p className={styles.staticIntro}>
-          Sie geben den Startschuss. Danach halten wir Abstimmung,
-          Organisation und Umsetzung so einfach wie möglich.
+          Vom ersten Kontakt bis zur Übergabe wissen Sie, was als Nächstes
+          passiert.
         </p>
         <ol>
           {processSteps.map((step) => (
@@ -403,8 +403,8 @@ export function ProcessImpulseJourney() {
             <p className={styles.chapter}>So arbeiten wir</p>
             <h2>Drei Schritte. Kein Umweg.</h2>
             <p>
-              Eine klare Linie vom ersten Gespräch bis zur sauber übergebenen
-              Fläche.
+              Vom ersten Kontakt bis zur Übergabe wissen Sie, was als Nächstes
+              passiert.
             </p>
           </div>
 

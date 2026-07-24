@@ -4,28 +4,28 @@ export const serviceCatalog = [
     number: "01",
     title: "Garten & Grundstück",
     formValue: "Gartenpflege",
-    text: "Pflege, Rückschnitt und saubere Außenflächen — regelmäßig oder genau dann, wenn Unterstützung gebraucht wird.",
+    text: "Rasen- und Grünpflege sowie Form- und Rückschnitt an Hecken und Gehölzen — für Eigenheime und größere Außenanlagen.",
   },
   {
     id: "winter",
     number: "02",
     title: "Winterdienst",
     formValue: "Winterdienst",
-    text: "Schnee räumen, Flächen streuen und Wege sichern. Abrufbereit bei plötzlichem Wintereinbruch.",
+    text: "Schnee räumen und Flächen streuen auf Treppen, Aufgängen, Gehwegen, Zufahrten, Parkplätzen und Höfen.",
   },
   {
     id: "property",
     number: "03",
     title: "Hausmeisterservice",
     formValue: "Hausmeisterservice",
-    text: "Kontrolle, Pflege, Koordination und kleinere Reparaturen für private und gewerbliche Immobilien.",
+    text: "Kontrolle und Wartung privater sowie gewerblicher Objekte; Kleinreparaturen, wenn kein Fachbetrieb erforderlich ist.",
   },
   {
     id: "clear",
     number: "04",
     title: "Entrümpelung",
     formValue: "Entrümpelung",
-    text: "Wohnungsauflösung, Betriebsauflösung, Demontage und besenreine Übergabe — diskret und gut geplant.",
+    text: "Private Haushalts- und Wohnungsauflösungen sowie gewerbliche Betriebsauflösungen — auf Wunsch mit Demontagearbeiten.",
   },
 ] as const;
 

@@ -149,9 +149,9 @@ body::after {
 
 .hero-scrim {
   background:
-    linear-gradient(90deg, rgba(8, 36, 27, 0.9) 0%, rgba(18, 49, 37, 0.56) 46%, rgba(18, 49, 37, 0.14) 78%),
-    linear-gradient(0deg, rgba(8, 34, 26, 0.82) 0%, transparent 52%),
-    linear-gradient(180deg, rgba(8, 34, 26, 0.5) 0%, transparent 30%);
+    linear-gradient(90deg, rgba(8, 36, 27, 0.82) 0%, rgba(18, 49, 37, 0.46) 46%, rgba(18, 49, 37, 0.1) 78%),
+    linear-gradient(0deg, rgba(8, 34, 26, 0.68) 0%, transparent 52%),
+    linear-gradient(180deg, rgba(8, 34, 26, 0.38) 0%, transparent 30%);
 }
 
 .hero h1 span {
@@ -257,22 +257,6 @@ body::after {
 .readiness-divider > span {
   background: var(--acid);
   box-shadow: 0 0 0 7px rgba(220, 233, 154, 0.08);
-}
-
-/* Original full-width quality image. */
-.image-break > img {
-  filter: saturate(0.74) contrast(1.03) sepia(0.045);
-}
-
-.image-break__overlay {
-  background:
-    linear-gradient(90deg, rgba(11, 38, 29, 0.84), rgba(11, 38, 29, 0.22) 72%),
-    linear-gradient(0deg, rgba(11, 38, 29, 0.74), transparent 58%);
-}
-
-.image-break .eyebrow,
-.image-break__content > span {
-  color: var(--acid);
 }
 
 /* Contact keeps its original two-column/sticky layout. */
@@ -421,25 +405,14 @@ body::after {
 
   .hero-scrim {
     background:
-      linear-gradient(180deg, rgba(8, 34, 26, 0.62) 0%, rgba(8, 34, 26, 0.1) 28%, rgba(8, 34, 26, 0.9) 78%, rgba(8, 34, 26, 0.98) 100%),
-      linear-gradient(90deg, rgba(8, 34, 26, 0.47), transparent);
+      linear-gradient(180deg, rgba(8, 34, 26, 0.52) 0%, rgba(8, 34, 26, 0.06) 28%, rgba(8, 34, 26, 0.82) 78%, rgba(8, 34, 26, 0.94) 100%),
+      linear-gradient(90deg, rgba(8, 34, 26, 0.34), transparent);
   }
 
   .mobile-menu {
     background-color: var(--paper);
     background-image: url("/media/natural-paper-texture.webp");
     background-size: 640px auto;
-  }
-
-  .mobile-call {
-    color: var(--paper-bright);
-    background: var(--moss-deep);
-    border-color: rgba(16, 45, 35, 0.22);
-    box-shadow: 0 15px 38px rgba(16, 45, 35, 0.24);
-  }
-
-  .mobile-call span {
-    color: var(--acid);
   }
 
   .services::before,

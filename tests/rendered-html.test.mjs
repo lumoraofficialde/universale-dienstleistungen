@@ -11,14 +11,17 @@ test("exports a complete static GitHub Pages site", async () => {
   assert.match(html, /<html lang="de">/i);
   assert.match(html, /<title>Universale Dienstleistungen/i);
   assert.match(html, /Alles im Griff\./);
+  assert.doesNotMatch(html, /Universale Qualit/);
+  assert.doesNotMatch(html, /Wir verlassen eine/);
   assert.match(html, /Ein Objekt\./);
-  assert.match(html, /Vier Leistungen\./);
-  assert.match(html, /Das ganze Jahr\./);
+  assert.match(html, /Vier Bereiche\./);
+  assert.match(html, /Ein Ansprechpartner\./);
+  assert.match(html, /private Haushalte und gewerbliche Objekte/);
   assert.match(html, /Vier Leistungsbereiche/);
-  assert.match(html, /Regelmäßig betreut\./);
-  assert.match(html, /Saisonal bereit\./);
-  assert.match(html, /Alles im Blick\./);
-  assert.match(html, /Sauber übergeben\./);
+  assert.match(html, /Laufend betreut\./);
+  assert.match(html, /Saisonal vorbereitet\./);
+  assert.match(html, /Gebündelt erledigt\./);
+  assert.match(html, /Einmalig organisiert\./);
   assert.match(html, /Situation besprechen/);
   assert.doesNotMatch(html, /Was oben/);
   assert.doesNotMatch(html, /Vorher-Nachher-Vergleich/);
@@ -37,7 +40,7 @@ test("exports a complete static GitHub Pages site", async () => {
   assert.match(html, /Wir erledigen\./);
   assert.doesNotMatch(html, /class="[^"]*\bundefined\b/);
   assert.doesNotMatch(html, /Worauf Sie sich verlassen können\./);
-  assert.match(html, /Wobei können wir helfen\?/);
+  assert.match(html, /Welche Leistung brauchen Sie\?/);
   assert.match(html, /id="kontakt"/);
 
   const teamHtml = await readFile(
@@ -87,7 +90,8 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   ]);
 
   assert.match(shell, /NEXT_PUBLIC_BASE_PATH/);
-  assert.match(page, /data-scroll-parallax/);
+  assert.doesNotMatch(page, /data-scroll-parallax/);
+  assert.match(team, /data-scroll-parallax/);
   assert.doesNotMatch(page, /data-process-reveal/);
   assert.doesNotMatch(shell, /processObserver/);
   assert.match(shell, /Math\.min\(y \* 0\.58, 280\)/);
@@ -113,6 +117,11 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(chronogarten, /chronogarten-winter\.jpg/);
   assert.doesNotMatch(chronogarten, /addEventListener\("scroll"/);
   assert.match(chronogartenCss, /min-height:\s*500dvh/);
+  assert.match(chronogartenCss, /--chrono-top:\s*76px/);
+  assert.match(
+    chronogartenCss,
+    /@media \(max-width: 780px\)[\s\S]*?--chrono-top:\s*68px/,
+  );
   assert.match(chronogartenCss, /prefers-reduced-motion:\s*reduce/);
   assert.equal([...serviceCatalog.matchAll(/\bid:\s*"/g)].length, 4);
   for (const serviceName of [
@@ -138,6 +147,8 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.doesNotMatch(page, /Arbeit, die man sieht\./);
   assert.doesNotMatch(page, /Wir halten Immobilien/);
   assert.doesNotMatch(page, /services-heading/);
+  assert.doesNotMatch(page, /image-break/);
+  assert.doesNotMatch(page, /tree-shaping/);
   assert.match(page, /FleetScaleJourney/);
   assert.doesNotMatch(page, /FleetGlyph/);
   assert.doesNotMatch(page, /fleetScenarios/);
@@ -164,6 +175,11 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   }
   assert.doesNotMatch(page, /<figcaption>/);
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
+  assert.match(css, /html\s*\{[\s\S]*?scroll-padding-top:\s*76px/);
+  assert.match(
+    css,
+    /@media \(max-width: 780px\)[\s\S]*?html\s*\{\s*scroll-padding-top:\s*68px/,
+  );
   assert.doesNotMatch(css, /terraschnitt/);
   assert.match(css, /@keyframes readiness-marquee/);
   assert.doesNotMatch(css, /\.process-intro/);
@@ -186,6 +202,12 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.doesNotMatch(naturalCss, /\.hero-media\s*\{/);
   assert.doesNotMatch(naturalCss, /\.services-grid\s*\{/);
   assert.doesNotMatch(naturalCss, /\.services-heading/);
+  assert.doesNotMatch(naturalCss, /\.image-break/);
+  assert.doesNotMatch(naturalCss, /\.mobile-call\s*\{/);
+  assert.match(
+    css,
+    /\.mobile-call\s*\{[\s\S]*?background:\s*var\(--acid\)/,
+  );
   assert.match(fleetJourneyCss, /min-height:\s*500dvh/);
   assert.match(fleetJourneyCss, /position:\s*sticky/);
   assert.match(fleetJourneyCss, /@media \(max-width: 780px\)/);
@@ -203,9 +225,9 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(processImpulseJourney, /prefers-reduced-motion/);
   assert.match(processImpulseJourney, /aria-labelledby="process-impulse-title"/);
   assert.match(processImpulseJourney, /process-impulse-panorama\.webp/);
-  assert.match(processImpulseJourney, /Telefonisch, per E-Mail oder im Formular/);
-  assert.match(processImpulseJourney, /stellen das passende Team zusammen/);
-  assert.match(processImpulseJourney, /hinterlässt die Fläche sauber/);
+  assert.match(processImpulseJourney, /Einsatzort, Aufgabe und gewünschten Zeitraum/);
+  assert.match(processImpulseJourney, /Umfang, Termin, Personal und Technik/);
+  assert.match(processImpulseJourney, /Umsetzung, Rückmeldung und Übergabe/);
   assert.doesNotMatch(processImpulseJourney, /addEventListener\(\s*["']scroll/);
   assert.doesNotMatch(processImpulseJourney, /killAll/);
   assert.match(processImpulseJourneyCss, /min-height:\s*420dvh/);

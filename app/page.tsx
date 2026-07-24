@@ -20,8 +20,8 @@ import { serviceCatalog } from "./service-catalog";
 const situations = [
   {
     number: "01",
-    title: "Regelmäßig betreut.",
-    text: "Für Außenflächen, die dauerhaft ordentlich bleiben sollen. Feste Abstimmung statt immer wieder neu organisieren.",
+    title: "Laufend betreut.",
+    text: "Wiederkehrende Pflege- und Kontrolltermine für Außenflächen und Immobilien. Rhythmus und Umfang stimmen wir auf Objekt und Saison ab.",
     formValue: serviceCatalog[0].formValue,
     image: assetPath("/media/gardener-trimming.webp"),
     srcSet: `${assetPath("/media/gardener-trimming-1280.webp")} 1280w, ${assetPath("/media/gardener-trimming.webp")} 2560w`,
@@ -30,8 +30,8 @@ const situations = [
   },
   {
     number: "02",
-    title: "Saisonal bereit.",
-    text: "Kapazitäten passend zu Wetter und Jahreszeit planen, bevor daraus Zeitdruck entsteht.",
+    title: "Saisonal vorbereitet.",
+    text: "Gartenpflege und Winterdienst rechtzeitig einplanen — mit direkter Erreichbarkeit, wenn das Wetter kurzfristig umschlägt.",
     formValue: serviceCatalog[1].formValue,
     image: assetPath("/media/snow-clearing.webp"),
     srcSet: `${assetPath("/media/snow-clearing-1280.webp")} 1280w, ${assetPath("/media/snow-clearing.webp")} 2560w`,
@@ -40,8 +40,8 @@ const situations = [
   },
   {
     number: "03",
-    title: "Alles im Blick.",
-    text: "Kontrolle, Pflege und kleine Aufgaben bleiben bei einem Ansprechpartner gebündelt.",
+    title: "Gebündelt erledigt.",
+    text: "Kontrollen, Pflege und kleinere Arbeiten an einem Objekt werden in einem abgestimmten Einsatz zusammengefasst.",
     formValue: serviceCatalog[2].formValue,
     image: assetPath("/media/grass-cutting.webp"),
     srcSet: `${assetPath("/media/grass-cutting-1280.webp")} 1280w, ${assetPath("/media/grass-cutting.webp")} 1920w`,
@@ -50,8 +50,8 @@ const situations = [
   },
   {
     number: "04",
-    title: "Sauber übergeben.",
-    text: "Eine klar umrissene Aufgabe vom ersten Überblick bis zum geordneten Abschluss.",
+    title: "Einmalig organisiert.",
+    text: "Für Entrümpelungen und klar definierte Einzelaufträge vereinbaren wir Umfang, Termin und Abschluss vorab.",
     formValue: serviceCatalog[3].formValue,
     image: assetPath("/media/winter-vehicle.webp"),
     srcSet: undefined,
@@ -64,25 +64,25 @@ const serviceChoices = [
   {
     value: serviceCatalog[0].formValue,
     label: serviceCatalog[0].title,
-    note: "Pflege & Rückschnitt",
+    note: "Grünflächen, Hecken, Gehölze",
     icon: "garden",
   },
   {
     value: serviceCatalog[1].formValue,
     label: serviceCatalog[1].title,
-    note: "Räumen & sichern",
+    note: "Wege, Zufahrten, Höfe",
     icon: "winter",
   },
   {
     value: serviceCatalog[2].formValue,
     label: serviceCatalog[2].title,
-    note: "Kontrolle & Pflege",
+    note: "Kontrolle & Kleinreparaturen",
     icon: "property",
   },
   {
     value: serviceCatalog[3].formValue,
     label: serviceCatalog[3].title,
-    note: "Räumen & übergeben",
+    note: "Haushalt & Betrieb",
     icon: "clear",
   },
 ] as const;
@@ -219,8 +219,8 @@ export default function Home() {
 
               <aside className="hero-panel" aria-label="Direktanfrage">
                 <p>
-                  Garten & Grundstück, Winterdienst, Hausmeisterservice und
-                  Entrümpelung aus einer Hand.
+                  Für private Haushalte und gewerbliche Objekte: Gartenpflege,
+                  Winterdienst, Hausmeisterservice und Entrümpelung aus einer Hand.
                 </p>
                 <div className="hero-actions">
                   <a className="button button--accent" href="#kontakt">
@@ -327,12 +327,13 @@ export default function Home() {
               </div>
             </div>
             <div className="readiness-copy" data-reveal="right">
-              <p className="eyebrow">Wenn es schnell gehen muss</p>
-              <h2 id="readiness-title">Bereit, bevor das Wetter umschlägt.</h2>
+              <p className="eyebrow">Wenn der Einsatz nicht warten kann</p>
+              <h2 id="readiness-title">Erreichbar, wenn es darauf ankommt.</h2>
               <p>
-                Bei Wintereinbruch und dringenden Fällen erreichen Sie uns rund
-                um die Uhr. Klare Abstimmung, kurze Wege und einsatzbereite
-                Technik sorgen dafür, dass kein Auftrag liegen bleibt.
+                Bei plötzlichem Wintereinbruch oder einem dringenden Fall
+                erreichen Sie uns telefonisch rund um die Uhr. Nennen Sie
+                Einsatzort, betroffene Fläche und Zugänglichkeit — wir klären
+                direkt, welches Team und welche Technik benötigt werden.
               </p>
               <a className="button button--outline" href="tel:+491738948124">
                 Notfall-Hotline anrufen <span aria-hidden="true">↗</span>
@@ -355,35 +356,16 @@ export default function Home() {
 
         <FleetScaleJourney />
 
-        <section className="image-break" aria-label="Gartenpflege im Einsatz">
-          <img
-            src={assetPath("/media/tree-shaping.webp")}
-            srcSet={`${assetPath("/media/tree-shaping-1280.webp")} 1280w, ${assetPath("/media/tree-shaping.webp")} 2560w`}
-            sizes="100vw"
-            alt="Gärtner beim professionellen Formschnitt einer Hecke"
-            loading="lazy"
-            data-scroll-parallax
-          />
-          <div className="image-break__overlay" aria-hidden="true" />
-          <div className="container image-break__content" data-reveal="left">
-            <p className="eyebrow">Vom ersten Schnitt bis zur letzten Kante</p>
-            <blockquote>
-              „Wir verlassen eine Fläche so, wie wir sie selbst vorfinden möchten.“
-            </blockquote>
-            <span>Universale Qualitätsversprechen</span>
-          </div>
-        </section>
-
         <ProcessImpulseJourney />
 
         <section className="contact" id="kontakt">
           <div className="container contact-grid">
             <div className="contact-intro" data-reveal="left">
-              <p className="eyebrow">Lassen Sie uns loslegen</p>
-              <h2>Was können wir<br />für Sie erledigen?</h2>
+              <p className="eyebrow">Ihre Anfrage</p>
+              <h2>Beschreiben Sie<br />kurz, was ansteht.</h2>
               <p>
-                Erzählen Sie uns kurz von Ihrem Vorhaben. Wir melden uns mit
-                einer klaren Einschätzung und den nächsten Schritten.
+                Einsatzort, Aufgabe und gewünschter Zeitraum reichen für den
+                Start. Alles Weitere klären wir persönlich.
               </p>
 
               <div className="contact-direct">
@@ -404,7 +386,7 @@ export default function Home() {
 
             <form className="contact-form" onSubmit={handleSubmit} data-reveal="right">
               <fieldset className="service-picker">
-                <legend>Wobei können wir helfen?</legend>
+                <legend>Welche Leistung brauchen Sie?</legend>
                 <div className="service-picker__meta">
                   <span>01 / Leistung wählen</span>
                   <p>Ein Bereich genügt für den Start.</p>
@@ -483,8 +465,8 @@ export default function Home() {
                 </div>
               ) : (
                 <p className="form-awaiting" aria-live="polite">
-                  Wählen Sie oben einen Bereich aus. Danach fragen wir nur noch
-                  die Angaben ab, die wir für eine erste Einschätzung brauchen.
+                  Wählen Sie oben einen Bereich aus. Danach fragen wir nach
+                  Kontaktdaten, Ausführungsort und den wichtigsten Eckdaten.
                 </p>
               )}
             </form>
