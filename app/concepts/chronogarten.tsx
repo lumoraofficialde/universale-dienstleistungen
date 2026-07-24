@@ -145,6 +145,7 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
       className={styles.root}
       id="unternehmen"
       aria-labelledby="chronogarten-title"
+      data-nav-section="leistungen"
       data-stage={activeStage.key}
       style={{ "--chrono-sun": `${activeStage.sun}%` } as React.CSSProperties}
     >

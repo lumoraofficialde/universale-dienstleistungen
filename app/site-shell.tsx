@@ -10,7 +10,18 @@ type VinextNavigate = (
   ...navigationArguments: unknown[]
 ) => Promise<unknown>;
 
-export type SitePage = "home" | "team" | "impressum" | "datenschutz";
+export type SitePage =
+  | "home"
+  | "team"
+  | "impressum"
+  | "datenschutz"
+  | "not-found";
+
+type HomeNavSection =
+  | "leistungen"
+  | "einsatzarten"
+  | "fuhrpark"
+  | "kontakt";
 
 const homeHref = (hash: string, currentPage: SitePage) =>
   currentPage === "home" ? hash : `${basePath}/${hash}`;
@@ -249,6 +260,7 @@ export function SiteMotion() {
 
 export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<HomeNavSection | "">("");
 
   useEffect(() => {
     const closeAfterNavigation = () => setMenuOpen(false);
@@ -261,15 +273,75 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
     return () => document.body.classList.remove("menu-is-open");
   }, [menuOpen]);
 
+  useEffect(() => {
+    if (currentPage !== "home") return;
+
+    let animationFrame = 0;
+
+    const updateActiveSection = () => {
+      const activationLine =
+        window.scrollY + 68 + Math.min(window.innerHeight * 0.28, 250);
+      const navigationStops = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-nav-section]"),
+      );
+      let nextSection: HomeNavSection | "" = "";
+
+      navigationStops.forEach((section) => {
+        const sectionTop =
+          section.getBoundingClientRect().top + window.scrollY;
+        if (sectionTop <= activationLine) {
+          nextSection =
+            (section.dataset.navSection as HomeNavSection | undefined) ?? "";
+        }
+      });
+
+      setActiveSection((current) =>
+        current === nextSection ? current : nextSection,
+      );
+      animationFrame = 0;
+    };
+
+    const scheduleUpdate = () => {
+      if (!animationFrame) {
+        animationFrame = window.requestAnimationFrame(updateActiveSection);
+      }
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+    };
+  }, [currentPage]);
+
   const closeMenu = () => setMenuOpen(false);
   const teamHref = currentPage === "team" ? "#top" : `${basePath}/team/`;
   const links = [
-    ["Leistungen", homeHref("#unternehmen", currentPage)],
-    ["Einsatzarten", homeHref("#leistungen", currentPage)],
-    ["Fuhrpark", homeHref("#fuhrpark", currentPage)],
-    ["Team", teamHref],
-    ["Kontakt", homeHref("#kontakt", currentPage)],
+    ["Leistungen", homeHref("#unternehmen", currentPage), "leistungen"],
+    ["Einsatzarten", homeHref("#leistungen", currentPage), "einsatzarten"],
+    ["Fuhrpark", homeHref("#fuhrpark", currentPage), "fuhrpark"],
+    ["Team", teamHref, ""],
+    ["Kontakt", homeHref("#kontakt", currentPage), "kontakt"],
   ] as const;
+
+  const getAriaCurrent = (
+    label: (typeof links)[number][0],
+    section: (typeof links)[number][2],
+  ) => {
+    if (label === "Team" && currentPage === "team") return "page" as const;
+    if (
+      currentPage === "home" &&
+      section &&
+      section === activeSection
+    ) {
+      return "location" as const;
+    }
+    return undefined;
+  };
 
   return (
     <>
@@ -286,10 +358,10 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
           </a>
 
           <nav className="desktop-nav" aria-label="Hauptnavigation">
-            {links.map(([label, href]) => (
+            {links.map(([label, href, section]) => (
               <a
                 href={href}
-                aria-current={label === "Team" && currentPage === "team" ? "page" : undefined}
+                aria-current={getAriaCurrent(label, section)}
                 key={label}
               >
                 {label}
@@ -315,8 +387,13 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
 
         <div id="mobile-menu" className={`mobile-menu${menuOpen ? " is-open" : ""}`}>
           <nav aria-label="Mobile Navigation">
-            {links.map(([label, href], index) => (
-              <a href={href} onClick={closeMenu} key={label}>
+            {links.map(([label, href, section], index) => (
+              <a
+                href={href}
+                aria-current={getAriaCurrent(label, section)}
+                onClick={closeMenu}
+                key={label}
+              >
                 {label} <span>{String(index + 1).padStart(2, "0")}</span>
               </a>
             ))}

@@ -41,6 +41,8 @@ test("exports a complete static GitHub Pages site", async () => {
   assert.doesNotMatch(html, /class="[^"]*\bundefined\b/);
   assert.doesNotMatch(html, /Worauf Sie sich verlassen können\./);
   assert.match(html, /Welche Leistung brauchen Sie\?/);
+  assert.doesNotMatch(html, /id="faq"/);
+  assert.doesNotMatch(html, /Vier Fragen\. Klare Antworten\./);
   assert.match(html, /id="kontakt"/);
 
   const teamHtml = await readFile(
@@ -68,6 +70,20 @@ test("exports a complete static GitHub Pages site", async () => {
   assert.match(datenschutzHtml, /keine eigenen Analyse-, Marketing- oder Trackingdienste/);
   assert.match(datenschutzHtml, /ausschlie\u00dflich lokal in Ihrem Browser/);
   assert.match(datenschutzHtml, /Ihre Datenschutzrechte/);
+
+  const notFoundHtml = await readFile(
+    new URL("../dist/client/404.html", import.meta.url),
+    "utf8",
+  );
+  assert.match(notFoundHtml, /Diese Fläche haben wir nicht gefunden\./);
+  assert.match(notFoundHtml, /Zur Startseite/);
+  assert.match(notFoundHtml, /Leistungen ansehen/);
+  assert.match(notFoundHtml, /Direkt anrufen/);
+  assert.doesNotMatch(notFoundHtml, /Unexpectedly client reference/);
+  assert.match(
+    notFoundHtml,
+    /href="(?:\/universale-dienstleistungen)?\/#unternehmen"/,
+  );
 
   assert.match(
     html,
@@ -172,6 +188,13 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(page, /Situation besprechen/);
   assert.match(shell, /is-stack-active/);
   assert.match(shell, /data-stack-current/);
+  assert.match(shell, /\[data-nav-section\]/);
+  assert.match(shell, /activeSection/);
+  assert.match(shell, /return "location" as const/);
+  assert.match(page, /data-nav-section="einsatzarten"/);
+  assert.match(page, /data-nav-section="kontakt"/);
+  assert.match(chronogarten, /data-nav-section="leistungen"/);
+  assert.match(fleetJourney, /data-nav-section="fuhrpark"/);
   assert.doesNotMatch(page, /service-marquee/);
   assert.doesNotMatch(page, /Objektservice/);
   assert.doesNotMatch(page, /function ServicesEmblem/);
@@ -284,11 +307,11 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(shell, /<strong>24\/7 anrufen<\/strong>/);
   assert.match(
     shell,
-    /\["Leistungen",\s*homeHref\("#unternehmen",\s*currentPage\)\]/,
+    /\["Leistungen",\s*homeHref\("#unternehmen",\s*currentPage\),\s*"leistungen"\]/,
   );
   assert.match(
     shell,
-    /\["Einsatzarten",\s*homeHref\("#leistungen",\s*currentPage\)\]/,
+    /\["Einsatzarten",\s*homeHref\("#leistungen",\s*currentPage\),\s*"einsatzarten"\]/,
   );
   assert.doesNotMatch(shell, /\["Über uns",/);
 });

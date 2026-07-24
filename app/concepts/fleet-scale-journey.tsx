@@ -330,6 +330,7 @@ export function FleetScaleJourney() {
       className={styles.root}
       id="fuhrpark"
       aria-labelledby="fleet-journey-title"
+      data-nav-section="fuhrpark"
       data-stage={stages[activeIndex].id}
     >
       <div className={styles.sticky}>

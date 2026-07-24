@@ -276,9 +276,18 @@ p {
 
 .desktop-nav a:hover::after,
 .desktop-nav a:focus-visible::after,
-.desktop-nav a[aria-current="page"]::after {
+.desktop-nav a[aria-current]::after {
   transform: scaleX(1);
   transform-origin: left;
+}
+
+.desktop-nav a[aria-current] {
+  font-weight: 850;
+}
+
+.desktop-nav a[aria-current="location"]::after {
+  height: 2px;
+  background: var(--acid);
 }
 
 .header-call {
@@ -1870,6 +1879,11 @@ p {
   }
 
   .mobile-menu nav a span { padding-top: 0.4rem; font-family: var(--font-body), sans-serif; font-size: 0.65rem; letter-spacing: 0.08em; }
+  .mobile-menu nav a[aria-current] {
+    padding-left: 0.65rem;
+    background: rgba(10, 38, 29, 0.065);
+    box-shadow: inset 3px 0 0 var(--pine-deep);
+  }
   .mobile-menu__contact { display: grid; gap: 0.3rem; font-size: 0.82rem; font-weight: 700; }
 
   .hero { min-height: max(700px, 100svh); }

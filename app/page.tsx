@@ -245,7 +245,11 @@ export default function Home() {
 
         <ActiveIntroConcept onChooseService={chooseService} />
 
-        <section className="services section" id="leistungen">
+        <section
+          className="services section"
+          id="leistungen"
+          data-nav-section="einsatzarten"
+        >
           <div className="container">
             <nav className="services-stack-nav" aria-label="Einsatzmodelle">
               <div className="services-stack-nav__segments">
@@ -359,7 +363,11 @@ export default function Home() {
 
         <ProcessImpulseJourney />
 
-        <section className="contact" id="kontakt">
+        <section
+          className="contact"
+          id="kontakt"
+          data-nav-section="kontakt"
+        >
           <div className="container contact-grid">
             <div className="contact-intro" data-reveal="left">
               <p className="eyebrow">Ihre Anfrage</p>
