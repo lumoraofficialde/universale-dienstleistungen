@@ -21,29 +21,23 @@ import { serviceCatalog } from "./service-catalog";
 const situations = [
   {
     number: "01",
-    title: "Regelmäßig gepflegt.",
-    text: "Wiederkehrende Garten- und Grundstückspflege für private und gewerbliche Außenflächen. Rhythmus und Umfang stimmen wir auf Objekt und Saison ab.",
+    title: "Laufend betreut.",
+    text: "Wiederkehrende Pflege- und Kontrolltermine für Außenflächen und Immobilien. Rhythmus und Umfang stimmen wir auf Objekt und Saison ab.",
     formValue: serviceCatalog[0].formValue,
     image: assetPath("/media/gardener-trimming.webp"),
     srcSet: `${assetPath("/media/gardener-trimming-1280.webp")} 1280w, ${assetPath("/media/gardener-trimming.webp")} 2560w`,
-    width: 2560,
-    height: 1707,
     alt: "Regelmäßige Pflege einer Gartenanlage",
     className: "service-card--garden",
-    mediaNote: undefined,
   },
   {
     number: "02",
-    title: "Saisonal geräumt.",
-    text: "Winterdienst für vereinbarte Wege, Zufahrten und Höfe — planbar für die Saison und telefonisch abstimmbar, wenn das Wetter umschlägt.",
+    title: "Saisonal vorbereitet.",
+    text: "Gartenpflege und Winterdienst rechtzeitig einplanen — mit direkter Erreichbarkeit, wenn das Wetter kurzfristig umschlägt.",
     formValue: serviceCatalog[1].formValue,
     image: assetPath("/media/snow-clearing.webp"),
     srcSet: `${assetPath("/media/snow-clearing-1280.webp")} 1280w, ${assetPath("/media/snow-clearing.webp")} 2560w`,
-    width: 2560,
-    height: 1707,
     alt: "Vorbereiteter Einsatz auf einer verschneiten Fläche",
     className: "service-card--winter",
-    mediaNote: undefined,
   },
   {
     number: "03",
@@ -52,11 +46,8 @@ const situations = [
     formValue: serviceCatalog[2].formValue,
     image: assetPath("/media/grass-cutting.webp"),
     srcSet: `${assetPath("/media/grass-cutting-1280.webp")} 1280w, ${assetPath("/media/grass-cutting.webp")} 1920w`,
-    width: 1920,
-    height: 1080,
     alt: "Laufende Betreuung einer weitläufigen Außenfläche",
     className: "service-card--house",
-    mediaNote: undefined,
   },
   {
     number: "04",
@@ -65,11 +56,8 @@ const situations = [
     formValue: serviceCatalog[3].formValue,
     image: assetPath("/media/winter-vehicle.webp"),
     srcSet: undefined,
-    width: 1080,
-    height: 1080,
-    alt: "Zwei Helfer tragen ein Möbelstück aus einem Transportfahrzeug",
+    alt: "Geordnete Übergabe nach einer Entrümpelung",
     className: "service-card--clear",
-    mediaNote: "Symbolbild",
   },
 ];
 
@@ -77,7 +65,7 @@ const serviceChoices = [
   {
     value: serviceCatalog[0].formValue,
     label: serviceCatalog[0].title,
-    note: "Grünpflege · Gebäude · Fenster",
+    note: "Grünflächen, Hecken, Gehölze",
     icon: "garden",
   },
   {
@@ -98,113 +86,7 @@ const serviceChoices = [
     note: "Haushalt & Betrieb",
     icon: "clear",
   },
-  {
-    value: "Mehrere Leistungen / noch unsicher",
-    label: "Mehrere / unsicher",
-    note: "Bedarf gemeinsam klären",
-    icon: "property",
-  },
 ] as const;
-
-const trustSignals = [
-  {
-    label: "Standort",
-    value: "GmbH aus Büsum",
-  },
-  {
-    label: "Erreichbarkeit",
-    value: "24/7 telefonisch",
-  },
-  {
-    label: "Einsatzgebiet",
-    value: "Norddeutschland · weitere Orte nach Prüfung",
-  },
-  {
-    label: "Abstimmung",
-    value: "Persönlich · bei Bedarf vor Ort",
-  },
-] as const;
-
-const equipmentFacts = [
-  "Räumfahrzeuge mit integriertem Streusystem",
-  "Mobile Schneefräsen",
-  "Mähwerke für größere Grünflächen",
-  "Wendige Mähtechnik für Eigenheime",
-  "Technik für Heckenform und Rückschnitt",
-  "3,5-t-Einsatzfahrzeug",
-] as const;
-
-const faqItems = [
-  {
-    question: "In welchem Gebiet ist Universale Dienstleistungen im Einsatz?",
-    answer:
-      "Unser Standort ist Büsum und unser Schwerpunkt liegt in Norddeutschland. Je nach Aufgabe, Umfang und Termin kommen auch weitere Orte infrage. Ob Ihr Ort und Zeitraum abgedeckt werden können, klären wir direkt in der Anfrage.",
-  },
-  {
-    question: "Arbeiten Sie für private und gewerbliche Auftraggeber?",
-    answer:
-      "Ja. Wir betreuen private Haushalte und Wohnobjekte ebenso wie gewerbliche Objekte und Flächen. Umfang, Rhythmus und Zuständigkeiten werden passend zum jeweiligen Auftrag vereinbart.",
-  },
-  {
-    question: "Sind kurzfristige oder dringende Einsätze möglich?",
-    answer:
-      "Wir sind rund um die Uhr telefonisch erreichbar. Ein konkretes Einsatzfenster bestätigen wir, nachdem wir Aufgabe, Einsatzort, Zugänglichkeit und verfügbare Kapazitäten geprüft haben.",
-  },
-  {
-    question: "Kann ich mehrere Leistungen kombinieren?",
-    answer:
-      "Ja. Pflege, Objektkontrolle, Winterdienst oder einmalige Arbeiten lassen sich nach Bedarf gemeinsam planen. Wählen Sie in der Anfrage „Mehrere / unsicher“, wenn der genaue Zuschnitt noch offen ist.",
-  },
-  {
-    question: "Wie entsteht ein Angebot?",
-    answer:
-      "Sie nennen uns Ort, Aufgabe, Umfang und gewünschten Zeitraum. Falls nötig, folgt eine persönliche Beratung oder ein Termin vor Ort. Leistungsumfang, Preisgrundlage und Ausführungstermin werden vor Beginn abgestimmt.",
-  },
-  {
-    question: "Wie wird der Preis bestimmt?",
-    answer:
-      "Fläche oder Umfang, Zugänglichkeit, Termin, notwendige Technik sowie möglicher Material- oder Entsorgungsaufwand unterscheiden sich je Auftrag. Deshalb kalkulieren wir individuell, statt einen unpassenden Pauschalpreis zu versprechen.",
-  },
-  {
-    question: "Welche Angaben brauchen Sie für eine erste Einschätzung?",
-    answer:
-      "Leistung, Einsatzort, ungefährer Umfang und gewünschter Zeitraum reichen für den Start. Bei dringenden Fällen helfen zusätzlich Angaben zur betroffenen Fläche und zur Zugänglichkeit.",
-  },
-  {
-    question: "Welche Flächen deckt der Winterdienst ab?",
-    answer:
-      "Nach Vereinbarung räumen und streuen wir Treppen, Aufgänge, Gehwege, Zufahrten, Parkplätze und Höfe. Welche Flächen konkret dazugehören, wird vor dem Einsatz festgelegt.",
-  },
-  {
-    question: "Was umfasst der Hausmeisterservice?",
-    answer:
-      "Wir übernehmen vereinbarte Kontrollen und Wartungsaufgaben an privaten und gewerblichen Objekten. Kleinreparaturen führen wir aus, wenn dafür kein spezialisierter Fachbetrieb erforderlich ist.",
-  },
-  {
-    question:
-      "Worin unterscheiden sich Garten- und Hauspflege und Hausmeisterservice?",
-    answer:
-      "Garten- und Hauspflege umfasst vereinbarte Grünpflege sowie Gebäude- und Fensterreinigung. Der Hausmeisterservice betrifft vereinbarte Objektkontrollen, Wartungsaufgaben und geeignete Kleinreparaturen. Den genauen Umfang halten wir vor Beginn fest.",
-  },
-  {
-    question: "Welche Entrümpelungen übernehmen Sie?",
-    answer:
-      "Zum Angebot gehören private Haushalts- und Wohnungsauflösungen sowie gewerbliche Entrümpelungen und Betriebsauflösungen. Entsorgung sowie mögliche Demontage- und Renovierungsarbeiten stimmen wir vorab nach Umfang und Zuständigkeit ab.",
-  },
-] as const;
-
-const serviceFormHints: Record<string, string> = {
-  [serviceCatalog[0].formValue]:
-    "Hilfreich sind Fläche, gewünschte Arbeiten und ein möglicher Pflegerhythmus.",
-  [serviceCatalog[1].formValue]:
-    "Hilfreich sind zu räumende Flächen, Dringlichkeit und Zugänglichkeit.",
-  [serviceCatalog[2].formValue]:
-    "Hilfreich sind Objektart, gewünschte Kontrollen und konkrete Aufgaben.",
-  [serviceCatalog[3].formValue]:
-    "Hilfreich sind Räume oder Fläche, Etage, Zugang und gewünschter Termin.",
-  "Mehrere Leistungen / noch unsicher":
-    "Beschreiben Sie kurz das Objekt und alle Aufgaben, die zusammen anstehen.",
-};
 
 type ServiceChoiceIcon = (typeof serviceChoices)[number]["icon"];
 
@@ -248,9 +130,6 @@ function ServiceIllustration({ type }: { type: ServiceChoiceIcon }) {
 export default function Home() {
   const [formStatus, setFormStatus] = useState("");
   const [selectedService, setSelectedService] = useState("");
-  const [preparedRequest, setPreparedRequest] = useState("");
-  const [preparedMailto, setPreparedMailto] = useState("");
-  const [copyStatus, setCopyStatus] = useState("");
 
   const handleSpotlight = (event: PointerEvent<HTMLElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -271,77 +150,28 @@ export default function Home() {
       return;
     }
     const form = event.currentTarget;
-    const phone = form.elements.namedItem("phone") as HTMLInputElement | null;
-    const email = form.elements.namedItem("email") as HTMLInputElement | null;
-    phone?.setCustomValidity("");
-    email?.setCustomValidity("");
-    if (!phone?.value.trim() && !email?.value.trim()) {
-      phone?.setCustomValidity(
-        "Bitte geben Sie eine Telefonnummer oder eine E-Mail-Adresse an.",
-      );
-    }
     if (!form.reportValidity()) return;
 
     const data = new FormData(form);
     const subject = `Anfrage: ${data.get("service")}`;
     const body = [
       `Name: ${data.get("name")}`,
-      `Telefon: ${data.get("phone") || "nicht angegeben"}`,
-      `E-Mail: ${data.get("email") || "nicht angegeben"}`,
+      `Telefon: ${data.get("phone")}`,
+      `E-Mail: ${data.get("email")}`,
       `Leistung: ${data.get("service")}`,
-      `Objektart: ${data.get("objectType")}`,
       `Wunschtermin: ${data.get("date") || "offen"}`,
-      `Bevorzugte Rückrufzeit: ${data.get("callbackTime") || "offen"}`,
-      `PLZ / Ort: ${data.get("location")}`,
+      `Ausführungsort: ${data.get("location")}`,
       "",
       String(data.get("message")),
     ].join("\n");
 
-    const mailto = `mailto:info@universale-dienstleistungen.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    setPreparedRequest(`Betreff: ${subject}\n\n${body}`);
-    setPreparedMailto(mailto);
-    setCopyStatus("");
-    setFormStatus(
-      "Die Anfrage ist vorbereitet. Ihr E-Mail-Programm wird jetzt geöffnet.",
-    );
-    window.location.href = mailto;
-  };
-
-  const copyPreparedRequest = async () => {
-    try {
-      await navigator.clipboard.writeText(preparedRequest);
-      setCopyStatus("Anfragetext kopiert.");
-    } catch {
-      setCopyStatus(
-        "Kopieren war nicht möglich. Bitte markieren Sie den Text manuell.",
-      );
-    }
-  };
-
-  const clearContactMethodValidity = (event: FormEvent<HTMLInputElement>) => {
-    const form = event.currentTarget.form;
-    if (!form) return;
-    form
-      .querySelectorAll<HTMLInputElement>(
-        'input[name="phone"], input[name="email"]',
-      )
-      .forEach((input) => input.setCustomValidity(""));
-  };
-
-  const clearPreparedRequest = () => {
-    if (!preparedRequest && !preparedMailto && !copyStatus) return;
-    setPreparedRequest("");
-    setPreparedMailto("");
-    setCopyStatus("");
-    setFormStatus("");
+    setFormStatus("Ihr E-Mail-Programm wird mit der vorbereiteten Anfrage geöffnet.");
+    window.location.href = `mailto:info@universale-dienstleistungen.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   const chooseService = (service: string) => {
     setSelectedService(service);
     setFormStatus("");
-    setPreparedRequest("");
-    setPreparedMailto("");
-    setCopyStatus("");
   };
 
   const showSituation = (index: number) => {
@@ -355,10 +185,6 @@ export default function Home() {
     });
   };
 
-  const selectedServiceHint =
-    serviceFormHints[selectedService] ??
-    "Beschreiben Sie kurz Objekt, Aufgabe und gewünschten Zeitraum.";
-
   return (
     <>
       <SiteMotion />
@@ -371,8 +197,6 @@ export default function Home() {
               src={assetPath("/media/gardener-trimming.webp")}
               srcSet={`${assetPath("/media/gardener-trimming-1280.webp")} 1280w, ${assetPath("/media/gardener-trimming.webp")} 2560w`}
               sizes="100vw"
-              width={2560}
-              height={1707}
               alt=""
               fetchPriority="high"
             />
@@ -383,123 +207,37 @@ export default function Home() {
           <div className="hero-inner">
             <div className="hero-kicker">
               <span className="status-dot" />
-              Gartenpflege · Winterdienst · Büsum
+              Büsum · Norddeutschland · deutschlandweit im Einsatz
             </div>
 
             <div className="hero-layout">
               <div className="hero-copy">
                 <h1 id="hero-title">
-                  Vier Leistungen.
-                  <span>Ein Ansprechpartner.</span>
+                  Alles im Griff.
+                  <span>Bei jedem Wetter.</span>
                 </h1>
               </div>
 
-              <div
-                className="hero-panel"
-                role="group"
-                aria-label="Direktanfrage"
-              >
+              <aside className="hero-panel" aria-label="Direktanfrage">
                 <p>
-                  Garten- und Hauspflege, Winterdienst, Hausmeisterservice und
-                  Entrümpelung für private und gewerbliche Objekte in
-                  Norddeutschland — je nach Auftrag darüber hinaus.
+                  Für private Haushalte und gewerbliche Objekte: Gartenpflege,
+                  Winterdienst, Hausmeisterservice und Entrümpelung aus einer Hand.
                 </p>
                 <div className="hero-actions">
                   <a className="button button--accent" href="#kontakt">
-                    Unverbindlich anfragen <span aria-hidden="true">↗</span>
+                    Angebot anfragen <span aria-hidden="true">↗</span>
                   </a>
                   <a className="text-link text-link--light" href="tel:+491738948124">
                     Jetzt anrufen <span aria-hidden="true">→</span>
                   </a>
                 </div>
-              </div>
+              </aside>
             </div>
 
             <div className="hero-scroll">
-              <a className="scroll-cue" href="#leistungen">
-                <span>Leistungen ansehen</span>
+              <a className="scroll-cue" href="#unternehmen">
+                <span>Entdecken</span>
                 <i aria-hidden="true">↓</i>
-              </a>
-            </div>
-          </div>
-        </section>
-
-        <section className="trust-strip" aria-label="Unternehmensfakten">
-          <div className="container trust-strip__grid">
-            {trustSignals.map((signal, index) => (
-              <div className="trust-strip__item" key={signal.label}>
-                <span>
-                  {String(index + 1).padStart(2, "0")} · {signal.label}
-                </span>
-                <strong>{signal.value}</strong>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section
-          className="service-ledger section"
-          id="leistungen"
-          aria-labelledby="service-ledger-title"
-          data-nav-section="leistungen"
-        >
-          <div className="container">
-            <div className="service-ledger__head" data-reveal>
-              <div>
-                <p className="eyebrow eyebrow--dark">Leistungsübersicht</p>
-                <h2 id="service-ledger-title">
-                  Was wir konkret
-                  <span>für Sie übernehmen.</span>
-                </h2>
-              </div>
-              <p>
-                Vier Leistungsbereiche für private und gewerbliche Objekte.
-                Welche Aufgaben, Flächen und Intervalle dazugehören, legen wir
-                vor Beginn gemeinsam fest.
-              </p>
-            </div>
-
-            <div className="service-ledger__list">
-              {serviceCatalog.map((service, index) => (
-                <article
-                  className="service-ledger__row"
-                  data-reveal={index % 2 ? "right" : "left"}
-                  key={service.id}
-                >
-                  <span className="service-ledger__number">{service.number}</span>
-                  <div className="service-ledger__summary">
-                    <h3>{service.title}</h3>
-                    <p>{service.text}</p>
-                  </div>
-                  <ul>
-                    {service.details.map((detail) => (
-                      <li key={detail}>{detail}</li>
-                    ))}
-                  </ul>
-                  <a
-                    href="#kontakt"
-                    aria-label={`${service.title} unverbindlich anfragen`}
-                    onClick={() => chooseService(service.formValue)}
-                  >
-                    Anfragen <span aria-hidden="true">↗</span>
-                  </a>
-                </article>
-              ))}
-            </div>
-
-            <div className="service-ledger__foot" data-reveal>
-              <p>
-                Sie brauchen mehrere Leistungen oder kennen den genauen Umfang
-                noch nicht?
-              </p>
-              <a
-                className="button button--dark"
-                href="#kontakt"
-                onClick={() =>
-                  chooseService("Mehrere Leistungen / noch unsicher")
-                }
-              >
-                Bedarf gemeinsam klären <span aria-hidden="true">↗</span>
               </a>
             </div>
           </div>
@@ -509,21 +247,10 @@ export default function Home() {
 
         <section
           className="services section"
-          id="einsatzmodelle"
-          aria-labelledby="service-models-title"
+          id="leistungen"
           data-nav-section="einsatzarten"
         >
           <div className="container">
-            <div className="services-intro" data-reveal>
-              <p className="eyebrow eyebrow--dark">So können Sie uns beauftragen</p>
-              <h2 id="service-models-title">Regelmäßig, saisonal oder einmalig.</h2>
-              <p>
-                Sie stimmen Pflege, Winterdienst, Kontrollen und Räumung nicht
-                mit mehreren Anbietern ab. Wir bündeln die vereinbarten
-                Aufgaben in einem klaren Leistungsumfang.
-              </p>
-            </div>
-
             <nav className="services-stack-nav" aria-label="Einsatzmodelle">
               <div className="services-stack-nav__segments">
                 {situations.map((situation, index) => (
@@ -558,24 +285,14 @@ export default function Home() {
                   <img
                     src={situation.image}
                     srcSet={situation.srcSet}
-                    sizes={
-                      situation.srcSet
-                        ? "(max-width: 780px) calc(100vw - 36px), (max-width: 1100px) 55vw, 50vw"
-                        : undefined
-                    }
-                    width={situation.width}
-                    height={situation.height}
+                    sizes="(max-width: 780px) calc(100vw - 36px), (max-width: 1100px) 55vw, 50vw"
                     alt={situation.alt}
                     loading="lazy"
                   />
                   <div className="service-card__shade" aria-hidden="true" />
                   <div className="service-card__top">
                     <span>{situation.number}</span>
-                    <span>
-                      {situation.mediaNote
-                        ? `${situation.mediaNote} · Einsatzmodell`
-                        : "Einsatzmodell"}
-                    </span>
+                    <span>Einsatzmodell</span>
                   </div>
                   <div className="service-card__body">
                     <h3>{situation.title}</h3>
@@ -599,7 +316,6 @@ export default function Home() {
           <div className="container readiness-grid">
             <div
               className="readiness-display"
-              role="img"
               aria-label="24 Stunden am Tag, 7 Tage die Woche erreichbar"
             >
               <div className="readiness-hours" data-reveal="left" aria-hidden="true">
@@ -620,13 +336,12 @@ export default function Home() {
               <h2 id="readiness-title">Erreichbar, wenn es darauf ankommt.</h2>
               <p>
                 Bei plötzlichem Wintereinbruch oder einem dringenden Fall
-                sind wir rund um die Uhr telefonisch erreichbar. Nennen Sie
-                Einsatzort, betroffene Fläche und Zugänglichkeit — wir prüfen
-                verfügbare Kapazitäten und bestätigen anschließend ein
-                mögliches Einsatzfenster.
+                erreichen Sie uns telefonisch rund um die Uhr. Nennen Sie
+                Einsatzort, betroffene Fläche und Zugänglichkeit — wir klären
+                direkt, welches Team und welche Technik benötigt werden.
               </p>
               <a className="button button--outline" href="tel:+491738948124">
-                Verfügbarkeit telefonisch prüfen <span aria-hidden="true">↗</span>
+                Notfall-Hotline anrufen <span aria-hidden="true">↗</span>
               </a>
             </div>
           </div>
@@ -634,10 +349,10 @@ export default function Home() {
             <div className="readiness-rail__track">
               {[0, 1].map((copy) => (
                 <div className="readiness-rail__set" key={copy}>
-                  <span>Treppen</span><i>-</i>
-                  <span>Wege</span><i>-</i>
-                  <span>Zufahrten</span><i>-</i>
-                  <span>Parkplätze</span><i>-</i>
+                  <span>Räumen</span><i>-</i>
+                  <span>Streuen</span><i>-</i>
+                  <span>Sichern</span><i>-</i>
+                  <span>Betreuen</span><i>-</i>
                 </div>
               ))}
             </div>
@@ -646,120 +361,7 @@ export default function Home() {
 
         <FleetScaleJourney />
 
-        <section
-          className="company-proof section"
-          id="unternehmen"
-          aria-labelledby="company-proof-title"
-        >
-          <div className="container">
-            <div className="company-proof__head" data-reveal>
-              <div>
-                <p className="eyebrow eyebrow--dark">Unternehmen & Ausstattung</p>
-                <h2 id="company-proof-title">
-                  Klare Angaben.
-                  <span>Konkrete Ausstattung.</span>
-                </h2>
-              </div>
-              <p>
-                Universale Dienstleistungen ist eine GmbH mit Sitz in Büsum.
-                Wir beraten persönlich, besprechen den tatsächlichen Bedarf und
-                stellen den Einsatz passend zu Aufgabe, Fläche und Termin
-                zusammen.
-              </p>
-            </div>
-
-            <div className="company-proof__facts">
-              <article data-reveal="left">
-                <span>01 · Unternehmen</span>
-                <h3>Registrierte GmbH</h3>
-                <p>
-                  Universale Dienstleistungen GmbH · Amtsgericht Pinneberg ·
-                  HRB 18480 PI.
-                </p>
-              </article>
-              <article data-reveal>
-                <span>02 · Erreichbarkeit</span>
-                <h3>24/7 telefonisch</h3>
-                <p>
-                  Auch bei dringenden Fällen erreichbar. Einen Einsatz
-                  bestätigen wir nach Prüfung von Ort, Aufgabe und Kapazität.
-                </p>
-              </article>
-              <article data-reveal="right">
-                <span>03 · Abstimmung</span>
-                <h3>Persönlich und vor Ort</h3>
-                <p>
-                  Die Erstberatung ist unverbindlich. Eine Besichtigung
-                  vereinbaren wir, wenn die Aufgabe vor Ort geklärt werden muss.
-                </p>
-              </article>
-            </div>
-
-            <div className="company-proof__equipment">
-              <div data-reveal="left">
-                <p className="eyebrow eyebrow--dark">
-                  Einsatztechnik nach Aufgabe und Fläche
-                </p>
-                <h3>Vom schmalen Zugang bis zur größeren Fläche.</h3>
-                <p>
-                  Welche Maschine tatsächlich eingesetzt wird, richtet sich
-                  nach Zugänglichkeit, Fläche und vereinbartem Leistungsumfang.
-                </p>
-                <a className="text-link" href={`${basePath}/team/`}>
-                  Unternehmen kennenlernen <span aria-hidden="true">→</span>
-                </a>
-              </div>
-              <ul data-reveal="right">
-                {equipmentFacts.map((fact, index) => (
-                  <li key={fact}>
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    {fact}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
-
         <ProcessImpulseJourney />
-
-        <section className="faq section" id="faq" aria-labelledby="faq-title">
-          <div className="container">
-            <div className="faq__head" data-reveal>
-              <div>
-                <p className="eyebrow eyebrow--dark">Häufige Fragen</p>
-                <h2 id="faq-title">
-                  Was vor einer Anfrage
-                  <span>wichtig ist.</span>
-                </h2>
-              </div>
-              <p>
-                Die wichtigsten Rahmenbedingungen vorab — damit Sie wissen,
-                wofür Sie anfragen und wie es danach weitergeht.
-              </p>
-            </div>
-
-            <div className="faq__grid">
-              {faqItems.map((item, index) => (
-                <article
-                  data-reveal={index % 2 ? "right" : "left"}
-                  key={item.question}
-                >
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <h3>{item.question}</h3>
-                  <p>{item.answer}</p>
-                </article>
-              ))}
-            </div>
-
-            <div className="faq__cta" data-reveal>
-              <p>Ihre Situation ist nicht dabei?</p>
-              <a className="button button--dark" href="#kontakt">
-                Aufgabe unverbindlich schildern <span aria-hidden="true">↗</span>
-              </a>
-            </div>
-          </div>
-        </section>
 
         <section
           className="contact"
@@ -772,15 +374,8 @@ export default function Home() {
               <h2>Beschreiben Sie<br />kurz, was ansteht.</h2>
               <p>
                 Einsatzort, Aufgabe und gewünschter Zeitraum reichen für den
-                Start. Die Beratung ist unverbindlich; Leistungsumfang,
-                Preisgrundlage und Termin klären wir vor Beginn persönlich.
+                Start. Alles Weitere klären wir persönlich.
               </p>
-
-              <ul className="contact-assurances" aria-label="So geht es weiter">
-                <li>Persönliche Abstimmung per Telefon oder E-Mail</li>
-                <li>Vor-Ort-Termin nach Bedarf und Vereinbarung</li>
-                <li>Einzelne oder kombinierte Leistungen möglich</li>
-              </ul>
 
               <div className="contact-direct">
                 <a href="tel:+491738948124">
@@ -798,12 +393,7 @@ export default function Home() {
               </div>
             </div>
 
-            <form
-              className="contact-form"
-              onInput={clearPreparedRequest}
-              onSubmit={handleSubmit}
-              data-reveal="right"
-            >
+            <form className="contact-form" onSubmit={handleSubmit} data-reveal="right">
               <fieldset className="service-picker">
                 <legend>Welche Leistung brauchen Sie?</legend>
                 <div className="service-picker__meta">
@@ -830,7 +420,7 @@ export default function Home() {
               <input type="hidden" name="service" value={selectedService} />
 
               {selectedService ? (
-                <div className="form-details">
+                <div className="form-details" key={selectedService}>
                   <div className="form-details__heading">
                     <span>02 / Ihre Anfrage</span>
                     <p><strong>{selectedService}</strong> ist ausgewählt.</p>
@@ -839,168 +429,53 @@ export default function Home() {
                   <div className="form-row form-row--two">
                     <label>
                       <span>Name *</span>
-                      <input
-                        name="name"
-                        type="text"
-                        autoComplete="name"
-                        maxLength={120}
-                        required
-                      />
+                      <input name="name" type="text" autoComplete="name" required />
                     </label>
                     <label>
-                      <span>Telefon</span>
-                      <input
-                        name="phone"
-                        type="tel"
-                        autoComplete="tel"
-                        maxLength={40}
-                        aria-describedby="contact-method-hint"
-                        onInput={clearContactMethodValidity}
-                      />
+                      <span>Telefon *</span>
+                      <input name="phone" type="tel" autoComplete="tel" required />
                     </label>
                   </div>
 
                   <div className="form-row form-row--two">
                     <label>
-                      <span>E-Mail</span>
-                      <input
-                        name="email"
-                        type="email"
-                        autoComplete="email"
-                        maxLength={160}
-                        aria-describedby="contact-method-hint"
-                        onInput={clearContactMethodValidity}
-                      />
+                      <span>E-Mail *</span>
+                      <input name="email" type="email" autoComplete="email" required />
                     </label>
                     <label>
-                      <span>PLZ / Ort *</span>
-                      <input
-                        name="location"
-                        type="text"
-                        autoComplete="address-level2"
-                        placeholder="z. B. 25761 Büsum"
-                        maxLength={120}
-                        required
-                      />
+                      <span>Ausführungsort *</span>
+                      <input name="location" type="text" autoComplete="street-address" required />
                     </label>
                   </div>
-
-                  <p className="contact-method-hint" id="contact-method-hint">
-                    Bitte geben Sie mindestens Telefon oder E-Mail an.
-                  </p>
-
-                  <div className="form-row form-row--two">
-                    <label>
-                      <span>Objektart *</span>
-                      <select name="objectType" defaultValue="" required>
-                        <option value="" disabled>Bitte wählen</option>
-                        <option value="Privathaushalt / Wohnobjekt">
-                          Privathaushalt / Wohnobjekt
-                        </option>
-                        <option value="Gewerbeobjekt / Unternehmen">
-                          Gewerbeobjekt / Unternehmen
-                        </option>
-                        <option value="Andere / noch offen">
-                          Andere / noch offen
-                        </option>
-                      </select>
-                    </label>
-                    <label>
-                      <span>Bevorzugte Rückrufzeit</span>
-                      <input
-                        name="callbackTime"
-                        type="text"
-                        placeholder="z. B. werktags ab 16 Uhr"
-                        maxLength={120}
-                      />
-                    </label>
-                  </div>
-
-                  <label className="date-label">
-                    <span>Gewünschter Zeitraum</span>
-                    <input
-                      name="date"
-                      type="text"
-                      placeholder="z. B. Kalenderwoche 35 oder flexibel"
-                      maxLength={120}
-                    />
-                  </label>
 
                   <label className="message-label">
-                    <span>Worum geht es? * · max. 1.000 Zeichen</span>
+                    <span>Worum geht es? *</span>
                     <textarea
                       name="message"
                       rows={4}
-                      placeholder={selectedServiceHint}
-                      maxLength={1000}
+                      placeholder="Fläche, Aufgabe, gewünschter Zeitraum …"
                       required
                     />
                   </label>
 
-                  <p className="privacy-note">
-                    Hinweise zur Verarbeitung Ihrer Angaben finden Sie in der{" "}
-                    <a href={`${basePath}/datenschutz/`} target="_blank" rel="noreferrer">
-                      Datenschutzerklärung
-                    </a>
-                    . Beim Klick öffnet sich eine vorbereitete Nachricht in Ihrem
-                    E-Mail-Programm; versendet wird sie erst dort.
-                  </p>
+                  <label className="privacy-check">
+                    <input name="privacy" type="checkbox" required />
+                    <span>
+                      Ich habe die <a href={`${basePath}/datenschutz/`}>Datenschutzerklärung</a> gelesen und stimme der Kontaktaufnahme zu.
+                    </span>
+                  </label>
 
                   <div className="form-submit">
                     <button className="button button--accent" type="submit">
-                      Anfrage als E-Mail öffnen <span aria-hidden="true">↗</span>
+                      Anfrage vorbereiten <span aria-hidden="true">↗</span>
                     </button>
                     <p aria-live="polite">{formStatus}</p>
                   </div>
-
-                  {preparedRequest ? (
-                    <div className="request-fallback" aria-labelledby="request-fallback-title">
-                      <div>
-                        <span>Alternative ohne geöffnetes E-Mail-Programm</span>
-                        <h3 id="request-fallback-title">
-                          Ihre Anfrage ist weiterhin verfügbar.
-                        </h3>
-                        <p>
-                          Kopieren Sie den Text und senden Sie ihn an
-                          info@universale-dienstleistungen.de oder öffnen Sie
-                          die vorbereitete E-Mail erneut.
-                        </p>
-                      </div>
-                      <label>
-                        <span>Vorbereiteter Anfragetext</span>
-                        <textarea
-                          value={preparedRequest}
-                          rows={10}
-                          readOnly
-                          onFocus={(event) => event.currentTarget.select()}
-                        />
-                      </label>
-                      <div className="request-fallback__actions">
-                        <button
-                          className="button button--dark"
-                          type="button"
-                          onClick={copyPreparedRequest}
-                        >
-                          Anfragetext kopieren
-                        </button>
-                        <a className="button button--outline-dark" href={preparedMailto}>
-                          E-Mail erneut öffnen
-                        </a>
-                        <a className="text-link" href="tel:+491738948124">
-                          Stattdessen anrufen <span aria-hidden="true">→</span>
-                        </a>
-                      </div>
-                      <p className="request-fallback__status" aria-live="polite">
-                        {copyStatus}
-                      </p>
-                    </div>
-                  ) : null}
                 </div>
               ) : (
                 <p className="form-awaiting" aria-live="polite">
                   Wählen Sie oben einen Bereich aus. Danach fragen wir nach
-                  Kontaktdaten, PLZ beziehungsweise Ort und den wichtigsten
-                  Eckdaten.
+                  Kontaktdaten, Ausführungsort und den wichtigsten Eckdaten.
                 </p>
               )}
             </form>

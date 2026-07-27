@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import {
+  MobileCall,
   SiteFooter,
   SiteHeader,
   SiteMotion,
@@ -51,14 +52,14 @@ export function LegalPage({
               <span>Dokument</span>
               <strong>{documentNumber}</strong>
               <i />
-              <small>Stand · 27. Juli 2026</small>
+              <small>Stand · 24. Juli 2026</small>
             </div>
           </div>
         </section>
 
         <section className={styles.ledger}>
           <div className={`container ${styles.ledgerGrid}`}>
-            <div className={styles.index} data-reveal="left">
+            <aside className={styles.index} data-reveal="left">
               <p>Inhalt</p>
               <nav aria-label={`${title} – Inhaltsverzeichnis`}>
                 {navigation.map((item) => (
@@ -76,7 +77,7 @@ export function LegalPage({
                 </a>
                 <a href="tel:+491738948124">+49 173 8948124</a>
               </div>
-            </div>
+            </aside>
 
             <div className={styles.content}>{children}</div>
           </div>
@@ -84,6 +85,7 @@ export function LegalPage({
       </main>
 
       <SiteFooter currentPage={currentPage} />
+      <MobileCall />
     </>
   );
 }

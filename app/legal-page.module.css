@@ -193,7 +193,7 @@
 }
 
 .index nav a span {
-  color: var(--moss-deep);
+  color: var(--moss);
   font-family: var(--font-body), sans-serif;
   font-size: 0.58rem;
   font-weight: 850;
@@ -220,9 +220,6 @@
 }
 
 .indexContact a {
-  min-height: 44px;
-  display: flex;
-  align-items: center;
   overflow-wrap: anywhere;
   font-size: 0.72rem;
   font-weight: 700;
@@ -256,7 +253,7 @@
 
 .sectionNumber {
   padding-top: 0.72rem;
-  color: var(--moss-deep);
+  color: var(--moss);
   font-size: 0.64rem;
   font-weight: 850;
   letter-spacing: 0.08em;
@@ -327,9 +324,6 @@
 }
 
 .sectionBody a {
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
   border-bottom: 1px solid currentColor;
   font-weight: 700;
   transition: color 180ms ease;
@@ -572,7 +566,7 @@
 
   .sectionBody p,
   .sectionBody li {
-    font-size: 0.94rem;
+    font-size: 0.82rem;
   }
 
   .factRows > div {

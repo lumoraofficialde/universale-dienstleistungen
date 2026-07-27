@@ -1,11 +1,11 @@
 .root {
-  --chrono-accent: var(--acid, #dce99a);
+  --chrono-accent: #dff36c;
   --chrono-ivory: #f5f1e7;
   --chrono-lens-x: 72%;
   --chrono-lens-y: 48%;
   --chrono-top: 76px;
   position: relative;
-  min-height: 380dvh;
+  min-height: 500dvh;
   overflow: clip;
   isolation: isolate;
   color: var(--chrono-ivory);
@@ -327,7 +327,7 @@
   color: #132019;
   background: var(--chrono-accent);
   border: 1px solid var(--chrono-accent);
-  border-radius: var(--radius-control, 4px 4px 16px 4px);
+  border-radius: 1px;
   font-size: 0.65rem;
   font-weight: 850;
   letter-spacing: 0.09em;
@@ -528,11 +528,11 @@
 @media (max-width: 780px) {
   .root {
     --chrono-top: 68px;
-    min-height: 360dvh;
+    min-height: 500dvh;
   }
 
   .sticky {
-    min-height: 0;
+    min-height: 560px;
   }
 
   .image,
@@ -613,7 +613,7 @@
 
   .eyebrow {
     margin-bottom: 0.9rem;
-    font-size: 0.7rem;
+    font-size: 0.54rem;
   }
 
   .copy h2,
@@ -630,7 +630,7 @@
   .copyChange > p {
     max-width: 39ch;
     margin-top: 1rem;
-    font-size: 0.94rem;
+    font-size: 0.73rem;
     line-height: 1.58;
   }
 
@@ -639,7 +639,7 @@
     margin-top: 1rem;
     padding-inline: 1rem;
     gap: 1.2rem;
-    font-size: 0.75rem;
+    font-size: 0.56rem;
   }
 
   .timeline {
@@ -651,7 +651,7 @@
   .timeline button {
     min-height: 46px;
     padding: 0.72rem 0.18rem 0;
-    font-size: clamp(0.68rem, 2.3vw, 0.76rem);
+    font-size: clamp(0.46rem, 1.8vw, 0.54rem);
     letter-spacing: 0.025em;
     text-align: center;
   }
@@ -682,11 +682,11 @@
 
   .copyChange > p {
     max-width: 35ch;
-    font-size: 0.9rem;
+    font-size: 0.69rem;
   }
 
   .timeline button {
-    font-size: clamp(0.66rem, 2.3vw, 0.72rem);
+    font-size: clamp(0.44rem, 1.8vw, 0.5rem);
   }
 }
 
@@ -741,8 +741,7 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce),
-  (max-width: 780px) {
+@media (prefers-reduced-motion: reduce) {
   .root {
     min-height: auto;
   }
@@ -769,48 +768,5 @@
 
   .copyChange {
     animation: none;
-  }
-
-  .transcript {
-    position: relative;
-    width: min(90vw, 1180px);
-    height: auto;
-    margin: 0 auto;
-    padding: clamp(4.5rem, 8vw, 7rem) 0;
-    overflow: visible;
-    clip: auto;
-    white-space: normal;
-    color: var(--chrono-ivory);
-    list-style: none;
-  }
-
-  .transcript li {
-    padding: 1.75rem 0;
-    border-bottom: 1px solid rgba(245, 241, 231, 0.24);
-  }
-
-  .transcript strong {
-    font-family: var(--font-display), sans-serif;
-    font-size: clamp(2.2rem, 5vw, 4rem);
-    font-weight: 600;
-    line-height: 0.92;
-    text-transform: uppercase;
-  }
-
-  .transcript p {
-    max-width: 56ch;
-    margin-top: 0.8rem;
-    color: rgba(245, 241, 231, 0.76);
-  }
-}
-
-@media (max-width: 780px) {
-  .sticky {
-    height: 72svh;
-    min-height: 360px;
-  }
-
-  .transcript {
-    display: none;
   }
 }

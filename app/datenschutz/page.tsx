@@ -5,41 +5,10 @@ import {
   legalStyles as styles,
 } from "../legal-page";
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  "https://universale-dienstleistungen.de";
-const previewImage = `${siteUrl}/og.jpg`;
-
 export const metadata: Metadata = {
   title: "Datenschutz | Universale Dienstleistungen",
   description:
     "Datenschutzerklärung der Universale Dienstleistungen GmbH für diesen Internetauftritt.",
-  alternates: {
-    canonical: `${siteUrl}/datenschutz/`,
-  },
-  openGraph: {
-    title: "Datenschutz | Universale Dienstleistungen",
-    description:
-      "Datenschutzerklärung der Universale Dienstleistungen GmbH für diesen Internetauftritt.",
-    type: "website",
-    locale: "de_DE",
-    url: `${siteUrl}/datenschutz/`,
-    images: [
-      {
-        url: previewImage,
-        width: 1200,
-        height: 630,
-        alt: "Universale Dienstleistungen — Datenschutz",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Datenschutz | Universale Dienstleistungen",
-    description:
-      "Datenschutzerklärung der Universale Dienstleistungen GmbH für diesen Internetauftritt.",
-    images: [previewImage],
-  },
 };
 
 const navigation = [
@@ -240,7 +209,7 @@ export default function DatenschutzPage() {
           Funktionsweise der Website, die eingesetzten Dienstleister oder die
           rechtlichen Anforderungen ändern.
         </p>
-        <p className={`${styles.note} ${styles.caps}`}>Stand: 27. Juli 2026</p>
+        <p className={`${styles.note} ${styles.caps}`}>Stand: 24. Juli 2026</p>
       </LegalSection>
     </LegalPage>
   );

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import styles from "./not-found.module.css";
 import {
+  MobileCall,
   SiteFooter,
   SiteHeader,
   SiteMotion,
@@ -12,15 +13,6 @@ export const metadata: Metadata = {
   title: "Seite nicht gefunden | Universale Dienstleistungen",
   description:
     "Die angeforderte Seite wurde nicht gefunden. Zurück zu den Leistungen von Universale Dienstleistungen.",
-  robots: {
-    index: false,
-    follow: false,
-  },
-  alternates: {
-    canonical: null,
-  },
-  openGraph: null,
-  twitter: null,
 };
 
 export default function NotFound() {
@@ -56,7 +48,7 @@ export default function NotFound() {
                 </a>
                 <a
                   className={styles.secondaryAction}
-                  href={`${basePath}/#leistungen`}
+                  href={`${basePath}/#unternehmen`}
                 >
                   Leistungen ansehen <span aria-hidden="true">↗</span>
                 </a>
@@ -85,13 +77,14 @@ export default function NotFound() {
                 <span />
                 Weg endet hier
               </div>
-              <p className={styles.mapNote}>Büsum · Nordsee</p>
+              <p className={styles.mapNote}>Büsum · 54.13° N</p>
             </div>
           </div>
         </section>
       </main>
 
       <SiteFooter currentPage="not-found" />
+      <MobileCall />
     </>
   );
 }

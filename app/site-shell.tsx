@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 export const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 export const assetPath = (path: string) => `${basePath}${path}`;
@@ -20,7 +20,7 @@ export type SitePage =
 type HomeNavSection =
   | "leistungen"
   | "einsatzarten"
-  | "ablauf"
+  | "fuhrpark"
   | "kontakt";
 
 const homeHref = (hash: string, currentPage: SitePage) =>
@@ -168,29 +168,6 @@ export function SiteMotion() {
     };
 
     const originalVinextNavigate = vinextWindow.__VINEXT_RSC_NAVIGATE__;
-    const moveToTarget = (
-      target: Element,
-      id: string,
-      behavior: ScrollBehavior,
-    ) => {
-      const root = document.documentElement;
-      const previousInlineBehavior = root.style.scrollBehavior;
-
-      // `behavior: auto` otherwise inherits `html { scroll-behavior: smooth }`.
-      // History restoration and direct deep links must land immediately.
-      if (behavior === "auto") root.style.scrollBehavior = "auto";
-
-      if (!id || id === "top") {
-        window.scrollTo({ top: 0, behavior });
-      } else {
-        target.scrollIntoView({ behavior, block: "start" });
-      }
-
-      if (behavior === "auto") {
-        root.style.scrollBehavior = previousInlineBehavior;
-      }
-    };
-
     const handleStaticNavigation: VinextNavigate = (href) => {
       const nextUrl = new URL(href, window.location.href);
       const currentUrl = new URL(window.location.href);
@@ -203,11 +180,14 @@ export function SiteMotion() {
         const id = decodeURIComponent(nextUrl.hash.slice(1));
         return new Promise((resolve) => {
           window.requestAnimationFrame(() => {
-            const target =
-              !id || id === "top"
-                ? document.documentElement
-                : document.getElementById(id);
-            if (target) moveToTarget(target, id, "auto");
+            if (!id || id === "top") {
+              window.scrollTo({ top: 0, behavior: "auto" });
+            } else {
+              document.getElementById(id)?.scrollIntoView({
+                behavior: "auto",
+                block: "start",
+              });
+            }
             resolve(undefined);
           });
         });
@@ -218,44 +198,6 @@ export function SiteMotion() {
     };
 
     vinextWindow.__VINEXT_RSC_NAVIGATE__ = handleStaticNavigation;
-
-    let hashNavigationFrame = 0;
-    const scrollToHash = (
-      hash: string,
-      behavior: ScrollBehavior = "auto",
-    ) => {
-      const id = decodeURIComponent(hash.replace(/^#/, ""));
-      const target =
-        !id || id === "top"
-          ? document.documentElement
-          : document.getElementById(id);
-      if (!target) return false;
-
-      window.cancelAnimationFrame(hashNavigationFrame);
-      hashNavigationFrame = window.requestAnimationFrame(() => {
-        moveToTarget(target, id, behavior);
-        hashNavigationFrame = 0;
-      });
-      return true;
-    };
-
-    const handleHistoryNavigation = () => {
-      window.dispatchEvent(new Event("site:navigate"));
-      document.body.classList.remove("menu-is-open");
-      scrollToHash(window.location.hash, "auto");
-    };
-
-    let hashStabilizationActive = true;
-    const stabilizeInitialHash = () => {
-      if (hashStabilizationActive && window.location.hash) {
-        scrollToHash(window.location.hash, "auto");
-      }
-    };
-    const initialHashFrame =
-      window.requestAnimationFrame(stabilizeInitialHash);
-
-    window.addEventListener("load", stabilizeInitialHash, { once: true });
-    void document.fonts?.ready.then(stabilizeInitialHash);
 
     const handleHashNavigation = (event: globalThis.MouseEvent) => {
       if (
@@ -283,43 +225,30 @@ export function SiteMotion() {
       if (!isSameDocument || !nextUrl.hash) return;
 
       const id = decodeURIComponent(nextUrl.hash.slice(1));
-      const target =
-        id === "top" ? document.documentElement : document.getElementById(id);
+      const target = id === "top" ? document.documentElement : document.getElementById(id);
       if (!target) return;
 
       event.preventDefault();
+      event.stopPropagation();
       window.dispatchEvent(new Event("site:navigate"));
       document.body.classList.remove("menu-is-open");
 
       const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches
         ? "auto"
         : "smooth";
-      const shouldMoveFocus = link.classList.contains("skip-link");
-      window.cancelAnimationFrame(hashNavigationFrame);
-      hashNavigationFrame = window.requestAnimationFrame(() => {
-        moveToTarget(target, id, behavior);
-        if (shouldMoveFocus && target instanceof HTMLElement) {
-          target.tabIndex = -1;
-          target.focus({ preventScroll: true });
+      window.requestAnimationFrame(() => {
+        if (id === "top") {
+          window.scrollTo({ top: 0, behavior });
+        } else {
+          target.scrollIntoView({ behavior, block: "start" });
         }
-        if (window.location.hash !== nextUrl.hash) {
-          window.history.pushState(null, "", nextUrl.hash);
-        }
-        hashNavigationFrame = 0;
+        window.history.pushState(null, "", nextUrl.hash);
       });
     };
 
     window.addEventListener("click", handleHashNavigation, { capture: true });
-    window.addEventListener("popstate", handleHistoryNavigation);
-    window.addEventListener("hashchange", handleHistoryNavigation);
     return () => {
-      hashStabilizationActive = false;
       window.removeEventListener("click", handleHashNavigation, true);
-      window.removeEventListener("popstate", handleHistoryNavigation);
-      window.removeEventListener("hashchange", handleHistoryNavigation);
-      window.removeEventListener("load", stabilizeInitialHash);
-      window.cancelAnimationFrame(initialHashFrame);
-      window.cancelAnimationFrame(hashNavigationFrame);
       if (vinextWindow.__VINEXT_RSC_NAVIGATE__ === handleStaticNavigation) {
         vinextWindow.__VINEXT_RSC_NAVIGATE__ = originalVinextNavigate;
       }
@@ -332,7 +261,6 @@ export function SiteMotion() {
 export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<HomeNavSection | "">("");
-  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const closeAfterNavigation = () => setMenuOpen(false);
@@ -342,55 +270,8 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
 
   useEffect(() => {
     document.body.classList.toggle("menu-is-open", menuOpen);
-    const backgroundElements = [
-      document.querySelector<HTMLElement>(".skip-link"),
-      document.querySelector<HTMLElement>(".site-header .brand"),
-      document.querySelector<HTMLElement>(".site-header .header-call"),
-      document.querySelector<HTMLElement>("main"),
-      document.querySelector<HTMLElement>(".site-footer"),
-      document.querySelector<HTMLElement>(".mobile-call"),
-    ].filter((element): element is HTMLElement => Boolean(element));
-
-    if (!menuOpen) {
-      return () => document.body.classList.remove("menu-is-open");
-    }
-
-    backgroundElements.forEach((element) => {
-      element.inert = true;
-    });
-
-    const focusFrame = window.requestAnimationFrame(() => {
-      document
-        .querySelector<HTMLAnchorElement>("#mobile-menu nav a")
-        ?.focus();
-    });
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      setMenuOpen(false);
-      window.requestAnimationFrame(() => menuButtonRef.current?.focus());
-    };
-
-    window.addEventListener("keydown", handleEscape);
-
-    return () => {
-      window.cancelAnimationFrame(focusFrame);
-      window.removeEventListener("keydown", handleEscape);
-      backgroundElements.forEach((element) => {
-        element.inert = false;
-      });
-      document.body.classList.remove("menu-is-open");
-    };
+    return () => document.body.classList.remove("menu-is-open");
   }, [menuOpen]);
-
-  useEffect(() => {
-    const mobileNavigation = window.matchMedia("(max-width: 780px)");
-    const closeOnDesktop = () => {
-      if (!mobileNavigation.matches) setMenuOpen(false);
-    };
-
-    mobileNavigation.addEventListener("change", closeOnDesktop);
-    return () => mobileNavigation.removeEventListener("change", closeOnDesktop);
-  }, []);
 
   useEffect(() => {
     if (currentPage !== "home") return;
@@ -440,10 +321,10 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
   const closeMenu = () => setMenuOpen(false);
   const teamHref = currentPage === "team" ? "#top" : `${basePath}/team/`;
   const links = [
-    ["Leistungen", homeHref("#leistungen", currentPage), "leistungen"],
-    ["Einsatzmodelle", homeHref("#einsatzmodelle", currentPage), "einsatzarten"],
-    ["Ablauf", homeHref("#ablauf", currentPage), "ablauf"],
-    ["Über uns", teamHref, ""],
+    ["Leistungen", homeHref("#unternehmen", currentPage), "leistungen"],
+    ["Einsatzarten", homeHref("#leistungen", currentPage), "einsatzarten"],
+    ["Fuhrpark", homeHref("#fuhrpark", currentPage), "fuhrpark"],
+    ["Team", teamHref, ""],
     ["Kontakt", homeHref("#kontakt", currentPage), "kontakt"],
   ] as const;
 
@@ -451,7 +332,7 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
     label: (typeof links)[number][0],
     section: (typeof links)[number][2],
   ) => {
-    if (label === "Über uns" && currentPage === "team") return "page" as const;
+    if (label === "Team" && currentPage === "team") return "page" as const;
     if (
       currentPage === "home" &&
       section &&
@@ -472,7 +353,7 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
             href={homeHref("#top", currentPage)}
             aria-label="Universale Startseite"
           >
-            <span className="brand-mark"><img src={assetPath("/media/universale-logo-160.webp")} width={160} height={157} alt="" /></span>
+            <span className="brand-mark"><img src={assetPath("/media/universale-logo.png")} alt="" /></span>
             <span className="brand-name"><strong>Universale</strong><span>Dienstleistungen</span></span>
           </a>
 
@@ -493,7 +374,6 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
           </a>
 
           <button
-            ref={menuButtonRef}
             className={`menu-button${menuOpen ? " is-open" : ""}`}
             type="button"
             aria-expanded={menuOpen}
@@ -533,25 +413,15 @@ export function SiteFooter({ currentPage = "home" }: { currentPage?: SitePage })
     <footer className="site-footer">
       <div className="container footer-main">
         <a className="brand brand--footer" href={homeHref("#top", currentPage)} aria-label="Zurück zum Anfang">
-          <span className="brand-mark"><img src={assetPath("/media/universale-logo-160.webp")} width={160} height={157} alt="" /></span>
+          <span className="brand-mark"><img src={assetPath("/media/universale-logo.png")} alt="" /></span>
           <span className="brand-name"><strong>Universale</strong><span>Dienstleistungen</span></span>
         </a>
-        <div className="footer-summary">
-          <p>Gartenpflege. Winterdienst.<br />Hausmeisterservice. Entrümpelung.</p>
-          <address>
-            Universale Dienstleistungen GmbH<br />
-            Westerstraße 3 · 25761 Büsum<br />
-            <a href="tel:+491738948124">+49 173 8948124</a><br />
-            <a href="mailto:info@universale-dienstleistungen.de">
-              info@universale-dienstleistungen.de
-            </a>
-          </address>
-        </div>
+        <p>Gepflegte Flächen. Sichere Wege.<br />Ein zuverlässiger Partner.</p>
         <div className="footer-links">
-          <a href={homeHref("#leistungen", currentPage)}>Leistungen</a>
-          <a href={homeHref("#einsatzmodelle", currentPage)}>Einsatzmodelle</a>
-          <a href={homeHref("#ablauf", currentPage)}>Ablauf</a>
-          <a href={`${basePath}/team/`}>Über uns</a>
+          <a href={homeHref("#unternehmen", currentPage)}>Leistungen</a>
+          <a href={homeHref("#leistungen", currentPage)}>Einsatzarten</a>
+          <a href={`${basePath}/team/`}>Team</a>
+          <a href={homeHref("#fuhrpark", currentPage)}>Fuhrpark</a>
           <a href={homeHref("#kontakt", currentPage)}>Kontakt</a>
         </div>
       </div>
@@ -579,10 +449,8 @@ export function SiteFooter({ currentPage = "home" }: { currentPage?: SitePage })
 
 export function MobileCall() {
   return (
-    <aside aria-label="Direkter Telefonkontakt">
-      <a className="mobile-call" href="tel:+491738948124">
-        <span aria-hidden="true">●</span><strong>24/7 anrufen</strong>
-      </a>
-    </aside>
+    <a className="mobile-call" href="tel:+491738948124">
+      <span aria-hidden="true">●</span><strong>24/7 anrufen</strong>
+    </a>
   );
 }

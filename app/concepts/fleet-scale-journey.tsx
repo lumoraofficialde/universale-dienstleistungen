@@ -19,7 +19,7 @@ const stages = [
     label: "Objekt",
     title: "Präzise am Objekt.",
     text: "Für wendige, saubere Grünpflege rund um Eigenheime und kleinere Objekte.",
-    equipment: ["Wendige Mähtechnik"],
+    equipment: ["Mähwerke für Eigenheime"],
   },
   {
     id: "flaeche",
@@ -31,18 +31,18 @@ const stages = [
   {
     id: "winter",
     label: "Winter",
-    title: "Bereit, wenn der Winter einsetzt.",
+    title: "Bereit, wenn Winter einsetzt.",
     text: "Für Treppen, Wege, Zufahrten, Parkplätze und Höfe — räumen, streuen und Schnee gezielt beseitigen.",
     equipment: [
-      "Räumfahrzeuge mit integriertem Streusystem",
+      "Räumfahrzeuge mit Streusystem",
       "Mobile Schneefräsen",
     ],
   },
   {
     id: "einsatz",
     label: "Einsatz",
-    title: "Passend transportiert.",
-    text: "Ein Einsatzfahrzeug bringt Personal und benötigte Technik abgestimmt zum Einsatzort.",
+    title: "Schnell vor Ort.",
+    text: "Das 3,5-t-Einsatzfahrzeug bringt Personal und benötigte Technik abgestimmt zum Einsatzort.",
     equipment: ["3,5-t-Einsatzfahrzeug"],
   },
 ] as const;
@@ -63,7 +63,7 @@ export function FleetScaleJourney() {
 
   useEffect(() => {
     const media = window.matchMedia(
-      "(prefers-reduced-motion: reduce), (max-width: 780px)",
+      "(prefers-reduced-motion: reduce), (max-width: 780px) and (max-height: 620px)",
     );
     const syncMode = () => setStaticMode(media.matches);
 
@@ -272,22 +272,23 @@ export function FleetScaleJourney() {
       return () => motionQueries.revert();
     }, root);
 
-    const images = [macro, summer, winter];
-    const refreshAfterAsset = () => {
+    const refreshAfterAssets = async () => {
+      const images = [macro, summer, winter];
+      await Promise.allSettled(
+        images.map((image) =>
+          image.complete
+            ? Promise.resolve()
+            : image.decode().catch(() => undefined),
+        ),
+      );
+      await document.fonts?.ready;
       if (alive) ScrollTrigger.refresh();
     };
-    images.forEach((image) => {
-      if (!image.complete) {
-        image.addEventListener("load", refreshAfterAsset, { once: true });
-      }
-    });
-    void document.fonts?.ready.then(refreshAfterAsset);
+
+    void refreshAfterAssets();
 
     return () => {
       alive = false;
-      images.forEach((image) =>
-        image.removeEventListener("load", refreshAfterAsset),
-      );
       context.revert();
     };
   }, [staticMode]);
@@ -329,12 +330,10 @@ export function FleetScaleJourney() {
       className={styles.root}
       id="fuhrpark"
       aria-labelledby="fleet-journey-title"
+      data-nav-section="fuhrpark"
       data-stage={stages[activeIndex].id}
     >
-      <div
-        className={styles.sticky}
-        aria-hidden={staticMode ? true : undefined}
-      >
+      <div className={styles.sticky}>
         <div className={styles.media} aria-hidden="true">
           <picture className={styles.layer}>
             <source
@@ -345,10 +344,8 @@ export function FleetScaleJourney() {
               ref={macroRef}
               className={styles.macroImage}
               src={assetPath("/media/massstabsreise-kante.webp")}
-              width={1672}
-              height={941}
               alt=""
-              loading="lazy"
+              loading="eager"
               decoding="async"
             />
           </picture>
@@ -361,10 +358,8 @@ export function FleetScaleJourney() {
             <img
               ref={summerRef}
               src={assetPath("/media/massstabsreise-landschaft-sommer.webp")}
-              width={1440}
-              height={810}
               alt=""
-              loading="lazy"
+              loading="eager"
               decoding="async"
             />
           </picture>
@@ -377,10 +372,8 @@ export function FleetScaleJourney() {
             <img
               ref={winterRef}
               src={assetPath("/media/massstabsreise-landschaft-winter.webp")}
-              width={1440}
-              height={810}
               alt=""
-              loading="lazy"
+              loading="eager"
               decoding="async"
             />
           </picture>
@@ -419,17 +412,12 @@ export function FleetScaleJourney() {
           ))}
         </div>
 
-        <nav
-          className={styles.navigation}
-          aria-label="Maßstabsreise im Fuhrpark"
-          aria-hidden={staticMode ? true : undefined}
-        >
+        <nav className={styles.navigation} aria-label="Maßstabsreise im Fuhrpark">
           {stages.map((stage, index) => (
             <button
               type="button"
               aria-current={index === activeIndex ? "step" : undefined}
               aria-label={`Zu ${stage.label} springen`}
-              tabIndex={staticMode ? -1 : undefined}
               onClick={() => moveToStage(index)}
               onKeyDown={(event) => {
                 if (event.key !== "Enter" && event.key !== " ") return;

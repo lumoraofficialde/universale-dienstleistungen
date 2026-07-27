@@ -1,4 +1,3 @@
-
 name: Deploy to GitHub Pages
 
 on:
@@ -21,7 +20,6 @@ jobs:
     env:
       NEXT_PUBLIC_BASE_PATH: /universale-dienstleistungen
       NEXT_PUBLIC_SITE_URL: https://lumoraofficialde.github.io/universale-dienstleistungen
-      NEXT_PUBLIC_PREVIEW: "true"
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -37,7 +35,7 @@ jobs:
 
       - name: Install dependencies for runner platform
         # npm can omit optional WASM fallbacks when a lockfile is generated on macOS.
-        # Resolve Linux-native optional dependencies on the runner before building.
+        # Installing on the runner resolves the correct Linux-native dependency set.
         run: npm install --include=optional --no-audit --no-fund
 
       - name: Build and test static site

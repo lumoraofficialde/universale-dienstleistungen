@@ -102,8 +102,8 @@
   justify-content: space-between;
   gap: 1.8rem;
   border: 1px solid var(--line);
-  border-radius: var(--radius-control, 4px 4px 16px 4px);
-  font-size: 0.75rem;
+  border-radius: 4px 4px 18px 4px;
+  font-size: 0.67rem;
   font-weight: 850;
   letter-spacing: 0.075em;
   text-transform: uppercase;
@@ -124,7 +124,6 @@
 
 .call {
   width: fit-content;
-  min-height: 44px;
   margin-top: 2rem;
   padding-top: 1rem;
   display: grid;
@@ -155,7 +154,7 @@
     radial-gradient(circle at 72% 28%, rgba(217, 238, 114, 0.18), transparent 34%),
     var(--pine);
   border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: var(--radius-media, 6px 40px 6px 36px);
+  border-radius: 5px 44px 5px 38px;
   box-shadow: 0 34px 86px rgba(24, 55, 41, 0.2);
 }
 
@@ -293,7 +292,7 @@
   }
 
   .intro {
-    font-size: 0.94rem;
+    font-size: 0.82rem;
   }
 
   .actions {
@@ -308,7 +307,7 @@
 
   .map {
     min-height: 360px;
-    border-radius: var(--radius-media, 6px 40px 6px 36px);
+    border-radius: 4px 30px 4px 26px;
   }
 
   .mapMeta {

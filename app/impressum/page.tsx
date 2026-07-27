@@ -5,41 +5,10 @@ import {
   legalStyles as styles,
 } from "../legal-page";
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  "https://universale-dienstleistungen.de";
-const previewImage = `${siteUrl}/og.jpg`;
-
 export const metadata: Metadata = {
   title: "Impressum | Universale Dienstleistungen",
   description:
     "Anbieterkennzeichnung und rechtliche Angaben der Universale Dienstleistungen GmbH in Büsum.",
-  alternates: {
-    canonical: `${siteUrl}/impressum/`,
-  },
-  openGraph: {
-    title: "Impressum | Universale Dienstleistungen",
-    description:
-      "Anbieterkennzeichnung und rechtliche Angaben der Universale Dienstleistungen GmbH in Büsum.",
-    type: "website",
-    locale: "de_DE",
-    url: `${siteUrl}/impressum/`,
-    images: [
-      {
-        url: previewImage,
-        width: 1200,
-        height: 630,
-        alt: "Universale Dienstleistungen — Impressum",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Impressum | Universale Dienstleistungen",
-    description:
-      "Anbieterkennzeichnung und rechtliche Angaben der Universale Dienstleistungen GmbH in Büsum.",
-    images: [previewImage],
-  },
 };
 
 const navigation = [
@@ -69,7 +38,7 @@ export default function ImpressumPage() {
 
         <dl className={styles.factRows}>
           <div>
-            <dt>Geschäftsführer</dt>
+            <dt>Vertreten durch</dt>
             <dd>Barran Uca</dd>
           </div>
           <div>
