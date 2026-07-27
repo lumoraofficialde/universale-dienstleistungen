@@ -290,7 +290,6 @@
     width: auto;
     height: 100%;
     object-fit: contain;
-    transform: translateX(-50%);
   }
 
   .scrim {

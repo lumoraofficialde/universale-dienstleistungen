@@ -23,23 +23,14 @@ type HomeNavSection =
   | "ablauf"
   | "kontakt";
 
-const homeHref = (hash: string) => `${basePath}/${hash}`;
-
-const normalizePathname = (pathname: string) => {
-  const normalized = pathname.replace(/\/+$/, "");
-  return normalized || "/";
-};
+const homeHref = (hash: string, currentPage: SitePage) =>
+  currentPage === "home" ? hash : `${basePath}/${hash}`;
 
 export function SiteMotion() {
   useEffect(() => {
     document.documentElement.classList.add("motion-ready");
 
     let animationFrame = 0;
-    const mobileMotion = window.matchMedia("(max-width: 780px)");
-    const header = document.querySelector<HTMLElement>(".site-header");
-    const revealElements = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-reveal]"),
-    );
     const parallaxElements = Array.from(
       document.querySelectorAll<HTMLElement>("[data-scroll-parallax]"),
     );
@@ -54,16 +45,6 @@ export function SiteMotion() {
 
     const updateScrollEffects = () => {
       const y = window.scrollY;
-      header?.classList.toggle("is-scrolled", y > 40);
-
-      // Mobile browsers already do a lot of work while their address bar changes
-      // the visual viewport. Keep that path compositor-light: no document-wide
-      // CSS-variable updates, parallax measurements or sticky-stack bookkeeping.
-      if (mobileMotion.matches) {
-        animationFrame = 0;
-        return;
-      }
-
       const viewportHeight = window.innerHeight;
       const max = document.documentElement.scrollHeight - viewportHeight;
       document.documentElement.style.setProperty(
@@ -82,6 +63,8 @@ export function SiteMotion() {
         "--hero-fade",
         `${Math.max(0.08, 1 - y / (viewportHeight * 0.82))}`,
       );
+
+      document.querySelector(".site-header")?.classList.toggle("is-scrolled", y > 40);
 
       parallaxElements.forEach((element) => {
         const rect = element.getBoundingClientRect();
@@ -160,11 +143,9 @@ export function SiteMotion() {
       { threshold: 0.08, rootMargin: "-4% 0px -4% 0px" },
     );
 
-    if (mobileMotion.matches) {
-      revealElements.forEach((element) => element.classList.add("is-visible"));
-    } else {
-      revealElements.forEach((element) => observer.observe(element));
-    }
+    document.querySelectorAll("[data-reveal]").forEach((element) =>
+      observer.observe(element),
+    );
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
     updateScrollEffects();
@@ -176,9 +157,6 @@ export function SiteMotion() {
       if (animationFrame) window.cancelAnimationFrame(animationFrame);
       stackCards.forEach((card) =>
         card.classList.remove("is-stack-active", "is-stack-past"),
-      );
-      revealElements.forEach((element) =>
-        element.classList.remove("is-visible", "is-past"),
       );
       document.documentElement.classList.remove("motion-ready");
     };
@@ -218,8 +196,7 @@ export function SiteMotion() {
       const currentUrl = new URL(window.location.href);
       const isSameDocument =
         nextUrl.origin === currentUrl.origin &&
-        normalizePathname(nextUrl.pathname) ===
-          normalizePathname(currentUrl.pathname) &&
+        nextUrl.pathname === currentUrl.pathname &&
         nextUrl.search === currentUrl.search;
 
       if (isSameDocument) {
@@ -301,16 +278,13 @@ export function SiteMotion() {
       const currentUrl = new URL(window.location.href);
       const isSameDocument =
         nextUrl.origin === currentUrl.origin &&
-        normalizePathname(nextUrl.pathname) ===
-          normalizePathname(currentUrl.pathname) &&
+        nextUrl.pathname === currentUrl.pathname &&
         nextUrl.search === currentUrl.search;
       if (!isSameDocument || !nextUrl.hash) return;
 
       const id = decodeURIComponent(nextUrl.hash.slice(1));
       const target =
-        id === "top"
-          ? document.documentElement
-          : document.getElementById(id);
+        id === "top" ? document.documentElement : document.getElementById(id);
       if (!target) return;
 
       event.preventDefault();
@@ -328,9 +302,8 @@ export function SiteMotion() {
           target.tabIndex = -1;
           target.focus({ preventScroll: true });
         }
-        const nextHash = `#${encodeURIComponent(id)}`;
-        if (window.location.hash !== nextHash) {
-          window.history.pushState(null, "", nextHash);
+        if (window.location.hash !== nextUrl.hash) {
+          window.history.pushState(null, "", nextUrl.hash);
         }
         hashNavigationFrame = 0;
       });
@@ -422,56 +395,56 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
   useEffect(() => {
     if (currentPage !== "home") return;
 
-    const navigationStops = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-nav-section]"),
-    );
-    const visibleStops = new Set<HTMLElement>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const section = entry.target as HTMLElement;
-          if (entry.isIntersecting) {
-            visibleStops.add(section);
-          } else {
-            visibleStops.delete(section);
-          }
-        });
+    let animationFrame = 0;
 
-        const nextSection = navigationStops.reduce<HomeNavSection | "">(
-          (current, section) =>
-            visibleStops.has(section)
-              ? (section.dataset.navSection as HomeNavSection | undefined) ??
-                current
-              : current,
-          "",
-        );
-        if (nextSection) {
-          setActiveSection((current) =>
-            current === nextSection ? current : nextSection,
-          );
+    const updateActiveSection = () => {
+      const activationLine =
+        window.scrollY + 68 + Math.min(window.innerHeight * 0.28, 250);
+      const navigationStops = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-nav-section]"),
+      );
+      let nextSection: HomeNavSection | "" = "";
+
+      navigationStops.forEach((section) => {
+        const sectionTop =
+          section.getBoundingClientRect().top + window.scrollY;
+        if (sectionTop <= activationLine) {
+          nextSection =
+            (section.dataset.navSection as HomeNavSection | undefined) ?? "";
         }
-      },
-      {
-        rootMargin: "-68px 0px -70% 0px",
-        threshold: 0,
-      },
-    );
+      });
 
-    navigationStops.forEach((section) => observer.observe(section));
+      setActiveSection((current) =>
+        current === nextSection ? current : nextSection,
+      );
+      animationFrame = 0;
+    };
+
+    const scheduleUpdate = () => {
+      if (!animationFrame) {
+        animationFrame = window.requestAnimationFrame(updateActiveSection);
+      }
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate, { passive: true });
 
     return () => {
-      observer.disconnect();
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
     };
   }, [currentPage]);
 
   const closeMenu = () => setMenuOpen(false);
   const teamHref = currentPage === "team" ? "#top" : `${basePath}/team/`;
   const links = [
-    ["Leistungen", homeHref("#leistungen"), "leistungen"],
-    ["Einsatzmodelle", homeHref("#einsatzmodelle"), "einsatzarten"],
-    ["Ablauf", homeHref("#ablauf"), "ablauf"],
+    ["Leistungen", homeHref("#leistungen", currentPage), "leistungen"],
+    ["Einsatzmodelle", homeHref("#einsatzmodelle", currentPage), "einsatzarten"],
+    ["Ablauf", homeHref("#ablauf", currentPage), "ablauf"],
     ["Über uns", teamHref, ""],
-    ["Kontakt", homeHref("#kontakt"), "kontakt"],
+    ["Kontakt", homeHref("#kontakt", currentPage), "kontakt"],
   ] as const;
 
   const getAriaCurrent = (
@@ -496,7 +469,7 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
         <div className="header-inner">
           <a
             className="brand"
-            href={homeHref("#top")}
+            href={homeHref("#top", currentPage)}
             aria-label="Universale Startseite"
           >
             <span className="brand-mark"><img src={assetPath("/media/universale-logo-160.webp")} width={160} height={157} alt="" /></span>
@@ -559,11 +532,7 @@ export function SiteFooter({ currentPage = "home" }: { currentPage?: SitePage })
   return (
     <footer className="site-footer">
       <div className="container footer-main">
-        <a
-          className="brand brand--footer"
-          href={homeHref("#top")}
-          aria-label="Zurück zum Anfang"
-        >
+        <a className="brand brand--footer" href={homeHref("#top", currentPage)} aria-label="Zurück zum Anfang">
           <span className="brand-mark"><img src={assetPath("/media/universale-logo-160.webp")} width={160} height={157} alt="" /></span>
           <span className="brand-name"><strong>Universale</strong><span>Dienstleistungen</span></span>
         </a>
@@ -579,11 +548,11 @@ export function SiteFooter({ currentPage = "home" }: { currentPage?: SitePage })
           </address>
         </div>
         <div className="footer-links">
-          <a href={homeHref("#leistungen")}>Leistungen</a>
-          <a href={homeHref("#einsatzmodelle")}>Einsatzmodelle</a>
-          <a href={homeHref("#ablauf")}>Ablauf</a>
+          <a href={homeHref("#leistungen", currentPage)}>Leistungen</a>
+          <a href={homeHref("#einsatzmodelle", currentPage)}>Einsatzmodelle</a>
+          <a href={homeHref("#ablauf", currentPage)}>Ablauf</a>
           <a href={`${basePath}/team/`}>Über uns</a>
-          <a href={homeHref("#kontakt")}>Kontakt</a>
+          <a href={homeHref("#kontakt", currentPage)}>Kontakt</a>
         </div>
       </div>
       <div className="container footer-meta">
@@ -611,27 +580,8 @@ export function SiteFooter({ currentPage = "home" }: { currentPage?: SitePage })
 export function MobileCall() {
   return (
     <aside aria-label="Direkter Telefonkontakt">
-      <a
-        className="mobile-call"
-        href="tel:+491738948124"
-        aria-label="Jetzt anrufen: +49 173 8948124"
-        title="Jetzt anrufen"
-      >
-        <svg
-          viewBox="0 0 24 24"
-          width="24"
-          height="24"
-          fill="none"
-          aria-hidden="true"
-        >
-          <path
-            d="M7.2 3.5 9.6 8l-2 1.7c.9 2 2.6 3.7 4.7 4.7l1.7-2 4.5 2.4-.7 3.5c-.2.9-1 1.5-1.9 1.5C9.4 19.8 4.2 14.6 4.2 8.1c0-.9.6-1.7 1.5-1.9l1.5-2.7Z"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+      <a className="mobile-call" href="tel:+491738948124">
+        <span aria-hidden="true">●</span><strong>24/7 anrufen</strong>
       </a>
     </aside>
   );

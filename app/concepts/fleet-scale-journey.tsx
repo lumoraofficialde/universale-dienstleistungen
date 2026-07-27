@@ -82,13 +82,9 @@ export function FleetScaleJourney() {
     const copies = copyRefs.current.filter(
       (copy): copy is HTMLDivElement => Boolean(copy),
     );
-    const staticMedia = window.matchMedia(
-      "(prefers-reduced-motion: reduce), (max-width: 780px)",
-    );
 
     if (
       staticMode ||
-      staticMedia.matches ||
       !root ||
       !macro ||
       !summer ||

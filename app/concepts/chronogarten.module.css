@@ -761,16 +761,6 @@
     transition: none;
   }
 
-  .image,
-  .timeLens {
-    filter: none;
-    will-change: auto;
-  }
-
-  .ghostNumber {
-    mix-blend-mode: normal;
-  }
-
   .seasonWipe,
   .weather,
   .markers {

@@ -184,8 +184,6 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.doesNotMatch(page, /Kompetenz durch Erfahrung/);
   assert.doesNotMatch(page, /hero-proof/);
   assert.match(page, /readiness-rail__track/);
-  assert.match(page, /event\.pointerType !== "mouse"/);
-  assert.match(page, /\(hover: hover\) and \(pointer: fine\)/);
   assert.match(shell, /classList\.toggle\(\s*"is-past"/);
   assert.match(shell, /handleHashNavigation/);
   assert.match(shell, /addEventListener\(\s*"click",\s*handleHashNavigation/);
@@ -313,10 +311,6 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(fleetJourneyCss, /min-height:\s*360dvh/);
   assert.match(fleetJourneyCss, /position:\s*sticky/);
   assert.match(fleetJourneyCss, /@media \(max-width: 780px\)/);
-  assert.match(
-    fleetJourneyCss,
-    /@media \(max-width: 780px\)[\s\S]*?\.layer img\s*\{[\s\S]*?left:\s*50%;[\s\S]*?transform:\s*translateX\(-50%\)/,
-  );
   assert.match(fleetJourneyCss, /prefers-reduced-motion:\s*reduce/);
   assert.match(fleetJourneyCss, /min-height:\s*auto/);
   assert.doesNotMatch(css, /\.fleet-architect/);
@@ -343,14 +337,7 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(processImpulseJourneyCss, /position:\s*sticky/);
   assert.match(processImpulseJourneyCss, /prefers-reduced-motion:\s*reduce/);
   assert.match(processImpulseJourneyCss, /min-height:\s*auto/);
-  assert.match(
-    css,
-    /\.readiness-rail__track\s*\{[\s\S]*?animation:\s*none;[\s\S]*?will-change:\s*auto/,
-  );
-  assert.match(
-    css,
-    /\.readiness-rail span\s*\{[\s\S]*?font-size:\s*clamp\(2\.6rem, 12vw, 4rem\)/,
-  );
+  assert.match(css, /\.readiness-rail span\s*\{\s*font-size:\s*clamp\(3\.25rem, 15vw, 4\.5rem\)/);
   assert.match(
     css,
     /@media \(max-width: 780px\)[\s\S]*?\.hero-kicker\s*\{\s*display:\s*none;/,
@@ -363,38 +350,14 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(team, /team-portrait__frame/);
   assert.doesNotMatch(team, /Menschen\. Technik\. Ergebnis\./);
   assert.doesNotMatch(team, /team-gallery/);
-  assert.match(shell, /className="mobile-call"/);
-  assert.match(shell, /aria-label="Jetzt anrufen: \+49 173 8948124"/);
-  assert.match(shell, /<svg[\s\S]*?<path/);
-  assert.doesNotMatch(shell, /<strong>24\/7 anrufen<\/strong>/);
+  assert.match(shell, /<strong>24\/7 anrufen<\/strong>/);
   assert.match(
     shell,
-    /\["Leistungen",\s*homeHref\("#leistungen"\),\s*"leistungen"\]/,
+    /\["Leistungen",\s*homeHref\("#leistungen",\s*currentPage\),\s*"leistungen"\]/,
   );
   assert.match(
     shell,
-    /\["Einsatzmodelle",\s*homeHref\("#einsatzmodelle"\),\s*"einsatzarten"\]/,
-  );
-  assert.match(shell, /normalizePathname/);
-  assert.match(shell, /if \(!isSameDocument \|\| !nextUrl\.hash\) return/);
-  assert.doesNotMatch(shell, /data-home-section|dataset\.homeSection/);
-  assert.match(shell, /mobileMotion\.matches/);
-  assert.match(fleetJourney, /staticMedia\.matches/);
-  assert.match(
-    css,
-    /\.mobile-call\s*\{[\s\S]*?right:\s*calc\(12px \+ env\(safe-area-inset-right\)\)[\s\S]*?width:\s*48px[\s\S]*?border-radius:\s*50%/,
-  );
-  assert.match(
-    css,
-    /A native document flow[\s\S]*?\.services-grid\s*\{[\s\S]*?display:\s*flex;[\s\S]*?flex-direction:\s*column/,
-  );
-  assert.match(
-    css,
-    /A native document flow[\s\S]*?\.service-card,[\s\S]*?position:\s*relative;[\s\S]*?width:\s*100%;[\s\S]*?min-width:\s*0/,
-  );
-  assert.match(
-    css,
-    /\.motion-ready \[data-reveal\],[\s\S]*?transition:\s*none;[\s\S]*?will-change:\s*auto/,
+    /\["Einsatzmodelle",\s*homeHref\("#einsatzmodelle",\s*currentPage\),\s*"einsatzarten"\]/,
   );
   assert.match(shell, /\["Über uns",/);
 });

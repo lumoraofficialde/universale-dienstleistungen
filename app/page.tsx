@@ -253,13 +253,6 @@ export default function Home() {
   const [copyStatus, setCopyStatus] = useState("");
 
   const handleSpotlight = (event: PointerEvent<HTMLElement>) => {
-    if (
-      event.pointerType !== "mouse" ||
-      !window.matchMedia("(hover: hover) and (pointer: fine)").matches
-    ) {
-      return;
-    }
-
     const rect = event.currentTarget.getBoundingClientRect();
     event.currentTarget.style.setProperty(
       "--spot-x",

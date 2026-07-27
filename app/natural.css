@@ -440,7 +440,7 @@ body::after {
 
 @media (max-width: 780px) {
   body::after {
-    display: none;
+    opacity: 0.032;
   }
 
   .services.section {
@@ -528,8 +528,7 @@ body::after {
   }
 
   .site-header.is-scrolled {
-    background-color: rgba(247, 244, 235, 0.985);
-    background-image: none;
+    background-color: rgba(247, 244, 235, 0.96);
   }
 }
 
