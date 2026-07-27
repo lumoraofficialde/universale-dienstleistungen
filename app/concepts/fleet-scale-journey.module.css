@@ -421,7 +421,7 @@
 }
 
 @media (prefers-reduced-motion: reduce),
-  (max-width: 780px) and (max-height: 620px) {
+  (max-width: 780px) {
   .root {
     min-height: auto;
     color: var(--ink);
@@ -532,8 +532,7 @@
   }
 }
 
-@media (max-width: 780px) and (prefers-reduced-motion: reduce),
-  (max-width: 780px) and (max-height: 620px) {
+@media (max-width: 780px) {
   .sticky {
     height: 62svh;
     min-height: 390px;

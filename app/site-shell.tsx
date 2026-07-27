@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 export const assetPath = (path: string) => `${basePath}${path}`;
@@ -23,48 +23,73 @@ type HomeNavSection =
   | "fuhrpark"
   | "kontakt";
 
-const homeHref = (hash: string, currentPage: SitePage) =>
-  currentPage === "home" ? hash : `${basePath}/${hash}`;
+const homePath = basePath
+  ? `${basePath.replace(/\/+$/, "")}/`
+  : "/";
+const homeHref = (hash: string) => `${homePath}${hash}`;
+const normalizePathname = (pathname: string) =>
+  pathname.replace(/\/+$/, "") || "/";
 
 export function SiteMotion() {
   useEffect(() => {
-    document.documentElement.classList.add("motion-ready");
+    const root = document.documentElement;
+    const header = document.querySelector<HTMLElement>(".site-header");
+    const progress = document.querySelector<HTMLElement>(".scroll-progress");
+    const hero = document.querySelector<HTMLElement>(".hero, .team-hero");
+    const lightweightMotion = window.matchMedia(
+      "(max-width: 780px), (prefers-reduced-motion: reduce)",
+    );
+
+    root.classList.add("motion-ready");
 
     let animationFrame = 0;
+    let headerScrolled: boolean | null = null;
     const parallaxElements = Array.from(
       document.querySelectorAll<HTMLElement>("[data-scroll-parallax]"),
     );
-    const stackCards = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-stack-card]"),
-    );
-    const stackSegments = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-stack-segment]"),
-    );
-    const stackCurrent = document.querySelector<HTMLElement>("[data-stack-current]");
-    const mobileStack = window.matchMedia("(max-width: 780px)");
+
+    const updateHeader = () => {
+      const nextScrolled = window.scrollY > 40;
+      if (nextScrolled === headerScrolled) return;
+      headerScrolled = nextScrolled;
+      header?.classList.toggle("is-scrolled", nextScrolled);
+    };
+
+    const resetLightweightEffects = () => {
+      progress?.style.setProperty("transform", "scaleX(0)");
+      hero?.style.setProperty("--hero-shift", "0px");
+      hero?.style.setProperty("--hero-content-y", "0px");
+      hero?.style.setProperty("--hero-fade", "1");
+      parallaxElements.forEach((element) => {
+        element.style.setProperty("--parallax-y", "0px");
+      });
+    };
 
     const updateScrollEffects = () => {
+      if (lightweightMotion.matches) {
+        animationFrame = 0;
+        return;
+      }
+
       const y = window.scrollY;
       const viewportHeight = window.innerHeight;
       const max = document.documentElement.scrollHeight - viewportHeight;
-      document.documentElement.style.setProperty(
-        "--scroll-progress",
-        `${max > 0 ? (y / max) * 100 : 0}%`,
+      progress?.style.setProperty(
+        "transform",
+        `scaleX(${max > 0 ? y / max : 0})`,
       );
-      document.documentElement.style.setProperty(
+      hero?.style.setProperty(
         "--hero-shift",
         `${Math.min(y * 0.58, 280)}px`,
       );
-      document.documentElement.style.setProperty(
+      hero?.style.setProperty(
         "--hero-content-y",
         `${Math.min(y * 0.1, 84)}px`,
       );
-      document.documentElement.style.setProperty(
+      hero?.style.setProperty(
         "--hero-fade",
         `${Math.max(0.08, 1 - y / (viewportHeight * 0.82))}`,
       );
-
-      document.querySelector(".site-header")?.classList.toggle("is-scrolled", y > 40);
 
       parallaxElements.forEach((element) => {
         const rect = element.getBoundingClientRect();
@@ -77,51 +102,24 @@ export function SiteMotion() {
         );
       });
 
-      if (stackCards.length) {
-        let activeStackIndex = 0;
-
-        if (mobileStack.matches) {
-          const activationOffset = Math.min(96, viewportHeight * 0.12);
-          stackCards.forEach((card, index) => {
-            const stickyTop =
-              Number.parseFloat(card.style.getPropertyValue("--stack-top")) || 132;
-            if (
-              card.getBoundingClientRect().top <=
-              stickyTop + activationOffset
-            ) {
-              activeStackIndex = index;
-            }
-          });
-        }
-
-        stackCards.forEach((card, index) => {
-          card.classList.toggle("is-stack-active", index === activeStackIndex);
-          card.classList.toggle("is-stack-past", index < activeStackIndex);
-        });
-
-        stackSegments.forEach((segment, index) => {
-          const isActive = index === activeStackIndex;
-          segment.classList.toggle("is-active", isActive);
-          segment.classList.toggle("is-complete", index < activeStackIndex);
-          if (isActive) {
-            segment.setAttribute("aria-current", "step");
-          } else {
-            segment.removeAttribute("aria-current");
-          }
-        });
-
-        if (stackCurrent) {
-          stackCurrent.textContent =
-            stackCards[activeStackIndex]?.dataset.stackTitle ?? "";
-        }
-      }
-
       animationFrame = 0;
     };
 
     const onScroll = () => {
+      updateHeader();
+      if (lightweightMotion.matches) return;
       if (!animationFrame) {
         animationFrame = window.requestAnimationFrame(updateScrollEffects);
+      }
+    };
+
+    const onMotionModeChange = () => {
+      window.cancelAnimationFrame(animationFrame);
+      animationFrame = 0;
+      if (lightweightMotion.matches) {
+        resetLightweightEffects();
+      } else {
+        updateScrollEffects();
       }
     };
 
@@ -148,17 +146,17 @@ export function SiteMotion() {
     );
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
-    updateScrollEffects();
+    lightweightMotion.addEventListener("change", onMotionModeChange);
+    updateHeader();
+    onMotionModeChange();
 
     return () => {
       observer.disconnect();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      lightweightMotion.removeEventListener("change", onMotionModeChange);
       if (animationFrame) window.cancelAnimationFrame(animationFrame);
-      stackCards.forEach((card) =>
-        card.classList.remove("is-stack-active", "is-stack-past"),
-      );
-      document.documentElement.classList.remove("motion-ready");
+      root.classList.remove("motion-ready");
     };
   }, []);
 
@@ -168,29 +166,58 @@ export function SiteMotion() {
     };
 
     const originalVinextNavigate = vinextWindow.__VINEXT_RSC_NAVIGATE__;
+    let hashNavigationFrame = 0;
+    let initialHashFrame = 0;
+    let hashStabilizationActive = true;
+
+    const moveToTarget = (
+      target: Element,
+      id: string,
+      behavior: ScrollBehavior,
+    ) => {
+      const root = document.documentElement;
+      const previousInlineBehavior = root.style.scrollBehavior;
+
+      if (behavior === "auto") root.style.scrollBehavior = "auto";
+      if (!id || id === "top") {
+        window.scrollTo({ top: 0, behavior });
+      } else {
+        target.scrollIntoView({ behavior, block: "start" });
+      }
+      if (behavior === "auto") root.style.scrollBehavior = previousInlineBehavior;
+    };
+
+    const scrollToHash = (
+      hash: string,
+      behavior: ScrollBehavior = "auto",
+    ) => {
+      const id = decodeURIComponent(hash.replace(/^#/, ""));
+      const target =
+        !id || id === "top"
+          ? document.documentElement
+          : document.getElementById(id);
+      if (!target) return false;
+
+      window.cancelAnimationFrame(hashNavigationFrame);
+      hashNavigationFrame = window.requestAnimationFrame(() => {
+        moveToTarget(target, id, behavior);
+        hashNavigationFrame = 0;
+      });
+      return true;
+    };
+
     const handleStaticNavigation: VinextNavigate = (href) => {
       const nextUrl = new URL(href, window.location.href);
       const currentUrl = new URL(window.location.href);
       const isSameDocument =
         nextUrl.origin === currentUrl.origin &&
-        nextUrl.pathname === currentUrl.pathname &&
+        normalizePathname(nextUrl.pathname) ===
+          normalizePathname(currentUrl.pathname) &&
         nextUrl.search === currentUrl.search;
 
       if (isSameDocument) {
-        const id = decodeURIComponent(nextUrl.hash.slice(1));
-        return new Promise((resolve) => {
-          window.requestAnimationFrame(() => {
-            if (!id || id === "top") {
-              window.scrollTo({ top: 0, behavior: "auto" });
-            } else {
-              document.getElementById(id)?.scrollIntoView({
-                behavior: "auto",
-                block: "start",
-              });
-            }
-            resolve(undefined);
-          });
-        });
+        scrollToHash(nextUrl.hash, "auto");
+        return Promise.resolve();
       }
 
       window.location.assign(nextUrl.href);
@@ -198,6 +225,24 @@ export function SiteMotion() {
     };
 
     vinextWindow.__VINEXT_RSC_NAVIGATE__ = handleStaticNavigation;
+
+    const stabilizeInitialHash = () => {
+      if (hashStabilizationActive && window.location.hash) {
+        scrollToHash(window.location.hash, "auto");
+      }
+    };
+
+    initialHashFrame = window.requestAnimationFrame(() => {
+      initialHashFrame = window.requestAnimationFrame(stabilizeInitialHash);
+    });
+    window.addEventListener("load", stabilizeInitialHash, { once: true });
+    void document.fonts?.ready.then(stabilizeInitialHash);
+
+    const handleHistoryNavigation = () => {
+      window.dispatchEvent(new Event("site:navigate"));
+      document.body.classList.remove("menu-is-open");
+      scrollToHash(window.location.hash, "auto");
+    };
 
     const handleHashNavigation = (event: globalThis.MouseEvent) => {
       if (
@@ -214,41 +259,72 @@ export function SiteMotion() {
       const origin = event.target;
       if (!(origin instanceof Element)) return;
       const link = origin.closest<HTMLAnchorElement>("a[href]");
-      if (!link) return;
+      if (
+        !link ||
+        link.hasAttribute("download") ||
+        (link.target && link.target !== "_self")
+      ) {
+        return;
+      }
 
       const nextUrl = new URL(link.href, window.location.href);
       const currentUrl = new URL(window.location.href);
+      if (nextUrl.origin !== currentUrl.origin || !nextUrl.hash) return;
+
       const isSameDocument =
-        nextUrl.origin === currentUrl.origin &&
-        nextUrl.pathname === currentUrl.pathname &&
+        normalizePathname(nextUrl.pathname) ===
+          normalizePathname(currentUrl.pathname) &&
         nextUrl.search === currentUrl.search;
-      if (!isSameDocument || !nextUrl.hash) return;
+
+      if (!isSameDocument) {
+        event.preventDefault();
+        event.stopPropagation();
+        window.dispatchEvent(new Event("site:navigate"));
+        document.body.classList.remove("menu-is-open");
+        window.location.assign(nextUrl.href);
+        return;
+      }
 
       const id = decodeURIComponent(nextUrl.hash.slice(1));
       const target = id === "top" ? document.documentElement : document.getElementById(id);
       if (!target) return;
 
       event.preventDefault();
-      event.stopPropagation();
       window.dispatchEvent(new Event("site:navigate"));
       document.body.classList.remove("menu-is-open");
 
-      const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "auto"
-        : "smooth";
-      window.requestAnimationFrame(() => {
-        if (id === "top") {
-          window.scrollTo({ top: 0, behavior });
-        } else {
-          target.scrollIntoView({ behavior, block: "start" });
+      const behavior =
+        window.matchMedia(
+          "(max-width: 780px), (prefers-reduced-motion: reduce)",
+        ).matches
+          ? "auto"
+          : "smooth";
+      const shouldMoveFocus = link.classList.contains("skip-link");
+      window.cancelAnimationFrame(hashNavigationFrame);
+      hashNavigationFrame = window.requestAnimationFrame(() => {
+        moveToTarget(target, id, behavior);
+        if (shouldMoveFocus && target instanceof HTMLElement) {
+          target.tabIndex = -1;
+          target.focus({ preventScroll: true });
         }
-        window.history.pushState(null, "", nextUrl.hash);
+        if (window.location.hash !== nextUrl.hash) {
+          window.history.pushState(null, "", nextUrl.hash);
+        }
+        hashNavigationFrame = 0;
       });
     };
 
     window.addEventListener("click", handleHashNavigation, { capture: true });
+    window.addEventListener("popstate", handleHistoryNavigation);
+    window.addEventListener("hashchange", handleHistoryNavigation);
     return () => {
+      hashStabilizationActive = false;
       window.removeEventListener("click", handleHashNavigation, true);
+      window.removeEventListener("popstate", handleHistoryNavigation);
+      window.removeEventListener("hashchange", handleHistoryNavigation);
+      window.removeEventListener("load", stabilizeInitialHash);
+      window.cancelAnimationFrame(initialHashFrame);
+      window.cancelAnimationFrame(hashNavigationFrame);
       if (vinextWindow.__VINEXT_RSC_NAVIGATE__ === handleStaticNavigation) {
         vinextWindow.__VINEXT_RSC_NAVIGATE__ = originalVinextNavigate;
       }
@@ -261,6 +337,7 @@ export function SiteMotion() {
 export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<HomeNavSection | "">("");
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const closeAfterNavigation = () => setMenuOpen(false);
@@ -270,62 +347,86 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
 
   useEffect(() => {
     document.body.classList.toggle("menu-is-open", menuOpen);
-    return () => document.body.classList.remove("menu-is-open");
+    if (!menuOpen) {
+      return () => document.body.classList.remove("menu-is-open");
+    }
+
+    const focusFrame = window.requestAnimationFrame(() => {
+      document
+        .querySelector<HTMLAnchorElement>("#mobile-menu nav a")
+        ?.focus();
+    });
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setMenuOpen(false);
+      window.requestAnimationFrame(() => menuButtonRef.current?.focus());
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      window.removeEventListener("keydown", handleEscape);
+      document.body.classList.remove("menu-is-open");
+    };
   }, [menuOpen]);
+
+  useEffect(() => {
+    const mobileNavigation = window.matchMedia("(max-width: 780px)");
+    const closeOnDesktop = () => {
+      if (!mobileNavigation.matches) setMenuOpen(false);
+    };
+
+    mobileNavigation.addEventListener("change", closeOnDesktop);
+    return () => mobileNavigation.removeEventListener("change", closeOnDesktop);
+  }, []);
 
   useEffect(() => {
     if (currentPage !== "home") return;
 
-    let animationFrame = 0;
+    const navigationStops = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-nav-section]"),
+    );
+    const visibleStops = new Set<HTMLElement>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const section = entry.target as HTMLElement;
+          if (entry.isIntersecting) {
+            visibleStops.add(section);
+          } else {
+            visibleStops.delete(section);
+          }
+        });
 
-    const updateActiveSection = () => {
-      const activationLine =
-        window.scrollY + 68 + Math.min(window.innerHeight * 0.28, 250);
-      const navigationStops = Array.from(
-        document.querySelectorAll<HTMLElement>("[data-nav-section]"),
-      );
-      let nextSection: HomeNavSection | "" = "";
-
-      navigationStops.forEach((section) => {
-        const sectionTop =
-          section.getBoundingClientRect().top + window.scrollY;
-        if (sectionTop <= activationLine) {
-          nextSection =
-            (section.dataset.navSection as HomeNavSection | undefined) ?? "";
+        const nextSection = navigationStops.reduce<HomeNavSection | "">(
+          (current, section) =>
+            visibleStops.has(section)
+              ? (section.dataset.navSection as HomeNavSection | undefined) ??
+                current
+              : current,
+          "",
+        );
+        if (nextSection) {
+          setActiveSection((current) =>
+            current === nextSection ? current : nextSection,
+          );
         }
-      });
+      },
+      { rootMargin: "-68px 0px -70% 0px", threshold: 0 },
+    );
 
-      setActiveSection((current) =>
-        current === nextSection ? current : nextSection,
-      );
-      animationFrame = 0;
-    };
-
-    const scheduleUpdate = () => {
-      if (!animationFrame) {
-        animationFrame = window.requestAnimationFrame(updateActiveSection);
-      }
-    };
-
-    updateActiveSection();
-    window.addEventListener("scroll", scheduleUpdate, { passive: true });
-    window.addEventListener("resize", scheduleUpdate, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", scheduleUpdate);
-      window.removeEventListener("resize", scheduleUpdate);
-      if (animationFrame) window.cancelAnimationFrame(animationFrame);
-    };
+    navigationStops.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
   }, [currentPage]);
 
   const closeMenu = () => setMenuOpen(false);
   const teamHref = currentPage === "team" ? "#top" : `${basePath}/team/`;
   const links = [
-    ["Leistungen", homeHref("#unternehmen", currentPage), "leistungen"],
-    ["Einsatzarten", homeHref("#leistungen", currentPage), "einsatzarten"],
-    ["Fuhrpark", homeHref("#fuhrpark", currentPage), "fuhrpark"],
+    ["Leistungen", homeHref("#unternehmen"), "leistungen"],
+    ["Einsatzarten", homeHref("#leistungen"), "einsatzarten"],
+    ["Fuhrpark", homeHref("#fuhrpark"), "fuhrpark"],
     ["Team", teamHref, ""],
-    ["Kontakt", homeHref("#kontakt", currentPage), "kontakt"],
+    ["Kontakt", homeHref("#kontakt"), "kontakt"],
   ] as const;
 
   const getAriaCurrent = (
@@ -350,7 +451,7 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
         <div className="header-inner">
           <a
             className="brand"
-            href={homeHref("#top", currentPage)}
+            href={homeHref("#top")}
             aria-label="Universale Startseite"
           >
             <span className="brand-mark"><img src={assetPath("/media/universale-logo.png")} alt="" /></span>
@@ -374,6 +475,7 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
           </a>
 
           <button
+            ref={menuButtonRef}
             className={`menu-button${menuOpen ? " is-open" : ""}`}
             type="button"
             aria-expanded={menuOpen}
@@ -385,7 +487,11 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
           </button>
         </div>
 
-        <div id="mobile-menu" className={`mobile-menu${menuOpen ? " is-open" : ""}`}>
+        <div
+          id="mobile-menu"
+          className={`mobile-menu${menuOpen ? " is-open" : ""}`}
+          aria-hidden={!menuOpen}
+        >
           <nav aria-label="Mobile Navigation">
             {links.map(([label, href, section], index) => (
               <a
@@ -412,17 +518,17 @@ export function SiteFooter({ currentPage = "home" }: { currentPage?: SitePage })
   return (
     <footer className="site-footer">
       <div className="container footer-main">
-        <a className="brand brand--footer" href={homeHref("#top", currentPage)} aria-label="Zurück zum Anfang">
+        <a className="brand brand--footer" href={homeHref("#top")} aria-label="Zurück zum Anfang">
           <span className="brand-mark"><img src={assetPath("/media/universale-logo.png")} alt="" /></span>
           <span className="brand-name"><strong>Universale</strong><span>Dienstleistungen</span></span>
         </a>
         <p>Gepflegte Flächen. Sichere Wege.<br />Ein zuverlässiger Partner.</p>
         <div className="footer-links">
-          <a href={homeHref("#unternehmen", currentPage)}>Leistungen</a>
-          <a href={homeHref("#leistungen", currentPage)}>Einsatzarten</a>
+          <a href={homeHref("#unternehmen")}>Leistungen</a>
+          <a href={homeHref("#leistungen")}>Einsatzarten</a>
           <a href={`${basePath}/team/`}>Team</a>
-          <a href={homeHref("#fuhrpark", currentPage)}>Fuhrpark</a>
-          <a href={homeHref("#kontakt", currentPage)}>Kontakt</a>
+          <a href={homeHref("#fuhrpark")}>Fuhrpark</a>
+          <a href={homeHref("#kontakt")}>Kontakt</a>
         </div>
       </div>
       <div className="container footer-meta">
@@ -449,8 +555,27 @@ export function SiteFooter({ currentPage = "home" }: { currentPage?: SitePage })
 
 export function MobileCall() {
   return (
-    <a className="mobile-call" href="tel:+491738948124">
-      <span aria-hidden="true">●</span><strong>24/7 anrufen</strong>
+    <a
+      className="mobile-call"
+      href="tel:+491738948124"
+      aria-label="Jetzt anrufen: +49 173 8948124"
+      title="Jetzt anrufen"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        width="24"
+        height="24"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M7.2 3.5 9.6 8l-2 1.7c.9 2 2.6 3.7 4.7 4.7l1.7-2 4.5 2.4-.7 3.5c-.2.9-1 1.5-1.9 1.5C9.4 19.8 4.2 14.6 4.2 8.1c0-.9.6-1.7 1.5-1.9l1.5-2.7Z"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
     </a>
   );
 }

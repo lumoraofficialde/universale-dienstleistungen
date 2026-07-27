@@ -147,6 +147,15 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(shell, /__VINEXT_RSC_NAVIGATE__/);
   assert.match(shell, /const isSameDocument =/);
   assert.match(shell, /handleStaticNavigation/);
+  assert.match(shell, /normalizePathname/);
+  assert.match(shell, /window\.location\.assign\(nextUrl\.href\)/);
+  assert.match(shell, /addEventListener\("popstate", handleHistoryNavigation\)/);
+  assert.match(shell, /addEventListener\("hashchange", handleHistoryNavigation\)/);
+  assert.match(shell, /document\.fonts\?\.ready\.then\(stabilizeInitialHash\)/);
+  assert.match(
+    shell,
+    /"\(max-width: 780px\), \(prefers-reduced-motion: reduce\)"/,
+  );
   assert.doesNotMatch(shell, /dataset\.season/);
   assert.doesNotMatch(page, /data-season-story/);
   assert.match(page, /ActiveIntroConcept/);
@@ -156,8 +165,10 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(chronogarten, /IntersectionObserver/);
   assert.match(chronogarten, /prefers-reduced-motion/);
   assert.match(chronogarten, /serviceCatalog/);
-  assert.match(chronogarten, /chronogarten-garten\.jpg/);
-  assert.match(chronogarten, /chronogarten-winter\.jpg/);
+  assert.match(chronogarten, /chronogarten-garten-960\.webp/);
+  assert.match(chronogarten, /chronogarten-winter-960\.webp/);
+  assert.match(chronogarten, /visualStages/);
+  assert.match(chronogarten, /lightweightMode !== false/);
   assert.doesNotMatch(chronogarten, /addEventListener\("scroll"/);
   assert.match(chronogartenCss, /min-height:\s*500dvh/);
   assert.match(chronogartenCss, /--chrono-top:\s*76px/);
@@ -181,15 +192,17 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     page,
     /import\s*\{[\s\S]*?\bbasePath\b[\s\S]*?\}\s*from\s*["']\.\/site-shell["']/,
   );
-  assert.match(page, /services-stack-nav/);
-  assert.match(page, /data-stack-card/);
-  assert.match(page, /data-stack-segment/);
+  assert.doesNotMatch(page, /services-stack-nav/);
+  assert.doesNotMatch(page, /data-stack-card/);
+  assert.doesNotMatch(page, /data-stack-segment/);
+  assert.match(page, /event\.pointerType !== "mouse"/);
   assert.match(page, /Einsatzmodell/);
   assert.match(page, /Situation besprechen/);
-  assert.match(shell, /is-stack-active/);
-  assert.match(shell, /data-stack-current/);
+  assert.doesNotMatch(shell, /is-stack-active/);
+  assert.doesNotMatch(shell, /data-stack-current/);
   assert.match(shell, /\[data-nav-section\]/);
   assert.match(shell, /activeSection/);
+  assert.match(shell, /new IntersectionObserver/);
   assert.match(shell, /return "location" as const/);
   assert.match(page, /data-nav-section="einsatzarten"/);
   assert.match(page, /data-nav-section="kontakt"/);
@@ -242,10 +255,8 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(css, /\.services-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(12, 1fr\)/);
   assert.match(
     css,
-    /@media \(max-width: 780px\)[\s\S]*?\.service-card,[\s\S]*?position:\s*sticky/,
+    /@media \(max-width: 780px\)[\s\S]*?\.services-grid\s*\{[\s\S]*?display:\s*grid[\s\S]*?\.service-card,[\s\S]*?position:\s*relative/,
   );
-  assert.match(css, /\.services-stack-nav__segments/);
-  assert.match(css, /\.is-stack-past/);
   assert.match(layout, /import "\.\/natural\.css"/);
   assert.match(naturalCss, /natural-paper-texture\.webp/);
   assert.doesNotMatch(naturalCss, /natural-paint-stroke/);
@@ -258,9 +269,11 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.doesNotMatch(naturalCss, /\.services-heading/);
   assert.doesNotMatch(naturalCss, /\.image-break/);
   assert.doesNotMatch(naturalCss, /\.mobile-call\s*\{/);
+  assert.match(css, /\.mobile-call\s*\{[\s\S]*?width:\s*52px/);
+  assert.match(css, /\.mobile-call\s*\{[\s\S]*?border-radius:\s*50%/);
   assert.match(
-    css,
-    /\.mobile-call\s*\{[\s\S]*?background:\s*var\(--acid\)/,
+    naturalCss,
+    /@media \(max-width: 780px\)[\s\S]*?body::after\s*\{[\s\S]*?display:\s*none/,
   );
   assert.match(fleetJourneyCss, /min-height:\s*500dvh/);
   assert.match(fleetJourneyCss, /position:\s*sticky/);
@@ -304,14 +317,15 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(team, /team-portrait__frame/);
   assert.doesNotMatch(team, /Menschen\. Technik\. Ergebnis\./);
   assert.doesNotMatch(team, /team-gallery/);
-  assert.match(shell, /<strong>24\/7 anrufen<\/strong>/);
+  assert.match(shell, /aria-label="Jetzt anrufen: \+49 173 8948124"/);
+  assert.doesNotMatch(shell, /<strong>24\/7 anrufen<\/strong>/);
   assert.match(
     shell,
-    /\["Leistungen",\s*homeHref\("#unternehmen",\s*currentPage\),\s*"leistungen"\]/,
+    /\["Leistungen",\s*homeHref\("#unternehmen"\),\s*"leistungen"\]/,
   );
   assert.match(
     shell,
-    /\["Einsatzarten",\s*homeHref\("#leistungen",\s*currentPage\),\s*"einsatzarten"\]/,
+    /\["Einsatzarten",\s*homeHref\("#leistungen"\),\s*"einsatzarten"\]/,
   );
   assert.doesNotMatch(shell, /\["Über uns",/);
 });
@@ -338,11 +352,16 @@ test("ships optimized responsive visual assets", async () => {
   ];
   fleetJourneyAssets.forEach((file) => assert.ok(files.includes(file)));
   const chronogartenAssets = [
-    "chronogarten-intro.jpg",
-    "chronogarten-garten.jpg",
-    "chronogarten-hausmeister.jpg",
-    "chronogarten-entruempelung.jpg",
-    "chronogarten-winter.jpg",
+    "chronogarten-intro.webp",
+    "chronogarten-garten.webp",
+    "chronogarten-hausmeister.webp",
+    "chronogarten-entruempelung.webp",
+    "chronogarten-winter.webp",
+    "chronogarten-intro-960.webp",
+    "chronogarten-garten-960.webp",
+    "chronogarten-hausmeister-960.webp",
+    "chronogarten-entruempelung-960.webp",
+    "chronogarten-winter-960.webp",
   ];
   chronogartenAssets.forEach((file) => assert.ok(files.includes(file)));
   const processImpulseAssets = [
@@ -361,7 +380,7 @@ test("ships optimized responsive visual assets", async () => {
   assert.ok(grass.size < 300_000, `Grass ornament is still too large: ${grass.size}`);
   for (const file of chronogartenAssets) {
     const asset = await stat(new URL(file, mediaRoot));
-    assert.ok(asset.size < 500_000, `${file} is still too large: ${asset.size}`);
+    assert.ok(asset.size < 250_000, `${file} is still too large: ${asset.size}`);
   }
   for (const file of fleetJourneyAssets) {
     const asset = await stat(new URL(file, mediaRoot));

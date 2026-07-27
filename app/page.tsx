@@ -132,6 +132,7 @@ export default function Home() {
   const [selectedService, setSelectedService] = useState("");
 
   const handleSpotlight = (event: PointerEvent<HTMLElement>) => {
+    if (event.pointerType !== "mouse") return;
     const rect = event.currentTarget.getBoundingClientRect();
     event.currentTarget.style.setProperty(
       "--spot-x",
@@ -172,17 +173,6 @@ export default function Home() {
   const chooseService = (service: string) => {
     setSelectedService(service);
     setFormStatus("");
-  };
-
-  const showSituation = (index: number) => {
-    const target = document.querySelectorAll<HTMLElement>("[data-stack-card]")[index];
-    if (!target) return;
-    target.scrollIntoView({
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "auto"
-        : "smooth",
-      block: "start",
-    });
   };
 
   return (
@@ -251,33 +241,13 @@ export default function Home() {
           data-nav-section="einsatzarten"
         >
           <div className="container">
-            <nav className="services-stack-nav" aria-label="Einsatzmodelle">
-              <div className="services-stack-nav__segments">
-                {situations.map((situation, index) => (
-                  <button
-                    type="button"
-                    data-stack-segment
-                    aria-current={index === 0 ? "step" : undefined}
-                    aria-label={`${situation.title} anzeigen`}
-                    onClick={() => showSituation(index)}
-                    key={situation.title}
-                  />
-                ))}
-              </div>
-              <p data-stack-current>{situations[0].title}</p>
-            </nav>
-
             <div className="services-grid">
               {situations.map((situation, index) => (
                 <article
                   className={`service-card ${situation.className}`}
                   data-reveal={index % 2 === 0 ? "left" : "right"}
-                  data-stack-card
-                  data-stack-title={situation.title}
                   style={{
                     "--delay": `${index * 70}ms`,
-                    "--stack-top": `${132 + index * 8}px`,
-                    "--stack-z": index + 10,
                   } as React.CSSProperties}
                   onPointerMove={handleSpotlight}
                   key={situation.title}

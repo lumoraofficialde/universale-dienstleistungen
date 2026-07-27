@@ -18,7 +18,8 @@ const clearance = serviceCatalog[3];
 const stages = [
   {
     key: "intro",
-    image: "/media/chronogarten-intro.jpg",
+    image: "/media/chronogarten-intro.webp",
+    smallImage: "/media/chronogarten-intro-960.webp",
     season: "Ein Jahr",
     number: "365",
     title: ["Ein Objekt.", "Vier Bereiche.", "Ein Ansprechpartner."],
@@ -28,7 +29,8 @@ const stages = [
   },
   {
     key: "garden",
-    image: "/media/chronogarten-garten.jpg",
+    image: "/media/chronogarten-garten.webp",
+    smallImage: "/media/chronogarten-garten-960.webp",
     season: "Frühling",
     number: "01",
     title: [garden.title],
@@ -38,7 +40,8 @@ const stages = [
   },
   {
     key: "property",
-    image: "/media/chronogarten-hausmeister.jpg",
+    image: "/media/chronogarten-hausmeister.webp",
+    smallImage: "/media/chronogarten-hausmeister-960.webp",
     season: "Sommer",
     number: "02",
     title: [property.title],
@@ -48,7 +51,8 @@ const stages = [
   },
   {
     key: "clear",
-    image: "/media/chronogarten-entruempelung.jpg",
+    image: "/media/chronogarten-entruempelung.webp",
+    smallImage: "/media/chronogarten-entruempelung-960.webp",
     season: "Herbst",
     number: "03",
     title: [clearance.title],
@@ -58,7 +62,8 @@ const stages = [
   },
   {
     key: "winter",
-    image: "/media/chronogarten-winter.jpg",
+    image: "/media/chronogarten-winter.webp",
+    smallImage: "/media/chronogarten-winter-960.webp",
     season: "Winter",
     number: "04",
     title: [winter.title],
@@ -78,12 +83,15 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
   const markerRefs = useRef<Array<HTMLDivElement | null>>([]);
   const visualRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const [lightweightMode, setLightweightMode] = useState<boolean | null>(null);
   const activeStage = stages[activeIndex];
+  const visualStages = lightweightMode === false ? stages : [activeStage];
 
   useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const syncPreference = () => setReducedMotion(media.matches);
+    const media = window.matchMedia(
+      "(max-width: 780px), (prefers-reduced-motion: reduce)",
+    );
+    const syncPreference = () => setLightweightMode(media.matches);
 
     syncPreference();
     media.addEventListener("change", syncPreference);
@@ -91,7 +99,7 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
   }, []);
 
   useEffect(() => {
-    if (reducedMotion) return;
+    if (lightweightMode !== false) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -113,10 +121,10 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
     });
 
     return () => observer.disconnect();
-  }, [reducedMotion]);
+  }, [lightweightMode]);
 
   const moveToStage = (index: number) => {
-    if (reducedMotion) {
+    if (lightweightMode !== false) {
       setActiveIndex(index);
       return;
     }
@@ -164,31 +172,46 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
           }}
           aria-hidden="true"
         >
-          {stages.map((stage, index) => (
-            <img
-              className={`${styles.image} ${
-                index === activeIndex ? styles.imageActive : ""
-              }`}
-              src={assetPath(stage.image)}
-              alt=""
-              loading={index < 2 ? "eager" : "lazy"}
-              decoding="async"
-              key={stage.key}
-            />
-          ))}
-          <img
-            className={styles.timeLens}
-            src={assetPath(stages[0].image)}
-            alt=""
-            loading="lazy"
-            decoding="async"
-          />
-          <div className={styles.seasonWipe} key={activeStage.key} />
-          <div className={styles.weather}>
-            {Array.from({ length: 12 }, (_, index) => (
-              <i style={{ "--particle": index } as React.CSSProperties} key={index} />
-            ))}
-          </div>
+          {visualStages.map((stage) => {
+            const stageIndex = stages.indexOf(stage);
+            return (
+              <img
+                className={`${styles.image} ${
+                  stageIndex === activeIndex ? styles.imageActive : ""
+                }`}
+                src={assetPath(stage.image)}
+                srcSet={`${assetPath(stage.smallImage)} 960w, ${assetPath(stage.image)} 1586w`}
+                sizes="100vw"
+                width={1586}
+                height={992}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                key={stage.key}
+              />
+            );
+          })}
+          {lightweightMode === false ? (
+            <>
+              <img
+                className={styles.timeLens}
+                src={assetPath(stages[0].image)}
+                srcSet={`${assetPath(stages[0].smallImage)} 960w, ${assetPath(stages[0].image)} 1586w`}
+                sizes="100vw"
+                width={1586}
+                height={992}
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+              <div className={styles.seasonWipe} key={activeStage.key} />
+              <div className={styles.weather}>
+                {Array.from({ length: 12 }, (_, index) => (
+                  <i style={{ "--particle": index } as React.CSSProperties} key={index} />
+                ))}
+              </div>
+            </>
+          ) : null}
         </div>
 
         <div className={styles.scrim} aria-hidden="true" />
@@ -199,7 +222,10 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
           <i />
         </div>
 
-        <div className={styles.copy}>
+        <div
+          className={styles.copy}
+          aria-live={lightweightMode === true ? "polite" : undefined}
+        >
           <p className={styles.eyebrow}>
             <span>Chronogarten</span>
             <span>{activeStage.season}</span>

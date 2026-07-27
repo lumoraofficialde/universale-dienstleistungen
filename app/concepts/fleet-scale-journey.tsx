@@ -63,7 +63,7 @@ export function FleetScaleJourney() {
 
   useEffect(() => {
     const media = window.matchMedia(
-      "(prefers-reduced-motion: reduce), (max-width: 780px) and (max-height: 620px)",
+      "(prefers-reduced-motion: reduce), (max-width: 780px)",
     );
     const syncMode = () => setStaticMode(media.matches);
 
@@ -82,9 +82,13 @@ export function FleetScaleJourney() {
     const copies = copyRefs.current.filter(
       (copy): copy is HTMLDivElement => Boolean(copy),
     );
+    const staticMedia = window.matchMedia(
+      "(prefers-reduced-motion: reduce), (max-width: 780px)",
+    );
 
     if (
       staticMode ||
+      staticMedia.matches ||
       !root ||
       !macro ||
       !summer ||
@@ -344,42 +348,52 @@ export function FleetScaleJourney() {
               ref={macroRef}
               className={styles.macroImage}
               src={assetPath("/media/massstabsreise-kante.webp")}
+              width={1672}
+              height={941}
               alt=""
-              loading="eager"
+              loading="lazy"
               decoding="async"
             />
           </picture>
 
-          <picture className={styles.layer}>
-            <source
-              srcSet={`${assetPath("/media/massstabsreise-landschaft-sommer-960.webp")} 960w, ${assetPath("/media/massstabsreise-landschaft-sommer.webp")} 1440w`}
-              sizes="100vw"
-            />
-            <img
-              ref={summerRef}
-              src={assetPath("/media/massstabsreise-landschaft-sommer.webp")}
-              alt=""
-              loading="eager"
-              decoding="async"
-            />
-          </picture>
+          {!staticMode ? (
+            <>
+              <picture className={styles.layer}>
+                <source
+                  srcSet={`${assetPath("/media/massstabsreise-landschaft-sommer-960.webp")} 960w, ${assetPath("/media/massstabsreise-landschaft-sommer.webp")} 1440w`}
+                  sizes="100vw"
+                />
+                <img
+                  ref={summerRef}
+                  src={assetPath("/media/massstabsreise-landschaft-sommer.webp")}
+                  width={1440}
+                  height={810}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
 
-          <picture className={styles.layer}>
-            <source
-              srcSet={`${assetPath("/media/massstabsreise-landschaft-winter-960.webp")} 960w, ${assetPath("/media/massstabsreise-landschaft-winter.webp")} 1440w`}
-              sizes="100vw"
-            />
-            <img
-              ref={winterRef}
-              src={assetPath("/media/massstabsreise-landschaft-winter.webp")}
-              alt=""
-              loading="eager"
-              decoding="async"
-            />
-          </picture>
+              <picture className={styles.layer}>
+                <source
+                  srcSet={`${assetPath("/media/massstabsreise-landschaft-winter-960.webp")} 960w, ${assetPath("/media/massstabsreise-landschaft-winter.webp")} 1440w`}
+                  sizes="100vw"
+                />
+                <img
+                  ref={winterRef}
+                  src={assetPath("/media/massstabsreise-landschaft-winter.webp")}
+                  width={1440}
+                  height={810}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
 
-          <div ref={lightRef} className={styles.lightSweep} />
-          <div ref={frostRef} className={styles.frostFront} />
+              <div ref={lightRef} className={styles.lightSweep} />
+              <div ref={frostRef} className={styles.frostFront} />
+            </>
+          ) : null}
         </div>
 
         <div className={styles.scrim} aria-hidden="true" />

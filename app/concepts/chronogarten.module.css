@@ -741,7 +741,8 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce),
+  (max-width: 780px) {
   .root {
     min-height: auto;
   }
@@ -760,6 +761,12 @@
     transition: none;
   }
 
+  .image,
+  .timeLens {
+    filter: none;
+    will-change: auto;
+  }
+
   .seasonWipe,
   .weather,
   .markers {
@@ -768,5 +775,17 @@
 
   .copyChange {
     animation: none;
+  }
+}
+
+@media (max-width: 780px) {
+  .sticky {
+    height: clamp(620px, calc(100svh - 68px), 760px);
+    min-height: 620px;
+  }
+
+  .ghostNumber,
+  .sunTrack {
+    display: none;
   }
 }
