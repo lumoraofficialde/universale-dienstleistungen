@@ -45,7 +45,7 @@ export function ProcessImpulseJourney() {
 
   useEffect(() => {
     const media = window.matchMedia(
-      "(prefers-reduced-motion: reduce), (max-width: 780px), (max-height: 636px)",
+      "(prefers-reduced-motion: reduce), (max-height: 636px)",
     );
     const syncMode = () => setStaticMode(media.matches);
 
@@ -67,7 +67,7 @@ export function ProcessImpulseJourney() {
     );
 
     const staticMedia = window.matchMedia(
-      "(prefers-reduced-motion: reduce), (max-width: 780px), (max-height: 636px)",
+      "(prefers-reduced-motion: reduce), (max-height: 636px)",
     );
 
     if (
@@ -87,6 +87,9 @@ export function ProcessImpulseJourney() {
     }
 
     gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
+    if (window.innerWidth <= 780) {
+      ScrollTrigger.config({ ignoreMobileResize: true });
+    }
     let alive = true;
 
     const context = gsap.context(() => {
@@ -357,13 +360,13 @@ export function ProcessImpulseJourney() {
         <picture className={styles.media}>
           <source
             srcSet={`${assetPath("/media/process-impulse-panorama-960.webp")} 960w, ${assetPath("/media/process-impulse-panorama.webp")} 1672w`}
-            sizes="100vw"
+            sizes="(max-width: 780px) 178vh, 100vw"
           />
           <img
             ref={imageRef}
             src={assetPath("/media/process-impulse-panorama.webp")}
-            width={1672}
-            height={941}
+            width="1672"
+            height="941"
             alt=""
             loading="lazy"
             decoding="async"

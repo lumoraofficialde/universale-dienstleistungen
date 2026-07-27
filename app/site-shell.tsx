@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 export const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 export const assetPath = (path: string) => `${basePath}${path}`;
@@ -36,41 +36,91 @@ export function SiteMotion() {
     const header = document.querySelector<HTMLElement>(".site-header");
     const progress = document.querySelector<HTMLElement>(".scroll-progress");
     const hero = document.querySelector<HTMLElement>(".hero, .team-hero");
-    const lightweightMotion = window.matchMedia(
-      "(max-width: 780px), (prefers-reduced-motion: reduce)",
-    );
-
-    root.classList.add("motion-ready");
-
     let animationFrame = 0;
+    let measureFrame = 0;
     let headerScrolled: boolean | null = null;
+    let activeStackIndex = -1;
+    let stackThresholds: number[] = [];
+    let alive = true;
     const parallaxElements = Array.from(
       document.querySelectorAll<HTMLElement>("[data-scroll-parallax]"),
     );
+    const stackCards = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-stack-card]"),
+    );
+    const stackSegments = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-stack-segment]"),
+    );
+    const stackCurrent = document.querySelector<HTMLElement>("[data-stack-current]");
+    const mobileStack = window.matchMedia("(max-width: 780px)");
 
-    const updateHeader = () => {
-      const nextScrolled = window.scrollY > 40;
-      if (nextScrolled === headerScrolled) return;
-      headerScrolled = nextScrolled;
-      header?.classList.toggle("is-scrolled", nextScrolled);
+    root.classList.add("motion-ready");
+
+    const getDocumentTop = (element: HTMLElement) => {
+      let top = 0;
+      let current: HTMLElement | null = element;
+
+      while (current) {
+        top += current.offsetTop;
+        current = current.offsetParent as HTMLElement | null;
+      }
+
+      return top;
     };
 
-    const resetLightweightEffects = () => {
-      progress?.style.setProperty("transform", "scaleX(0)");
-      hero?.style.setProperty("--hero-shift", "0px");
-      hero?.style.setProperty("--hero-content-y", "0px");
-      hero?.style.setProperty("--hero-fade", "1");
-      parallaxElements.forEach((element) => {
-        element.style.setProperty("--parallax-y", "0px");
+    const applyStackState = (nextIndex: number) => {
+      if (!stackCards.length || nextIndex === activeStackIndex) return;
+      activeStackIndex = nextIndex;
+
+      stackCards.forEach((card, index) => {
+        card.classList.toggle("is-stack-active", index === nextIndex);
+        card.classList.toggle("is-stack-past", index < nextIndex);
       });
+
+      stackSegments.forEach((segment, index) => {
+        const isActive = index === nextIndex;
+        segment.classList.toggle("is-active", isActive);
+        segment.classList.toggle("is-complete", index < nextIndex);
+        if (isActive) {
+          segment.setAttribute("aria-current", "step");
+        } else {
+          segment.removeAttribute("aria-current");
+        }
+      });
+
+      if (stackCurrent) {
+        stackCurrent.textContent =
+          stackCards[nextIndex]?.dataset.stackTitle ?? "";
+      }
     };
 
-    const updateScrollEffects = () => {
-      if (lightweightMotion.matches) {
-        animationFrame = 0;
+    const measureStack = () => {
+      if (!stackCards.length) return;
+      if (!mobileStack.matches) {
+        stackThresholds = [];
+        applyStackState(0);
         return;
       }
 
+      const activationOffset = Math.min(96, window.innerHeight * 0.12);
+      stackThresholds = stackCards.map((card) => {
+        const stickyTop =
+          Number.parseFloat(card.style.getPropertyValue("--stack-top")) || 132;
+        return getDocumentTop(card) - stickyTop - activationOffset;
+      });
+    };
+
+    const getActiveStackIndex = (scrollTop: number) => {
+      if (!mobileStack.matches || !stackThresholds.length) return 0;
+
+      let nextIndex = 0;
+      stackThresholds.forEach((threshold, index) => {
+        if (scrollTop >= threshold) nextIndex = index;
+      });
+      return nextIndex;
+    };
+
+    const updateScrollEffects = () => {
       const y = window.scrollY;
       const viewportHeight = window.innerHeight;
       const max = document.documentElement.scrollHeight - viewportHeight;
@@ -78,21 +128,33 @@ export function SiteMotion() {
         "transform",
         `scaleX(${max > 0 ? y / max : 0})`,
       );
-      hero?.style.setProperty(
-        "--hero-shift",
-        `${Math.min(y * 0.58, 280)}px`,
-      );
-      hero?.style.setProperty(
-        "--hero-content-y",
-        `${Math.min(y * 0.1, 84)}px`,
-      );
-      hero?.style.setProperty(
-        "--hero-fade",
-        `${Math.max(0.08, 1 - y / (viewportHeight * 0.82))}`,
-      );
+
+      if (hero && y <= viewportHeight * 1.25) {
+        hero.style.setProperty(
+          "--hero-shift",
+          `${Math.min(y * 0.58, 280)}px`,
+        );
+        hero.style.setProperty(
+          "--hero-content-y",
+          `${Math.min(y * 0.1, 84)}px`,
+        );
+        hero.style.setProperty(
+          "--hero-fade",
+          `${Math.max(0.08, 1 - y / (viewportHeight * 0.82))}`,
+        );
+      }
+
+      const nextHeaderScrolled = y > 40;
+      if (nextHeaderScrolled !== headerScrolled) {
+        headerScrolled = nextHeaderScrolled;
+        header?.classList.toggle("is-scrolled", nextHeaderScrolled);
+      }
 
       parallaxElements.forEach((element) => {
         const rect = element.getBoundingClientRect();
+        if (rect.bottom < -viewportHeight || rect.top > viewportHeight * 2) {
+          return;
+        }
         const distanceFromCenter =
           (rect.top + rect.height / 2 - viewportHeight / 2) /
           (viewportHeight + rect.height);
@@ -102,25 +164,24 @@ export function SiteMotion() {
         );
       });
 
+      applyStackState(getActiveStackIndex(y));
+
       animationFrame = 0;
     };
 
     const onScroll = () => {
-      updateHeader();
-      if (lightweightMotion.matches) return;
       if (!animationFrame) {
         animationFrame = window.requestAnimationFrame(updateScrollEffects);
       }
     };
 
-    const onMotionModeChange = () => {
-      window.cancelAnimationFrame(animationFrame);
-      animationFrame = 0;
-      if (lightweightMotion.matches) {
-        resetLightweightEffects();
-      } else {
-        updateScrollEffects();
-      }
+    const onResize = () => {
+      if (measureFrame) window.cancelAnimationFrame(measureFrame);
+      measureFrame = window.requestAnimationFrame(() => {
+        measureStack();
+        onScroll();
+        measureFrame = 0;
+      });
     };
 
     const observer = new IntersectionObserver(
@@ -144,18 +205,28 @@ export function SiteMotion() {
     document.querySelectorAll("[data-reveal]").forEach((element) =>
       observer.observe(element),
     );
+    measureStack();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
-    lightweightMotion.addEventListener("change", onMotionModeChange);
-    updateHeader();
-    onMotionModeChange();
+    window.addEventListener("resize", onResize, { passive: true });
+    window.addEventListener("load", onResize, { once: true });
+    mobileStack.addEventListener("change", onResize);
+    void document.fonts.ready.then(() => {
+      if (alive) onResize();
+    });
+    updateScrollEffects();
 
     return () => {
+      alive = false;
       observer.disconnect();
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      lightweightMotion.removeEventListener("change", onMotionModeChange);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("load", onResize);
+      mobileStack.removeEventListener("change", onResize);
       if (animationFrame) window.cancelAnimationFrame(animationFrame);
+      if (measureFrame) window.cancelAnimationFrame(measureFrame);
+      stackCards.forEach((card) =>
+        card.classList.remove("is-stack-active", "is-stack-past"),
+      );
       root.classList.remove("motion-ready");
     };
   }, []);
@@ -164,60 +235,89 @@ export function SiteMotion() {
     const vinextWindow = window as Window & {
       __VINEXT_RSC_NAVIGATE__?: VinextNavigate;
     };
-
     const originalVinextNavigate = vinextWindow.__VINEXT_RSC_NAVIGATE__;
-    let hashNavigationFrame = 0;
-    let initialHashFrame = 0;
-    let hashStabilizationActive = true;
+    const mobileViewport = window.matchMedia("(max-width: 780px)");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let firstHashFrame = 0;
+    let secondHashFrame = 0;
+    let alive = true;
+
+    const isSameDocument = (nextUrl: URL, currentUrl: URL) =>
+      nextUrl.origin === currentUrl.origin &&
+      normalizePathname(nextUrl.pathname) ===
+        normalizePathname(currentUrl.pathname) &&
+      nextUrl.search === currentUrl.search;
 
     const moveToTarget = (
-      target: Element,
       id: string,
-      behavior: ScrollBehavior,
-    ) => {
-      const root = document.documentElement;
-      const previousInlineBehavior = root.style.scrollBehavior;
-
-      if (behavior === "auto") root.style.scrollBehavior = "auto";
-      if (!id || id === "top") {
-        window.scrollTo({ top: 0, behavior });
-      } else {
-        target.scrollIntoView({ behavior, block: "start" });
-      }
-      if (behavior === "auto") root.style.scrollBehavior = previousInlineBehavior;
-    };
-
-    const scrollToHash = (
-      hash: string,
       behavior: ScrollBehavior = "auto",
     ) => {
-      const id = decodeURIComponent(hash.replace(/^#/, ""));
       const target =
         !id || id === "top"
           ? document.documentElement
           : document.getElementById(id);
       if (!target) return false;
 
-      window.cancelAnimationFrame(hashNavigationFrame);
-      hashNavigationFrame = window.requestAnimationFrame(() => {
-        moveToTarget(target, id, behavior);
-        hashNavigationFrame = 0;
-      });
+      const previousScrollBehavior =
+        document.documentElement.style.scrollBehavior;
+      if (behavior === "auto") {
+        document.documentElement.style.scrollBehavior = "auto";
+      }
+
+      if (!id || id === "top") {
+        window.scrollTo({ top: 0, behavior });
+      } else {
+        target.scrollIntoView({ behavior, block: "start" });
+      }
+
+      if (id === "main" && target instanceof HTMLElement) {
+        target.focus({ preventScroll: true });
+      }
+
+      if (behavior === "auto") {
+        window.requestAnimationFrame(() => {
+          document.documentElement.style.scrollBehavior =
+            previousScrollBehavior;
+        });
+      }
       return true;
+    };
+
+    const scrollToHash = (
+      hash = window.location.hash,
+      behavior: ScrollBehavior = "auto",
+    ) => {
+      let id = "top";
+      try {
+        id = hash ? decodeURIComponent(hash.slice(1)) : "top";
+      } catch {
+        id = hash.slice(1) || "top";
+      }
+      return moveToTarget(id, behavior);
+    };
+
+    const stabilizeCurrentHash = () => {
+      if (!window.location.hash) return;
+      if (firstHashFrame) window.cancelAnimationFrame(firstHashFrame);
+      if (secondHashFrame) window.cancelAnimationFrame(secondHashFrame);
+      firstHashFrame = window.requestAnimationFrame(() => {
+        secondHashFrame = window.requestAnimationFrame(() => {
+          if (alive) scrollToHash(window.location.hash, "auto");
+        });
+      });
     };
 
     const handleStaticNavigation: VinextNavigate = (href) => {
       const nextUrl = new URL(href, window.location.href);
       const currentUrl = new URL(window.location.href);
-      const isSameDocument =
-        nextUrl.origin === currentUrl.origin &&
-        normalizePathname(nextUrl.pathname) ===
-          normalizePathname(currentUrl.pathname) &&
-        nextUrl.search === currentUrl.search;
 
-      if (isSameDocument) {
-        scrollToHash(nextUrl.hash, "auto");
-        return Promise.resolve();
+      if (isSameDocument(nextUrl, currentUrl)) {
+        return new Promise((resolve) => {
+          window.requestAnimationFrame(() => {
+            scrollToHash(nextUrl.hash, "auto");
+            resolve(undefined);
+          });
+        });
       }
 
       window.location.assign(nextUrl.href);
@@ -225,24 +325,6 @@ export function SiteMotion() {
     };
 
     vinextWindow.__VINEXT_RSC_NAVIGATE__ = handleStaticNavigation;
-
-    const stabilizeInitialHash = () => {
-      if (hashStabilizationActive && window.location.hash) {
-        scrollToHash(window.location.hash, "auto");
-      }
-    };
-
-    initialHashFrame = window.requestAnimationFrame(() => {
-      initialHashFrame = window.requestAnimationFrame(stabilizeInitialHash);
-    });
-    window.addEventListener("load", stabilizeInitialHash, { once: true });
-    void document.fonts?.ready.then(stabilizeInitialHash);
-
-    const handleHistoryNavigation = () => {
-      window.dispatchEvent(new Event("site:navigate"));
-      document.body.classList.remove("menu-is-open");
-      scrollToHash(window.location.hash, "auto");
-    };
 
     const handleHashNavigation = (event: globalThis.MouseEvent) => {
       if (
@@ -259,24 +341,13 @@ export function SiteMotion() {
       const origin = event.target;
       if (!(origin instanceof Element)) return;
       const link = origin.closest<HTMLAnchorElement>("a[href]");
-      if (
-        !link ||
-        link.hasAttribute("download") ||
-        (link.target && link.target !== "_self")
-      ) {
-        return;
-      }
+      if (!link) return;
 
       const nextUrl = new URL(link.href, window.location.href);
       const currentUrl = new URL(window.location.href);
       if (nextUrl.origin !== currentUrl.origin || !nextUrl.hash) return;
 
-      const isSameDocument =
-        normalizePathname(nextUrl.pathname) ===
-          normalizePathname(currentUrl.pathname) &&
-        nextUrl.search === currentUrl.search;
-
-      if (!isSameDocument) {
+      if (!isSameDocument(nextUrl, currentUrl)) {
         event.preventDefault();
         event.stopPropagation();
         window.dispatchEvent(new Event("site:navigate"));
@@ -285,46 +356,54 @@ export function SiteMotion() {
         return;
       }
 
-      const id = decodeURIComponent(nextUrl.hash.slice(1));
-      const target = id === "top" ? document.documentElement : document.getElementById(id);
-      if (!target) return;
+      let id = "top";
+      try {
+        id = decodeURIComponent(nextUrl.hash.slice(1)) || "top";
+      } catch {
+        id = nextUrl.hash.slice(1) || "top";
+      }
+      if (
+        id !== "top" &&
+        !document.getElementById(id)
+      ) {
+        return;
+      }
 
       event.preventDefault();
       window.dispatchEvent(new Event("site:navigate"));
       document.body.classList.remove("menu-is-open");
 
       const behavior =
-        window.matchMedia(
-          "(max-width: 780px), (prefers-reduced-motion: reduce)",
-        ).matches
-          ? "auto"
-          : "smooth";
-      const shouldMoveFocus = link.classList.contains("skip-link");
-      window.cancelAnimationFrame(hashNavigationFrame);
-      hashNavigationFrame = window.requestAnimationFrame(() => {
-        moveToTarget(target, id, behavior);
-        if (shouldMoveFocus && target instanceof HTMLElement) {
-          target.tabIndex = -1;
-          target.focus({ preventScroll: true });
-        }
-        if (window.location.hash !== nextUrl.hash) {
-          window.history.pushState(null, "", nextUrl.hash);
-        }
-        hashNavigationFrame = 0;
+        mobileViewport.matches || reducedMotion.matches ? "auto" : "smooth";
+      window.requestAnimationFrame(() => {
+        moveToTarget(id, behavior);
+        window.history.pushState(null, "", nextUrl.href);
+      });
+    };
+
+    const handleHistoryNavigation = () => {
+      window.requestAnimationFrame(() => {
+        scrollToHash(window.location.hash, "auto");
       });
     };
 
     window.addEventListener("click", handleHashNavigation, { capture: true });
+    window.addEventListener("load", stabilizeCurrentHash, { once: true });
     window.addEventListener("popstate", handleHistoryNavigation);
     window.addEventListener("hashchange", handleHistoryNavigation);
+    stabilizeCurrentHash();
+    void document.fonts.ready.then(() => {
+      if (alive) stabilizeCurrentHash();
+    });
+
     return () => {
-      hashStabilizationActive = false;
+      alive = false;
       window.removeEventListener("click", handleHashNavigation, true);
+      window.removeEventListener("load", stabilizeCurrentHash);
       window.removeEventListener("popstate", handleHistoryNavigation);
       window.removeEventListener("hashchange", handleHistoryNavigation);
-      window.removeEventListener("load", stabilizeInitialHash);
-      window.cancelAnimationFrame(initialHashFrame);
-      window.cancelAnimationFrame(hashNavigationFrame);
+      if (firstHashFrame) window.cancelAnimationFrame(firstHashFrame);
+      if (secondHashFrame) window.cancelAnimationFrame(secondHashFrame);
       if (vinextWindow.__VINEXT_RSC_NAVIGATE__ === handleStaticNavigation) {
         vinextWindow.__VINEXT_RSC_NAVIGATE__ = originalVinextNavigate;
       }
@@ -337,7 +416,6 @@ export function SiteMotion() {
 export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<HomeNavSection | "">("");
-  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const closeAfterNavigation = () => setMenuOpen(false);
@@ -347,76 +425,96 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
 
   useEffect(() => {
     document.body.classList.toggle("menu-is-open", menuOpen);
-    if (!menuOpen) {
-      return () => document.body.classList.remove("menu-is-open");
-    }
-
-    const focusFrame = window.requestAnimationFrame(() => {
-      document
-        .querySelector<HTMLAnchorElement>("#mobile-menu nav a")
-        ?.focus();
-    });
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      setMenuOpen(false);
-      window.requestAnimationFrame(() => menuButtonRef.current?.focus());
-    };
-
-    window.addEventListener("keydown", handleEscape);
-    return () => {
-      window.cancelAnimationFrame(focusFrame);
-      window.removeEventListener("keydown", handleEscape);
-      document.body.classList.remove("menu-is-open");
-    };
+    return () => document.body.classList.remove("menu-is-open");
   }, [menuOpen]);
 
   useEffect(() => {
-    const mobileNavigation = window.matchMedia("(max-width: 780px)");
+    const desktopViewport = window.matchMedia("(min-width: 781px)");
     const closeOnDesktop = () => {
-      if (!mobileNavigation.matches) setMenuOpen(false);
+      if (desktopViewport.matches) setMenuOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
     };
 
-    mobileNavigation.addEventListener("change", closeOnDesktop);
-    return () => mobileNavigation.removeEventListener("change", closeOnDesktop);
+    desktopViewport.addEventListener("change", closeOnDesktop);
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      desktopViewport.removeEventListener("change", closeOnDesktop);
+      window.removeEventListener("keydown", closeOnEscape);
+    };
   }, []);
 
   useEffect(() => {
     if (currentPage !== "home") return;
 
-    const navigationStops = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-nav-section]"),
-    );
-    const visibleStops = new Set<HTMLElement>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const section = entry.target as HTMLElement;
-          if (entry.isIntersecting) {
-            visibleStops.add(section);
-          } else {
-            visibleStops.delete(section);
-          }
-        });
+    let animationFrame = 0;
+    let resizeFrame = 0;
+    let alive = true;
+    let navigationStops: Array<{
+      section: HomeNavSection | "";
+      top: number;
+    }> = [];
 
-        const nextSection = navigationStops.reduce<HomeNavSection | "">(
-          (current, section) =>
-            visibleStops.has(section)
-              ? (section.dataset.navSection as HomeNavSection | undefined) ??
-                current
-              : current,
-          "",
-        );
-        if (nextSection) {
-          setActiveSection((current) =>
-            current === nextSection ? current : nextSection,
-          );
+    const measureNavigationStops = () => {
+      navigationStops = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-nav-section]"),
+      ).map((section) => ({
+        section:
+          (section.dataset.navSection as HomeNavSection | undefined) ?? "",
+        top: section.getBoundingClientRect().top + window.scrollY,
+      }));
+    };
+
+    const updateActiveSection = () => {
+      const activationLine =
+        window.scrollY + 68 + Math.min(window.innerHeight * 0.28, 250);
+      let nextSection: HomeNavSection | "" = "";
+
+      navigationStops.forEach((stop) => {
+        if (stop.top <= activationLine) {
+          nextSection = stop.section;
         }
-      },
-      { rootMargin: "-68px 0px -70% 0px", threshold: 0 },
-    );
+      });
 
-    navigationStops.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
+      setActiveSection((current) =>
+        current === nextSection ? current : nextSection,
+      );
+      animationFrame = 0;
+    };
+
+    const scheduleUpdate = () => {
+      if (!animationFrame) {
+        animationFrame = window.requestAnimationFrame(updateActiveSection);
+      }
+    };
+
+    const scheduleMeasure = () => {
+      if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
+      resizeFrame = window.requestAnimationFrame(() => {
+        measureNavigationStops();
+        scheduleUpdate();
+        resizeFrame = 0;
+      });
+    };
+
+    measureNavigationStops();
+    updateActiveSection();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleMeasure, { passive: true });
+    window.addEventListener("load", scheduleMeasure, { once: true });
+    void document.fonts.ready.then(() => {
+      if (alive) scheduleMeasure();
+    });
+
+    return () => {
+      alive = false;
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleMeasure);
+      window.removeEventListener("load", scheduleMeasure);
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+      if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
+    };
   }, [currentPage]);
 
   const closeMenu = () => setMenuOpen(false);
@@ -475,7 +573,6 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
           </a>
 
           <button
-            ref={menuButtonRef}
             className={`menu-button${menuOpen ? " is-open" : ""}`}
             type="button"
             aria-expanded={menuOpen}
@@ -487,11 +584,7 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
           </button>
         </div>
 
-        <div
-          id="mobile-menu"
-          className={`mobile-menu${menuOpen ? " is-open" : ""}`}
-          aria-hidden={!menuOpen}
-        >
+        <div id="mobile-menu" className={`mobile-menu${menuOpen ? " is-open" : ""}`}>
           <nav aria-label="Mobile Navigation">
             {links.map(([label, href, section], index) => (
               <a
@@ -565,11 +658,12 @@ export function MobileCall() {
         viewBox="0 0 24 24"
         width="24"
         height="24"
-        fill="none"
         aria-hidden="true"
+        focusable="false"
       >
         <path
-          d="M7.2 3.5 9.6 8l-2 1.7c.9 2 2.6 3.7 4.7 4.7l1.7-2 4.5 2.4-.7 3.5c-.2.9-1 1.5-1.9 1.5C9.4 19.8 4.2 14.6 4.2 8.1c0-.9.6-1.7 1.5-1.9l1.5-2.7Z"
+          d="M7.2 3.5 9.5 8l-1.9 1.9a15.7 15.7 0 0 0 6.5 6.5l1.9-1.9 4.5 2.3-.7 3.3c-.2.8-.9 1.4-1.8 1.4A15.5 15.5 0 0 1 2.5 6c0-.9.6-1.6 1.4-1.8l3.3-.7Z"
+          fill="none"
           stroke="currentColor"
           strokeWidth="1.8"
           strokeLinecap="round"

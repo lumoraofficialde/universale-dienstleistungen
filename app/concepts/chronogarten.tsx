@@ -83,15 +83,12 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
   const markerRefs = useRef<Array<HTMLDivElement | null>>([]);
   const visualRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [lightweightMode, setLightweightMode] = useState<boolean | null>(null);
+  const [reducedMotion, setReducedMotion] = useState(false);
   const activeStage = stages[activeIndex];
-  const visualStages = lightweightMode === false ? stages : [activeStage];
 
   useEffect(() => {
-    const media = window.matchMedia(
-      "(max-width: 780px), (prefers-reduced-motion: reduce)",
-    );
-    const syncPreference = () => setLightweightMode(media.matches);
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const syncPreference = () => setReducedMotion(media.matches);
 
     syncPreference();
     media.addEventListener("change", syncPreference);
@@ -99,7 +96,7 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
   }, []);
 
   useEffect(() => {
-    if (lightweightMode !== false) return;
+    if (reducedMotion) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -121,10 +118,10 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
     });
 
     return () => observer.disconnect();
-  }, [lightweightMode]);
+  }, [reducedMotion]);
 
   const moveToStage = (index: number) => {
-    if (lightweightMode !== false) {
+    if (reducedMotion) {
       setActiveIndex(index);
       return;
     }
@@ -172,46 +169,39 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
           }}
           aria-hidden="true"
         >
-          {visualStages.map((stage) => {
-            const stageIndex = stages.indexOf(stage);
-            return (
-              <img
-                className={`${styles.image} ${
-                  stageIndex === activeIndex ? styles.imageActive : ""
-                }`}
-                src={assetPath(stage.image)}
-                srcSet={`${assetPath(stage.smallImage)} 960w, ${assetPath(stage.image)} 1586w`}
-                sizes="100vw"
-                width={1586}
-                height={992}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                key={stage.key}
-              />
-            );
-          })}
-          {lightweightMode === false ? (
-            <>
-              <img
-                className={styles.timeLens}
-                src={assetPath(stages[0].image)}
-                srcSet={`${assetPath(stages[0].smallImage)} 960w, ${assetPath(stages[0].image)} 1586w`}
-                sizes="100vw"
-                width={1586}
-                height={992}
-                alt=""
-                loading="lazy"
-                decoding="async"
-              />
-              <div className={styles.seasonWipe} key={activeStage.key} />
-              <div className={styles.weather}>
-                {Array.from({ length: 12 }, (_, index) => (
-                  <i style={{ "--particle": index } as React.CSSProperties} key={index} />
-                ))}
-              </div>
-            </>
-          ) : null}
+          {stages.map((stage, index) => (
+            <img
+              className={`${styles.image} ${
+                index === activeIndex ? styles.imageActive : ""
+              }`}
+              src={assetPath(stage.image)}
+              srcSet={`${assetPath(stage.smallImage)} 960w, ${assetPath(stage.image)} 1586w`}
+              sizes="100vw"
+              width="1586"
+              height="992"
+              alt=""
+              loading={index < 2 ? "eager" : "lazy"}
+              decoding="async"
+              key={stage.key}
+            />
+          ))}
+          <img
+            className={styles.timeLens}
+            src={assetPath(stages[0].image)}
+            srcSet={`${assetPath(stages[0].smallImage)} 960w, ${assetPath(stages[0].image)} 1586w`}
+            sizes="100vw"
+            width="1586"
+            height="992"
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
+          <div className={styles.seasonWipe} key={activeStage.key} />
+          <div className={styles.weather}>
+            {Array.from({ length: 12 }, (_, index) => (
+              <i style={{ "--particle": index } as React.CSSProperties} key={index} />
+            ))}
+          </div>
         </div>
 
         <div className={styles.scrim} aria-hidden="true" />
@@ -222,10 +212,7 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
           <i />
         </div>
 
-        <div
-          className={styles.copy}
-          aria-live={lightweightMode === true ? "polite" : undefined}
-        >
+        <div className={styles.copy}>
           <p className={styles.eyebrow}>
             <span>Chronogarten</span>
             <span>{activeStage.season}</span>

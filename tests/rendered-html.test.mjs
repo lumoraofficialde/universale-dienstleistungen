@@ -148,14 +148,10 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(shell, /const isSameDocument =/);
   assert.match(shell, /handleStaticNavigation/);
   assert.match(shell, /normalizePathname/);
+  assert.match(shell, /stabilizeCurrentHash/);
   assert.match(shell, /window\.location\.assign\(nextUrl\.href\)/);
-  assert.match(shell, /addEventListener\("popstate", handleHistoryNavigation\)/);
-  assert.match(shell, /addEventListener\("hashchange", handleHistoryNavigation\)/);
-  assert.match(shell, /document\.fonts\?\.ready\.then\(stabilizeInitialHash\)/);
-  assert.match(
-    shell,
-    /"\(max-width: 780px\), \(prefers-reduced-motion: reduce\)"/,
-  );
+  assert.match(shell, /popstate/);
+  assert.match(shell, /hashchange/);
   assert.doesNotMatch(shell, /dataset\.season/);
   assert.doesNotMatch(page, /data-season-story/);
   assert.match(page, /ActiveIntroConcept/);
@@ -165,10 +161,11 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(chronogarten, /IntersectionObserver/);
   assert.match(chronogarten, /prefers-reduced-motion/);
   assert.match(chronogarten, /serviceCatalog/);
+  assert.match(chronogarten, /chronogarten-garten\.webp/);
   assert.match(chronogarten, /chronogarten-garten-960\.webp/);
+  assert.match(chronogarten, /chronogarten-winter\.webp/);
   assert.match(chronogarten, /chronogarten-winter-960\.webp/);
-  assert.match(chronogarten, /visualStages/);
-  assert.match(chronogarten, /lightweightMode !== false/);
+  assert.doesNotMatch(chronogarten, /max-width:\s*780px/);
   assert.doesNotMatch(chronogarten, /addEventListener\("scroll"/);
   assert.match(chronogartenCss, /min-height:\s*500dvh/);
   assert.match(chronogartenCss, /--chrono-top:\s*76px/);
@@ -177,6 +174,10 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     /@media \(max-width: 780px\)[\s\S]*?--chrono-top:\s*68px/,
   );
   assert.match(chronogartenCss, /prefers-reduced-motion:\s*reduce/);
+  assert.doesNotMatch(
+    chronogartenCss,
+    /@media \(max-width: 780px\),\s*\(prefers-reduced-motion:\s*reduce\)/,
+  );
   assert.equal([...serviceCatalog.matchAll(/\bid:\s*"/g)].length, 4);
   for (const serviceName of [
     "Garten & Grundstück",
@@ -192,17 +193,15 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     page,
     /import\s*\{[\s\S]*?\bbasePath\b[\s\S]*?\}\s*from\s*["']\.\/site-shell["']/,
   );
-  assert.doesNotMatch(page, /services-stack-nav/);
-  assert.doesNotMatch(page, /data-stack-card/);
-  assert.doesNotMatch(page, /data-stack-segment/);
-  assert.match(page, /event\.pointerType !== "mouse"/);
+  assert.match(page, /services-stack-nav/);
+  assert.match(page, /data-stack-card/);
+  assert.match(page, /data-stack-segment/);
   assert.match(page, /Einsatzmodell/);
   assert.match(page, /Situation besprechen/);
-  assert.doesNotMatch(shell, /is-stack-active/);
-  assert.doesNotMatch(shell, /data-stack-current/);
+  assert.match(shell, /is-stack-active/);
+  assert.match(shell, /data-stack-current/);
   assert.match(shell, /\[data-nav-section\]/);
   assert.match(shell, /activeSection/);
-  assert.match(shell, /new IntersectionObserver/);
   assert.match(shell, /return "location" as const/);
   assert.match(page, /data-nav-section="einsatzarten"/);
   assert.match(page, /data-nav-section="kontakt"/);
@@ -222,10 +221,19 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(fleetJourney, /Von der Kante bis zur Großfläche\./);
   assert.match(fleetJourney, /gsap/);
   assert.match(fleetJourney, /ScrollTrigger/);
+  assert.match(fleetJourney, /ignoreMobileResize:\s*true/);
   assert.match(fleetJourney, /scrub:\s*0\.7/);
   assert.match(fleetJourney, /data-fleet-journey-marker/);
   assert.match(fleetJourney, /aria-current/);
   assert.match(fleetJourney, /prefers-reduced-motion/);
+  assert.match(
+    fleetJourney,
+    /\(max-width: 780px\) and \(max-height: 620px\)/,
+  );
+  assert.doesNotMatch(
+    fleetJourney,
+    /"\(max-width: 780px\), \(prefers-reduced-motion: reduce\)"/,
+  );
   assert.match(fleetJourney, /massstabsreise-landschaft-sommer\.webp/);
   assert.match(fleetJourney, /massstabsreise-landschaft-winter\.webp/);
   assert.match(fleetJourney, /massstabsreise-kante\.webp/);
@@ -255,8 +263,10 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(css, /\.services-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(12, 1fr\)/);
   assert.match(
     css,
-    /@media \(max-width: 780px\)[\s\S]*?\.services-grid\s*\{[\s\S]*?display:\s*grid[\s\S]*?\.service-card,[\s\S]*?position:\s*relative/,
+    /@media \(max-width: 780px\)[\s\S]*?\.service-card,[\s\S]*?position:\s*sticky/,
   );
+  assert.match(css, /\.services-stack-nav__segments/);
+  assert.match(css, /\.is-stack-past/);
   assert.match(layout, /import "\.\/natural\.css"/);
   assert.match(naturalCss, /natural-paper-texture\.webp/);
   assert.doesNotMatch(naturalCss, /natural-paint-stroke/);
@@ -269,16 +279,18 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.doesNotMatch(naturalCss, /\.services-heading/);
   assert.doesNotMatch(naturalCss, /\.image-break/);
   assert.doesNotMatch(naturalCss, /\.mobile-call\s*\{/);
-  assert.match(css, /\.mobile-call\s*\{[\s\S]*?width:\s*52px/);
-  assert.match(css, /\.mobile-call\s*\{[\s\S]*?border-radius:\s*50%/);
   assert.match(
-    naturalCss,
-    /@media \(max-width: 780px\)[\s\S]*?body::after\s*\{[\s\S]*?display:\s*none/,
+    css,
+    /\.mobile-call\s*\{[\s\S]*?background:\s*var\(--acid\)/,
   );
   assert.match(fleetJourneyCss, /min-height:\s*500dvh/);
   assert.match(fleetJourneyCss, /position:\s*sticky/);
   assert.match(fleetJourneyCss, /@media \(max-width: 780px\)/);
   assert.match(fleetJourneyCss, /prefers-reduced-motion:\s*reduce/);
+  assert.doesNotMatch(
+    fleetJourneyCss,
+    /@media \(max-width: 780px\),\s*\(prefers-reduced-motion:\s*reduce\)/,
+  );
   assert.match(fleetJourneyCss, /min-height:\s*auto/);
   assert.doesNotMatch(css, /\.fleet-architect/);
   assert.doesNotMatch(naturalCss, /\.fleet-architect/);
@@ -288,10 +300,15 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(processImpulseJourney, /gsap\.context/);
   assert.match(processImpulseJourney, /ScrollTrigger/);
   assert.match(processImpulseJourney, /MotionPathPlugin/);
+  assert.match(processImpulseJourney, /ignoreMobileResize:\s*true/);
   assert.match(processImpulseJourney, /getTotalLength\(\)/);
   assert.match(processImpulseJourney, /strokeDasharray/);
   assert.match(processImpulseJourney, /scrub:\s*isMobile\s*\?\s*0\.55\s*:\s*0\.65/);
   assert.match(processImpulseJourney, /prefers-reduced-motion/);
+  assert.doesNotMatch(
+    processImpulseJourney,
+    /"\(max-width: 780px\), \(prefers-reduced-motion: reduce\)/,
+  );
   assert.match(processImpulseJourney, /aria-labelledby="process-impulse-title"/);
   assert.match(processImpulseJourney, /process-impulse-panorama\.webp/);
   assert.match(processImpulseJourney, /Einsatzort, Aufgabe und gewünschten Zeitraum/);
@@ -303,6 +320,10 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(processImpulseJourneyCss, /min-height:\s*360dvh/);
   assert.match(processImpulseJourneyCss, /position:\s*sticky/);
   assert.match(processImpulseJourneyCss, /prefers-reduced-motion:\s*reduce/);
+  assert.doesNotMatch(
+    processImpulseJourneyCss,
+    /@media \(max-width: 780px\),\s*\(prefers-reduced-motion:\s*reduce\)/,
+  );
   assert.match(processImpulseJourneyCss, /min-height:\s*auto/);
   assert.match(css, /\.readiness-rail span\s*\{\s*font-size:\s*clamp\(3\.25rem, 15vw, 4\.5rem\)/);
   assert.match(
@@ -318,6 +339,7 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.doesNotMatch(team, /Menschen\. Technik\. Ergebnis\./);
   assert.doesNotMatch(team, /team-gallery/);
   assert.match(shell, /aria-label="Jetzt anrufen: \+49 173 8948124"/);
+  assert.match(shell, /<svg[\s\S]*?viewBox="0 0 24 24"/);
   assert.doesNotMatch(shell, /<strong>24\/7 anrufen<\/strong>/);
   assert.match(
     shell,
@@ -327,6 +349,8 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     shell,
     /\["Einsatzarten",\s*homeHref\("#leistungen"\),\s*"einsatzarten"\]/,
   );
+  assert.match(css, /\.mobile-call\s*\{[\s\S]*?width:\s*52px[\s\S]*?border-radius:\s*50%/);
+  assert.match(css, /\.scroll-progress\s*\{[\s\S]*?transform:\s*scaleX\(0\)/);
   assert.doesNotMatch(shell, /\["Über uns",/);
 });
 
@@ -353,14 +377,14 @@ test("ships optimized responsive visual assets", async () => {
   fleetJourneyAssets.forEach((file) => assert.ok(files.includes(file)));
   const chronogartenAssets = [
     "chronogarten-intro.webp",
-    "chronogarten-garten.webp",
-    "chronogarten-hausmeister.webp",
-    "chronogarten-entruempelung.webp",
-    "chronogarten-winter.webp",
     "chronogarten-intro-960.webp",
+    "chronogarten-garten.webp",
     "chronogarten-garten-960.webp",
+    "chronogarten-hausmeister.webp",
     "chronogarten-hausmeister-960.webp",
+    "chronogarten-entruempelung.webp",
     "chronogarten-entruempelung-960.webp",
+    "chronogarten-winter.webp",
     "chronogarten-winter-960.webp",
   ];
   chronogartenAssets.forEach((file) => assert.ok(files.includes(file)));
