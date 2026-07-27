@@ -56,7 +56,7 @@ export default function TeamPage() {
                 Aufgabe ab.
               </p>
               <a className="button button--accent" href={`${basePath}/#kontakt`}>
-                Anfrage starten <span aria-hidden="true">↗</span>
+                Anfrage starten <span aria-hidden="true">↗︎</span>
               </a>
             </div>
           </div>
@@ -129,7 +129,7 @@ export default function TeamPage() {
                 klären wir anschließend mit Ihnen.
               </p>
               <a className="button button--accent" href={`${basePath}/#kontakt`}>
-                Anfrage starten <span aria-hidden="true">↗</span>
+                Anfrage starten <span aria-hidden="true">↗︎</span>
               </a>
             </div>
           </div>

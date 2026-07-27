@@ -256,8 +256,32 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   );
   assert.match(
     chronogartenCss,
-    /@media \(max-width: 780px\)[\s\S]*?\.image\s*\{[\s\S]*?opacity\s+600ms\s+ease-in-out/,
+    /@media \(max-width: 780px\)[\s\S]*?\.image\s*\{[\s\S]*?filter:\s*none[\s\S]*?opacity\s+460ms\s+ease-in-out/,
   );
+  assert.match(
+    chronogartenCss,
+    /@media \(max-width: 780px\)[\s\S]*?\.root\s*\{[\s\S]*?overflow:\s*visible[\s\S]*?background:\s*transparent/,
+  );
+  assert.match(
+    chronogartenCss,
+    /\.sticky,\s*[\r\n]+\s*\.visual\s*\{[\s\S]*?border-radius:\s*var\(--section-radius\)/,
+  );
+  assert.match(
+    chronogartenCss,
+    /\.weather i\s*\{[\s\S]*?animation-play-state:\s*paused\s*!important/,
+  );
+  assert.match(css, /--section-canvas:\s*#fff/);
+  assert.match(
+    css,
+    /#main\s*\{[\s\S]*?background:\s*var\(--section-canvas\)/,
+  );
+  assert.match(css, /--cta-glass-highlight:/);
+  assert.match(chronogartenCss, /background-image:\s*var\(--cta-glass-highlight\)/);
+  assert.match(
+    processImpulseJourneyCss,
+    /background-image:\s*var\(--cta-glass-highlight\)/,
+  );
+  assert.ok(page.includes("↗\uFE0E"));
   assert.match(chronogartenCss, /prefers-reduced-motion:\s*reduce/);
   assert.doesNotMatch(
     chronogartenCss,

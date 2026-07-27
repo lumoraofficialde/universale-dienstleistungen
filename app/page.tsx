@@ -237,7 +237,7 @@ export default function Home() {
                 </p>
                 <div className="hero-actions">
                   <a className="button button--accent" href="#kontakt">
-                    Anfrage starten <span aria-hidden="true">↗</span>
+                    Anfrage starten <span aria-hidden="true">↗︎</span>
                   </a>
                   <a className="text-link text-link--light" href="tel:+491738948124">
                     Einsatz besprechen <span aria-hidden="true">→</span>
@@ -325,7 +325,7 @@ export default function Home() {
                       href="#kontakt"
                       aria-label={`Einsatzmodell „${situation.title}“ besprechen`}
                     >
-                      Einsatzmodell besprechen <span aria-hidden="true">↗</span>
+                      Einsatzmodell besprechen <span aria-hidden="true">↗︎</span>
                     </a>
                   </div>
                 </article>
@@ -366,7 +366,7 @@ export default function Home() {
                 benötigt wird.
               </p>
               <a className="button button--outline" href="tel:+491738948124">
-                Dringenden Einsatz telefonisch klären <span aria-hidden="true">↗</span>
+                Dringenden Einsatz telefonisch klären <span aria-hidden="true">↗︎</span>
               </a>
             </div>
           </div>
@@ -444,7 +444,7 @@ export default function Home() {
                     >
                       <ServiceIllustration type={choice.icon} />
                       <span><strong>{choice.label}</strong><small>{choice.note}</small></span>
-                      <i aria-hidden="true">↗</i>
+                      <i aria-hidden="true">↗︎</i>
                     </button>
                   ))}
                 </div>
@@ -536,7 +536,7 @@ export default function Home() {
 
                   <div className="form-submit">
                     <button className="button button--accent" type="submit">
-                      E-Mail-Anfrage vorbereiten <span aria-hidden="true">↗</span>
+                      E-Mail-Anfrage vorbereiten <span aria-hidden="true">↗︎</span>
                     </button>
                     <p aria-live="polite">{formStatus}</p>
                   </div>

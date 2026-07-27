@@ -56,7 +56,7 @@ export default function NotFound() {
                   className={styles.secondaryAction}
                   href={`${basePath}/#unternehmen`}
                 >
-                  Leistungen ansehen <span aria-hidden="true">↗</span>
+                  Leistungen ansehen <span aria-hidden="true">↗︎</span>
                 </a>
               </div>
 

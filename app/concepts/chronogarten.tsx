@@ -240,7 +240,7 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
             }}
           >
             {activeStage.service ? `${activeStage.service.formValue} anfragen` : "Anfrage starten"}{" "}
-            <span aria-hidden="true">↗</span>
+            <span aria-hidden="true">↗︎</span>
           </a>
         </div>
 
