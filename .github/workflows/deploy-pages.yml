@@ -34,7 +34,9 @@ jobs:
         uses: actions/configure-pages@v6
 
       - name: Install dependencies for runner platform
-        run: npm ci --include=optional --no-audit --no-fund
+        # The lockfile is generated on macOS. A runner-side install resolves
+        # the Linux-native optional packages that npm ci can omit in this setup.
+        run: npm install --include=optional --no-audit --no-fund
 
       - name: Check types and code quality
         run: |
