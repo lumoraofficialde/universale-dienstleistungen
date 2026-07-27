@@ -133,6 +133,7 @@
 .ledger {
   position: relative;
   padding: clamp(6rem, 10vw, 11rem) 0 clamp(8rem, 13vw, 14rem);
+  background: var(--paper);
 }
 
 .ledger::before {

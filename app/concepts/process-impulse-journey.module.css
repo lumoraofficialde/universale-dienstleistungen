@@ -23,6 +23,7 @@
   min-height: 520px;
   overflow: hidden;
   background: var(--impulse-pine);
+  border-radius: inherit;
 }
 
 .root[data-enhanced="true"] .sticky {

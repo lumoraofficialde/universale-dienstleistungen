@@ -19,6 +19,7 @@
   min-height: 580px;
   overflow: hidden;
   background: #102019;
+  border-radius: inherit;
 }
 
 .visual,
