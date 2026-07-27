@@ -350,14 +350,33 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(team, /team-portrait__frame/);
   assert.doesNotMatch(team, /Menschen\. Technik\. Ergebnis\./);
   assert.doesNotMatch(team, /team-gallery/);
-  assert.match(shell, /<strong>24\/7 anrufen<\/strong>/);
+  assert.match(shell, /className="mobile-call"/);
+  assert.match(shell, /aria-label="Jetzt anrufen: \+49 173 8948124"/);
+  assert.match(shell, /<svg[\s\S]*?<path/);
+  assert.doesNotMatch(shell, /<strong>24\/7 anrufen<\/strong>/);
   assert.match(
     shell,
-    /\["Leistungen",\s*homeHref\("#leistungen",\s*currentPage\),\s*"leistungen"\]/,
+    /\["Leistungen",\s*homeHref\("#leistungen"\),\s*"leistungen"\]/,
   );
   assert.match(
     shell,
-    /\["Einsatzmodelle",\s*homeHref\("#einsatzmodelle",\s*currentPage\),\s*"einsatzarten"\]/,
+    /\["Einsatzmodelle",\s*homeHref\("#einsatzmodelle"\),\s*"einsatzarten"\]/,
+  );
+  assert.match(shell, /normalizePathname/);
+  assert.match(shell, /data-home-section/);
+  assert.match(shell, /mobileMotion\.matches/);
+  assert.match(fleetJourney, /staticMedia\.matches/);
+  assert.match(
+    css,
+    /\.mobile-call\s*\{[\s\S]*?right:\s*calc\(16px \+ env\(safe-area-inset-right\)\)[\s\S]*?width:\s*54px[\s\S]*?border-radius:\s*50%/,
+  );
+  assert.match(
+    css,
+    /A native document flow[\s\S]*?\.service-card,[\s\S]*?position:\s*relative/,
+  );
+  assert.match(
+    css,
+    /\.motion-ready \[data-reveal\],[\s\S]*?transition:\s*none;[\s\S]*?will-change:\s*auto/,
   );
   assert.match(shell, /\["Über uns",/);
 });
