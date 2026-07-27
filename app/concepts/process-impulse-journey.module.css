@@ -22,6 +22,7 @@
   height: min(76svh, 760px);
   min-height: 520px;
   overflow: hidden;
+  contain: paint;
   background: var(--impulse-pine);
   border-radius: inherit;
 }

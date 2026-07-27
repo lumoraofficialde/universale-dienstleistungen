@@ -49,7 +49,11 @@ export function ProcessImpulseJourney() {
     const media = window.matchMedia(
       "(prefers-reduced-motion: reduce), (max-width: 780px) and (orientation: landscape), (min-width: 781px) and (max-height: 636px)",
     );
-    const syncMode = () => setStaticMode(media.matches);
+    const syncMode = () => {
+      const nextStaticMode = media.matches;
+      setStaticMode(nextStaticMode);
+      setEnhanced(!nextStaticMode);
+    };
 
     syncMode();
     media.addEventListener("change", syncMode);
@@ -75,6 +79,7 @@ export function ProcessImpulseJourney() {
     if (
       staticMode ||
       staticMedia.matches ||
+      !enhanced ||
       !root ||
       !image ||
       !desktopPath ||
@@ -84,7 +89,6 @@ export function ProcessImpulseJourney() {
       !action ||
       copies.length !== processSteps.length + 1
     ) {
-      setEnhanced(false);
       actionAvailableRef.current = false;
       setActionAvailable(false);
       return;
@@ -94,7 +98,6 @@ export function ProcessImpulseJourney() {
     if (window.innerWidth <= 780) {
       ScrollTrigger.config({ ignoreMobileResize: true });
     }
-    let alive = true;
 
     const context = gsap.context(() => {
       const motionQueries = gsap.matchMedia();
@@ -169,7 +172,7 @@ export function ProcessImpulseJourney() {
               trigger: root,
               start: () => `top top+=${topOffset}`,
               end: "bottom bottom",
-              scrub: isMobile ? true : 0.65,
+              scrub: isMobile ? 0.2 : 0.65,
               invalidateOnRefresh: true,
               onUpdate: (trigger) => {
                 const actionIsAvailable = trigger.progress >= 0.9;
@@ -305,8 +308,6 @@ export function ProcessImpulseJourney() {
             .to(pulse, { autoAlpha: 0, duration: 0.18 }, 3.42)
             .to({}, { duration: 0.24 });
 
-          setEnhanced(true);
-
           return undefined;
         },
       );
@@ -314,23 +315,12 @@ export function ProcessImpulseJourney() {
       return () => motionQueries.revert();
     }, root);
 
-    const refreshAfterAssets = async () => {
-      await Promise.allSettled([
-        image.complete ? Promise.resolve() : image.decode().catch(() => undefined),
-        document.fonts?.ready,
-      ]);
-      if (alive) ScrollTrigger.refresh();
-    };
-
-    void refreshAfterAssets();
-
     return () => {
-      alive = false;
       actionAvailableRef.current = false;
       setActionAvailable(false);
       context.revert();
     };
-  }, [staticMode]);
+  }, [enhanced, staticMode]);
 
   return (
     <section

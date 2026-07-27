@@ -18,6 +18,7 @@
   height: calc(100dvh - var(--chrono-top));
   min-height: 580px;
   overflow: hidden;
+  contain: paint;
   background: #102019;
   border-radius: inherit;
 }
@@ -593,7 +594,12 @@
   }
 
   .weather i {
-    animation-play-state: paused !important;
+    animation-play-state: paused;
+  }
+
+  .root[data-ambient-motion-active="true"][data-stage="clear"] .weather i,
+  .root[data-ambient-motion-active="true"][data-stage="winter"] .weather i {
+    animation-play-state: running;
   }
 
   .root[data-stage="garden"] .imageActive {
@@ -756,6 +762,16 @@
 
   .timeline button {
     font-size: clamp(0.66rem, 2vw, 0.7rem);
+  }
+}
+
+@media (max-width: 480px) and (orientation: portrait) {
+  .image,
+  .timeLens,
+  .root[data-stage="garden"] .imageActive,
+  .root[data-stage="clear"] .imageActive,
+  .root[data-stage="winter"] .imageActive {
+    object-position: center;
   }
 }
 

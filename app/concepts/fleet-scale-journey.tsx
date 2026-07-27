@@ -87,9 +87,13 @@ export function FleetScaleJourney() {
     const copies = copyRefs.current.filter(
       (copy): copy is HTMLDivElement => Boolean(copy),
     );
+    const staticMedia = window.matchMedia(
+      "(prefers-reduced-motion: reduce), (max-width: 780px) and (orientation: landscape)",
+    );
 
     if (
       staticMode ||
+      staticMedia.matches ||
       !root ||
       !macro ||
       !summer ||
@@ -105,7 +109,6 @@ export function FleetScaleJourney() {
     if (window.innerWidth <= 780) {
       ScrollTrigger.config({ ignoreMobileResize: true });
     }
-    let alive = true;
 
     const context = gsap.context(() => {
       const motionQueries = gsap.matchMedia();
@@ -177,7 +180,7 @@ export function FleetScaleJourney() {
               trigger: root,
               start: () => `top top+=${topOffset}`,
               end: "bottom bottom",
-              scrub: isMobile ? true : 0.7,
+              scrub: isMobile ? 0.18 : 0.7,
               invalidateOnRefresh: true,
               onUpdate: (self) => {
                 const nextIndex = Math.min(
@@ -219,8 +222,6 @@ export function FleetScaleJourney() {
               { autoAlpha: 1, y: 0, duration: 0.28 },
               0.5,
             )
-            .to(light, { autoAlpha: 0.62, xPercent: 125, duration: 0.62 }, 0.13)
-            .to(light, { autoAlpha: 0, duration: 0.18 }, 0.76)
             .to(
               summer,
               {
@@ -241,13 +242,6 @@ export function FleetScaleJourney() {
             .to(copies[2], { autoAlpha: 0, y: -18, duration: 0.24 }, 2.08)
             .to(summer, { autoAlpha: 0, duration: 0.72 }, 2.08)
             .to(winter, { autoAlpha: 1, duration: 0.72 }, 2.08)
-            .fromTo(
-              frost,
-              { autoAlpha: 0, xPercent: -130 },
-              { autoAlpha: 0.72, xPercent: 130, duration: 0.62 },
-              2.08,
-            )
-            .to(frost, { autoAlpha: 0, duration: 0.18 }, 2.7)
             .fromTo(
               copies[3],
               { autoAlpha: 0, y: 18 },
@@ -273,6 +267,23 @@ export function FleetScaleJourney() {
             )
             .to({}, { duration: 0.22 });
 
+          if (!isMobile) {
+            timeline
+              .to(
+                light,
+                { autoAlpha: 0.62, xPercent: 125, duration: 0.62 },
+                0.13,
+              )
+              .to(light, { autoAlpha: 0, duration: 0.18 }, 0.76)
+              .fromTo(
+                frost,
+                { autoAlpha: 0, xPercent: -130 },
+                { autoAlpha: 0.72, xPercent: 130, duration: 0.62 },
+                2.08,
+              )
+              .to(frost, { autoAlpha: 0, duration: 0.18 }, 2.7);
+          }
+
           return undefined;
         },
       );
@@ -280,23 +291,7 @@ export function FleetScaleJourney() {
       return () => motionQueries.revert();
     }, root);
 
-    const refreshAfterAssets = async () => {
-      const images = [macro, summer, winter];
-      await Promise.allSettled(
-        images.map((image) =>
-          image.complete
-            ? Promise.resolve()
-            : image.decode().catch(() => undefined),
-        ),
-      );
-      await document.fonts?.ready;
-      if (alive) ScrollTrigger.refresh();
-    };
-
-    void refreshAfterAssets();
-
     return () => {
-      alive = false;
       context.revert();
     };
   }, [staticMode]);
@@ -373,6 +368,7 @@ export function FleetScaleJourney() {
               alt=""
               loading="lazy"
               decoding="async"
+              fetchPriority="low"
             />
           </picture>
 
@@ -389,6 +385,7 @@ export function FleetScaleJourney() {
               alt=""
               loading="lazy"
               decoding="async"
+              fetchPriority="low"
             />
           </picture>
 

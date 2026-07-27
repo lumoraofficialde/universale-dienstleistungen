@@ -15,6 +15,7 @@
   height: calc(100dvh - var(--journey-top));
   min-height: 560px;
   overflow: hidden;
+  contain: paint;
   background: #0a1b14;
   border-radius: inherit;
 }

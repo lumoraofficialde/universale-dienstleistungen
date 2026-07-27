@@ -21,6 +21,7 @@ const stages = [
     key: "intro",
     image: "/media/chronogarten-intro.webp",
     smallImage: "/media/chronogarten-intro-960.webp",
+    mobileImage: "/media/chronogarten-intro-mobile.webp",
     season: "Ein Jahr",
     number: "365",
     title: ["Ein Objekt.", "Vier Bereiche.", "Ein Ansprechpartner."],
@@ -32,6 +33,7 @@ const stages = [
     key: "garden",
     image: "/media/chronogarten-garten.webp",
     smallImage: "/media/chronogarten-garten-960.webp",
+    mobileImage: "/media/chronogarten-garten-mobile.webp",
     season: "Frühling",
     number: "01",
     title: [garden.title],
@@ -44,6 +46,7 @@ const stages = [
     key: "property",
     image: "/media/chronogarten-hausmeister.webp",
     smallImage: "/media/chronogarten-hausmeister-960.webp",
+    mobileImage: "/media/chronogarten-hausmeister-mobile.webp",
     season: "Sommer",
     number: "02",
     title: [property.title],
@@ -56,6 +59,7 @@ const stages = [
     key: "clear",
     image: "/media/chronogarten-entruempelung.webp",
     smallImage: "/media/chronogarten-entruempelung-960.webp",
+    mobileImage: "/media/chronogarten-entruempelung-mobile.webp",
     season: "Herbst",
     number: "03",
     title: [clearance.title],
@@ -68,6 +72,7 @@ const stages = [
     key: "winter",
     image: "/media/chronogarten-winter.webp",
     smallImage: "/media/chronogarten-winter-960.webp",
+    mobileImage: "/media/chronogarten-winter-mobile.webp",
     season: "Winter",
     number: "04",
     title: [winter.title],
@@ -103,15 +108,22 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
   useEffect(() => {
     if (reducedMotion) return;
 
+    const visibleRatios = new Map<Element, number>();
     const observer = new IntersectionObserver(
       (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        entries.forEach((entry) => {
+          visibleRatios.set(
+            entry.target,
+            entry.isIntersecting ? entry.intersectionRatio : 0,
+          );
+        });
+        const visible = Array.from(visibleRatios.entries()).sort(
+          (a, b) => b[1] - a[1],
+        )[0];
 
-        if (!visible || visible.intersectionRatio < 0.42) return;
+        if (!visible || visible[1] < 0.42) return;
         const nextIndex = Number(
-          (visible.target as HTMLElement).dataset.chronogartenMarker,
+          (visible[0] as HTMLElement).dataset.chronogartenMarker,
         );
         if (Number.isFinite(nextIndex)) setActiveIndex(nextIndex);
       },
@@ -119,10 +131,16 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
     );
 
     markerRefs.current.forEach((marker) => {
-      if (marker) observer.observe(marker);
+      if (marker) {
+        visibleRatios.set(marker, 0);
+        observer.observe(marker);
+      }
     });
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      visibleRatios.clear();
+    };
   }, [reducedMotion]);
 
   const moveToStage = (index: number) => {
@@ -156,6 +174,7 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
       id="unternehmen"
       aria-labelledby="chronogarten-title"
       data-nav-section="leistungen"
+      data-ambient-motion=""
       data-stage={activeStage.key}
       style={{ "--chrono-sun": `${activeStage.sun}%` } as React.CSSProperties}
     >
@@ -175,20 +194,26 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
           aria-hidden="true"
         >
           {stages.map((stage, index) => (
-            <img
-              className={`${styles.image} ${
-                index === activeIndex ? styles.imageActive : ""
-              }`}
-              src={assetPath(stage.image)}
-              srcSet={`${assetPath(stage.smallImage)} 960w, ${assetPath(stage.image)} 1586w`}
-              sizes="(max-width: 780px) 160vh, 100vw"
-              width="1586"
-              height="992"
-              alt=""
-              loading="lazy"
-              decoding="async"
-              key={stage.key}
-            />
+            <picture key={stage.key}>
+              <source
+                media="(max-width: 480px) and (orientation: portrait)"
+                srcSet={assetPath(stage.mobileImage)}
+              />
+              <img
+                className={`${styles.image} ${
+                  index === activeIndex ? styles.imageActive : ""
+                }`}
+                src={assetPath(stage.image)}
+                srcSet={`${assetPath(stage.smallImage)} 960w, ${assetPath(stage.image)} 1586w`}
+                sizes="(max-width: 780px) 160vh, 100vw"
+                width="1586"
+                height="992"
+                alt=""
+                loading="lazy"
+                decoding="async"
+                fetchPriority={index === 0 ? "high" : "low"}
+              />
+            </picture>
           ))}
           <img
             className={styles.timeLens}

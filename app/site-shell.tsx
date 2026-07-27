@@ -45,6 +45,7 @@ export function SiteMotion() {
     let activeStackIndex = -1;
     let stackThresholds: number[] = [];
     let measuredViewportWidth = window.innerWidth;
+    let maxScroll = 1;
     let staticMotionEnabled: boolean | null = null;
     let alive = true;
     const parallaxElements = Array.from(
@@ -59,8 +60,15 @@ export function SiteMotion() {
     const stackCurrent = document.querySelector<HTMLElement>("[data-stack-current]");
     const mobileStack = window.matchMedia("(max-width: 780px)");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const ambientMotionElements = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-ambient-motion]"),
+    );
 
     root.classList.add("motion-ready");
+
+    const measureScrollRange = () => {
+      maxScroll = Math.max(1, root.scrollHeight - window.innerHeight);
+    };
 
     const getDocumentTop = (element: HTMLElement) => {
       let top = 0;
@@ -149,10 +157,9 @@ export function SiteMotion() {
       const y = window.scrollY;
       const viewportHeight = window.innerHeight;
       const hasStaticMotion = syncStaticMotion();
-      const max = document.documentElement.scrollHeight - viewportHeight;
       progress?.style.setProperty(
         "transform",
-        `scaleX(${max > 0 ? y / max : 0})`,
+        `scaleX(${Math.min(1, y / maxScroll)})`,
       );
 
       if (hero && !hasStaticMotion && y <= viewportHeight * 1.25) {
@@ -224,12 +231,14 @@ export function SiteMotion() {
       measuredViewportWidth = nextViewportWidth;
 
       if (isHeightOnlyMobileResize) {
+        measureScrollRange();
         onScroll();
         return;
       }
 
       if (measureFrame) window.cancelAnimationFrame(measureFrame);
       measureFrame = window.requestAnimationFrame(() => {
+        measureScrollRange();
         measureStack();
         onScroll();
         measureFrame = 0;
@@ -258,10 +267,34 @@ export function SiteMotion() {
       { threshold: 0.08, rootMargin: "-4% 0px -4% 0px" },
     );
 
+    const ambientMotionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          (entry.target as HTMLElement).dataset.ambientMotionActive =
+            entry.isIntersecting ? "true" : "false";
+        });
+      },
+      { threshold: 0.01, rootMargin: "120px 0px" },
+    );
+
     document.querySelectorAll("[data-reveal]").forEach((element) =>
       observer.observe(element),
     );
+    ambientMotionElements.forEach((element) => {
+      element.dataset.ambientMotionActive = "false";
+      ambientMotionObserver.observe(element);
+    });
+    measureScrollRange();
     measureStack();
+    const layoutObserver =
+      typeof ResizeObserver === "undefined"
+        ? null
+        : new ResizeObserver(() => {
+            measureScrollRange();
+            measureStack();
+            onScroll();
+          });
+    layoutObserver?.observe(document.querySelector("main") ?? document.body);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize, { passive: true });
     window.addEventListener("load", onResize, { once: true });
@@ -275,6 +308,8 @@ export function SiteMotion() {
     return () => {
       alive = false;
       observer.disconnect();
+      ambientMotionObserver.disconnect();
+      layoutObserver?.disconnect();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
       window.removeEventListener("load", onResize);
@@ -285,6 +320,9 @@ export function SiteMotion() {
       stackCards.forEach((card) =>
         card.classList.remove("is-stack-active", "is-stack-past"),
       );
+      ambientMotionElements.forEach((element) => {
+        delete element.dataset.ambientMotionActive;
+      });
       root.classList.remove("motion-ready");
     };
   }, []);
@@ -606,6 +644,8 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
       section: HomeNavSection | "";
       top: number;
     }> = [];
+    const shouldTrackActiveSection = () =>
+      window.innerWidth > 780 || menuOpen;
 
     const measureNavigationStops = () => {
       navigationStops = Array.from(
@@ -618,6 +658,10 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
     };
 
     const updateActiveSection = () => {
+      if (!shouldTrackActiveSection()) {
+        animationFrame = 0;
+        return;
+      }
       const activationLine =
         window.scrollY + 68 + Math.min(window.innerHeight * 0.28, 250);
       let nextSection: HomeNavSection | "" = "";
@@ -635,14 +679,16 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
     };
 
     const scheduleUpdate = () => {
+      if (!shouldTrackActiveSection()) return;
       if (!animationFrame) {
         animationFrame = window.requestAnimationFrame(updateActiveSection);
       }
     };
 
-    const scheduleMeasure = () => {
+    const scheduleMeasure = (force = false) => {
       const nextViewportWidth = window.innerWidth;
       if (
+        !force &&
         nextViewportWidth <= 780 &&
         Math.abs(nextViewportWidth - measuredViewportWidth) < 1
       ) {
@@ -658,12 +704,18 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
         resizeFrame = 0;
       });
     };
+    const handleViewportMeasure = () => scheduleMeasure();
 
     measureNavigationStops();
-    updateActiveSection();
+    if (shouldTrackActiveSection()) updateActiveSection();
+    const layoutObserver =
+      typeof ResizeObserver === "undefined"
+        ? null
+        : new ResizeObserver(() => scheduleMeasure(true));
+    layoutObserver?.observe(document.querySelector("main") ?? document.body);
     window.addEventListener("scroll", scheduleUpdate, { passive: true });
-    window.addEventListener("resize", scheduleMeasure, { passive: true });
-    window.addEventListener("load", scheduleMeasure, { once: true });
+    window.addEventListener("resize", handleViewportMeasure, { passive: true });
+    window.addEventListener("load", handleViewportMeasure, { once: true });
     void document.fonts.ready.then(() => {
       if (alive) scheduleMeasure();
     });
@@ -671,12 +723,13 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
     return () => {
       alive = false;
       window.removeEventListener("scroll", scheduleUpdate);
-      window.removeEventListener("resize", scheduleMeasure);
-      window.removeEventListener("load", scheduleMeasure);
+      window.removeEventListener("resize", handleViewportMeasure);
+      window.removeEventListener("load", handleViewportMeasure);
+      layoutObserver?.disconnect();
       if (animationFrame) window.cancelAnimationFrame(animationFrame);
       if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
     };
-  }, [currentPage]);
+  }, [currentPage, menuOpen]);
 
   const closeMenu = () => {
     setMenuOpen(false);

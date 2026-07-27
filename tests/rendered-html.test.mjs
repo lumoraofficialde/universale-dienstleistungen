@@ -237,8 +237,14 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(chronogarten, /serviceCatalog/);
   assert.match(chronogarten, /chronogarten-garten\.webp/);
   assert.match(chronogarten, /chronogarten-garten-960\.webp/);
+  assert.match(chronogarten, /chronogarten-garten-mobile\.webp/);
   assert.match(chronogarten, /chronogarten-winter\.webp/);
   assert.match(chronogarten, /chronogarten-winter-960\.webp/);
+  assert.match(chronogarten, /chronogarten-winter-mobile\.webp/);
+  assert.match(
+    chronogarten,
+    /media="\(max-width: 480px\) and \(orientation: portrait\)"/,
+  );
   assert.doesNotMatch(
     chronogarten,
     /matchMedia\(\s*["']max-width:\s*780px["']\s*\)/,
@@ -268,8 +274,13 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   );
   assert.match(
     chronogartenCss,
-    /\.weather i\s*\{[\s\S]*?animation-play-state:\s*paused\s*!important/,
+    /@media \(max-width: 780px\)[\s\S]*?\.weather i\s*\{[\s\S]*?animation-play-state:\s*paused\s*;/,
   );
+  assert.match(
+    chronogartenCss,
+    /\.root\[data-ambient-motion-active="true"\]\[data-stage="clear"\]\s+\.weather i,\s*[\r\n]+\s*\.root\[data-ambient-motion-active="true"\]\[data-stage="winter"\]\s+\.weather i\s*\{[\s\S]*?animation-play-state:\s*running/,
+  );
+  assert.doesNotMatch(chronogartenCss, /animation-play-state:\s*paused\s*!important/);
   assert.match(css, /--section-canvas:\s*#fff/);
   assert.match(
     css,
@@ -331,7 +342,8 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(fleetJourney, /gsap/);
   assert.match(fleetJourney, /ScrollTrigger/);
   assert.match(fleetJourney, /ignoreMobileResize:\s*true/);
-  assert.match(fleetJourney, /scrub:\s*isMobile\s*\?\s*true\s*:\s*0\.7/);
+  assert.match(fleetJourney, /scrub:\s*isMobile\s*\?\s*0\.18\s*:\s*0\.7/);
+  assert.doesNotMatch(fleetJourney, /ScrollTrigger\.refresh\(\)/);
   assert.match(fleetJourney, /data-fleet-journey-marker/);
   assert.match(fleetJourney, /aria-current/);
   assert.match(fleetJourney, /prefers-reduced-motion/);
@@ -424,7 +436,8 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(processImpulseJourney, /ignoreMobileResize:\s*true/);
   assert.match(processImpulseJourney, /getTotalLength\(\)/);
   assert.match(processImpulseJourney, /strokeDasharray/);
-  assert.match(processImpulseJourney, /scrub:\s*isMobile\s*\?\s*true\s*:\s*0\.65/);
+  assert.match(processImpulseJourney, /scrub:\s*isMobile\s*\?\s*0\.2\s*:\s*0\.65/);
+  assert.doesNotMatch(processImpulseJourney, /ScrollTrigger\.refresh\(\)/);
   assert.match(processImpulseJourney, /prefers-reduced-motion/);
   assert.doesNotMatch(
     processImpulseJourney,
@@ -516,14 +529,19 @@ test("ships optimized responsive visual assets", async () => {
   const chronogartenAssets = [
     "chronogarten-intro.webp",
     "chronogarten-intro-960.webp",
+    "chronogarten-intro-mobile.webp",
     "chronogarten-garten.webp",
     "chronogarten-garten-960.webp",
+    "chronogarten-garten-mobile.webp",
     "chronogarten-hausmeister.webp",
     "chronogarten-hausmeister-960.webp",
+    "chronogarten-hausmeister-mobile.webp",
     "chronogarten-entruempelung.webp",
     "chronogarten-entruempelung-960.webp",
+    "chronogarten-entruempelung-mobile.webp",
     "chronogarten-winter.webp",
     "chronogarten-winter-960.webp",
+    "chronogarten-winter-mobile.webp",
   ];
   chronogartenAssets.forEach((file) => assert.ok(files.includes(file)));
   const processImpulseAssets = [

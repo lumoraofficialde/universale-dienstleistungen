@@ -334,7 +334,11 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="readiness" aria-labelledby="readiness-title">
+        <section
+          className="readiness"
+          aria-labelledby="readiness-title"
+          data-ambient-motion=""
+        >
           <div className="readiness-noise" aria-hidden="true" />
           <div className="container readiness-grid">
             <div
