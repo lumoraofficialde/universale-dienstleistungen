@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lumoraofficialde.github.io/universale-dienstleistungen/sitemap.xml

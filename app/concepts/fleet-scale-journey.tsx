@@ -10,40 +10,45 @@ const stages = [
   {
     id: "kante",
     label: "Kante",
-    title: "Saubere Konturen.",
-    text: "Für Form- und Rückschnitt an Hecken und Gehölzen — auch in unterschiedlichen Größenbereichen.",
-    equipment: ["Technik für Hecken- und Rückschnitt"],
+    title: "Hecken und Gehölze schneiden.",
+    text: "Für den Form- und Rückschnitt von Hecken und Gehölzen unterschiedlicher Größe.",
+    equipment: ["Technik für Hecken- und Gehölzschnitt"],
+    navigationLabel: "Technik für Hecken- und Gehölzschnitt anzeigen",
   },
   {
     id: "objekt",
     label: "Objekt",
-    title: "Präzise am Objekt.",
-    text: "Für wendige, saubere Grünpflege rund um Eigenheime und kleinere Objekte.",
-    equipment: ["Mähwerke für Eigenheime"],
+    title: "Grünpflege am Objekt.",
+    text: "Für die Grünpflege mit wendiger Technik rund um Eigenheime und kleinere Objekte.",
+    equipment: ["Mähtechnik für kleinere Flächen"],
+    navigationLabel: "Technik für kleinere Grünflächen anzeigen",
   },
   {
     id: "flaeche",
     label: "Fläche",
-    title: "Effizient auf Fläche.",
+    title: "Größere Flächen pflegen.",
     text: "Für gleichmäßige Pflege größerer Grünflächen mit dafür ausgelegten Mähwerken.",
-    equipment: ["Mähwerke für Großflächen"],
+    equipment: ["Mähtechnik für größere Flächen"],
+    navigationLabel: "Technik für größere Grünflächen anzeigen",
   },
   {
     id: "winter",
     label: "Winter",
-    title: "Bereit, wenn Winter einsetzt.",
-    text: "Für Treppen, Wege, Zufahrten, Parkplätze und Höfe — räumen, streuen und Schnee gezielt beseitigen.",
+    title: "Winterdienst für Wege und Flächen.",
+    text: "Für Treppen, Wege, Zufahrten, Parkplätze und Höfe — Schnee räumen und Flächen streuen.",
     equipment: [
       "Räumfahrzeuge mit Streusystem",
       "Mobile Schneefräsen",
     ],
+    navigationLabel: "Technik für den Winterdienst anzeigen",
   },
   {
     id: "einsatz",
     label: "Einsatz",
-    title: "Schnell vor Ort.",
-    text: "Das 3,5-t-Einsatzfahrzeug bringt Personal und benötigte Technik abgestimmt zum Einsatzort.",
+    title: "Personal und Technik transportieren.",
+    text: "Das 3,5-t-Einsatzfahrzeug transportiert Personal und die benötigte Technik zum Einsatzort.",
     equipment: ["3,5-t-Einsatzfahrzeug"],
+    navigationLabel: "Transport von Personal und Technik anzeigen",
   },
 ] as const;
 
@@ -341,7 +346,7 @@ export function FleetScaleJourney() {
           <picture className={styles.layer}>
             <source
               srcSet={`${assetPath("/media/massstabsreise-kante-960.webp")} 960w, ${assetPath("/media/massstabsreise-kante.webp")} 1672w`}
-              sizes="100vw"
+              sizes="(max-width: 780px) 178vh, 100vw"
             />
             <img
               ref={macroRef}
@@ -358,7 +363,7 @@ export function FleetScaleJourney() {
           <picture className={styles.layer}>
             <source
               srcSet={`${assetPath("/media/massstabsreise-landschaft-sommer-960.webp")} 960w, ${assetPath("/media/massstabsreise-landschaft-sommer.webp")} 1440w`}
-              sizes="100vw"
+              sizes="(max-width: 780px) 178vh, 100vw"
             />
             <img
               ref={summerRef}
@@ -374,7 +379,7 @@ export function FleetScaleJourney() {
           <picture className={styles.layer}>
             <source
               srcSet={`${assetPath("/media/massstabsreise-landschaft-winter-960.webp")} 960w, ${assetPath("/media/massstabsreise-landschaft-winter.webp")} 1440w`}
-              sizes="100vw"
+              sizes="(max-width: 780px) 178vh, 100vw"
             />
             <img
               ref={winterRef}
@@ -403,7 +408,7 @@ export function FleetScaleJourney() {
               key={stage.id}
             >
               {index === 0 ? (
-                <h2>Von der Kante bis zur Großfläche.</h2>
+                <h2>Passende Technik für Fläche und Zugang.</h2>
               ) : (
                 <h3>{stage.title}</h3>
               )}
@@ -421,12 +426,12 @@ export function FleetScaleJourney() {
           ))}
         </div>
 
-        <nav className={styles.navigation} aria-label="Maßstabsreise im Fuhrpark">
+        <nav className={styles.navigation} aria-label="Technik nach Einsatzbereich">
           {stages.map((stage, index) => (
             <button
               type="button"
               aria-current={index === activeIndex ? "step" : undefined}
-              aria-label={`Zu ${stage.label} springen`}
+              aria-label={stage.navigationLabel}
               onClick={() => moveToStage(index)}
               onKeyDown={(event) => {
                 if (event.key !== "Enter" && event.key !== " ") return;
@@ -454,7 +459,7 @@ export function FleetScaleJourney() {
       </div>
 
       <div className={styles.staticStory}>
-        <h2 id="fleet-journey-title">Von der Kante bis zur Großfläche.</h2>
+        <h2 id="fleet-journey-title">Passende Technik für Fläche und Zugang.</h2>
         <p>
           Nicht jedes Grundstück braucht dieselbe Maschine. Wir wählen Technik
           nach Fläche, Zugänglichkeit und Aufgabe.

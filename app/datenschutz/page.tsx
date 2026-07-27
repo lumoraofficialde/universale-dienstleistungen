@@ -5,10 +5,42 @@ import {
   legalStyles as styles,
 } from "../legal-page";
 
+const siteUrl = (
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  "https://lumoraofficialde.github.io/universale-dienstleistungen"
+).replace(/\/+$/, "");
+const canonicalUrl = `${siteUrl}/datenschutz/`;
+const previewImage = `${siteUrl}/og.jpg`;
+const description =
+  "Datenschutzerklärung der Universale Dienstleistungen GmbH für diesen Internetauftritt.";
+
 export const metadata: Metadata = {
   title: "Datenschutz | Universale Dienstleistungen",
-  description:
-    "Datenschutzerklärung der Universale Dienstleistungen GmbH für diesen Internetauftritt.",
+  description,
+  alternates: {
+    canonical: canonicalUrl,
+  },
+  openGraph: {
+    title: "Datenschutz | Universale Dienstleistungen",
+    description,
+    type: "website",
+    locale: "de_DE",
+    url: canonicalUrl,
+    images: [
+      {
+        url: previewImage,
+        width: 1200,
+        height: 630,
+        alt: "Universale Dienstleistungen — Alles im Griff. Bei jedem Wetter.",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Datenschutz | Universale Dienstleistungen",
+    description,
+    images: [previewImage],
+  },
 };
 
 const navigation = [
@@ -45,7 +77,7 @@ export default function DatenschutzPage() {
           Technische Daten entstehen beim Aufruf der Website durch den
           Hosting-Anbieter. Weitere Daten erhalten wir nur, wenn Sie uns diese
           mitteilen – beispielsweise telefonisch, per E-Mail oder über die
-          vorbereitete E-Mail-Anfrage auf der Kontaktseite.
+          vorbereitete E-Mail-Anfrage im Kontaktbereich.
         </p>
 
         <h3>Wofür werden Daten genutzt?</h3>
@@ -106,6 +138,7 @@ export default function DatenschutzPage() {
             href="https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement"
             target="_blank"
             rel="noreferrer"
+            aria-label="Datenschutzerklärung von GitHub (öffnet in einem neuen Tab)"
           >
             Datenschutzerklärung von GitHub
           </a>
@@ -209,7 +242,7 @@ export default function DatenschutzPage() {
           Funktionsweise der Website, die eingesetzten Dienstleister oder die
           rechtlichen Anforderungen ändern.
         </p>
-        <p className={`${styles.note} ${styles.caps}`}>Stand: 24. Juli 2026</p>
+        <p className={`${styles.note} ${styles.caps}`}>Stand: 27. Juli 2026</p>
       </LegalSection>
     </LegalPage>
   );

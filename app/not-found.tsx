@@ -6,6 +6,7 @@ import {
   SiteHeader,
   SiteMotion,
 } from "./site-shell";
+import { NotFoundMetadata } from "./not-found-metadata";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
@@ -13,15 +14,20 @@ export const metadata: Metadata = {
   title: "Seite nicht gefunden | Universale Dienstleistungen",
   description:
     "Die angeforderte Seite wurde nicht gefunden. Zurück zu den Leistungen von Universale Dienstleistungen.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function NotFound() {
   return (
     <>
+      <NotFoundMetadata />
       <SiteMotion />
       <SiteHeader currentPage="not-found" />
 
-      <main id="main" className={styles.page}>
+      <main id="main" className={styles.page} tabIndex={-1}>
         <section
           className={styles.hero}
           id="top"

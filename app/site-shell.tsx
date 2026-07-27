@@ -1,6 +1,7 @@
+/* eslint-disable @next/next/no-img-element -- Brand assets are pre-sized and the static deployment has no runtime image optimizer. */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 export const assetPath = (path: string) => `${basePath}${path}`;
@@ -53,6 +54,7 @@ export function SiteMotion() {
     );
     const stackCurrent = document.querySelector<HTMLElement>("[data-stack-current]");
     const mobileStack = window.matchMedia("(max-width: 780px)");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     root.classList.add("motion-ready");
 
@@ -130,18 +132,24 @@ export function SiteMotion() {
       );
 
       if (hero && y <= viewportHeight * 1.25) {
-        hero.style.setProperty(
-          "--hero-shift",
-          `${Math.min(y * 0.58, 280)}px`,
-        );
-        hero.style.setProperty(
-          "--hero-content-y",
-          `${Math.min(y * 0.1, 84)}px`,
-        );
-        hero.style.setProperty(
-          "--hero-fade",
-          `${Math.max(0.08, 1 - y / (viewportHeight * 0.82))}`,
-        );
+        if (reducedMotion.matches) {
+          hero.style.setProperty("--hero-shift", "0px");
+          hero.style.setProperty("--hero-content-y", "0px");
+          hero.style.setProperty("--hero-fade", "1");
+        } else {
+          hero.style.setProperty(
+            "--hero-shift",
+            `${Math.min(y * 0.58, 280)}px`,
+          );
+          hero.style.setProperty(
+            "--hero-content-y",
+            `${Math.min(y * 0.1, 84)}px`,
+          );
+          hero.style.setProperty(
+            "--hero-fade",
+            `${Math.max(0.08, 1 - y / (viewportHeight * 0.82))}`,
+          );
+        }
       }
 
       const nextHeaderScrolled = y > 40;
@@ -151,6 +159,10 @@ export function SiteMotion() {
       }
 
       parallaxElements.forEach((element) => {
+        if (reducedMotion.matches) {
+          element.style.setProperty("--parallax-y", "0px");
+          return;
+        }
         const rect = element.getBoundingClientRect();
         if (rect.bottom < -viewportHeight || rect.top > viewportHeight * 2) {
           return;
@@ -210,6 +222,7 @@ export function SiteMotion() {
     window.addEventListener("resize", onResize, { passive: true });
     window.addEventListener("load", onResize, { once: true });
     mobileStack.addEventListener("change", onResize);
+    reducedMotion.addEventListener("change", onResize);
     void document.fonts.ready.then(() => {
       if (alive) onResize();
     });
@@ -222,6 +235,7 @@ export function SiteMotion() {
       window.removeEventListener("resize", onResize);
       window.removeEventListener("load", onResize);
       mobileStack.removeEventListener("change", onResize);
+      reducedMotion.removeEventListener("change", onResize);
       if (animationFrame) window.cancelAnimationFrame(animationFrame);
       if (measureFrame) window.cancelAnimationFrame(measureFrame);
       stackCards.forEach((card) =>
@@ -251,6 +265,7 @@ export function SiteMotion() {
     const moveToTarget = (
       id: string,
       behavior: ScrollBehavior = "auto",
+      focusTarget = false,
     ) => {
       const target =
         !id || id === "top"
@@ -270,8 +285,15 @@ export function SiteMotion() {
         target.scrollIntoView({ behavior, block: "start" });
       }
 
-      if (id === "main" && target instanceof HTMLElement) {
-        target.focus({ preventScroll: true });
+      if (target instanceof HTMLElement && (id === "main" || focusTarget)) {
+        const focusDestination =
+          id === "main"
+            ? target
+            : target.querySelector<HTMLElement>("h1, h2, h3") ?? target;
+        if (!focusDestination.hasAttribute("tabindex")) {
+          focusDestination.setAttribute("tabindex", "-1");
+        }
+        focusDestination.focus({ preventScroll: true });
       }
 
       if (behavior === "auto") {
@@ -375,8 +397,9 @@ export function SiteMotion() {
 
       const behavior =
         mobileViewport.matches || reducedMotion.matches ? "auto" : "smooth";
+      const focusTarget = Boolean(link.closest(".mobile-menu"));
       window.requestAnimationFrame(() => {
-        moveToTarget(id, behavior);
+        moveToTarget(id, behavior, focusTarget);
         window.history.pushState(null, "", nextUrl.href);
       });
     };
@@ -416,6 +439,9 @@ export function SiteMotion() {
 export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<HomeNavSection | "">("");
+  const brandRef = useRef<HTMLAnchorElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const closeAfterNavigation = () => setMenuOpen(false);
@@ -431,19 +457,82 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
   useEffect(() => {
     const desktopViewport = window.matchMedia("(min-width: 781px)");
     const closeOnDesktop = () => {
-      if (desktopViewport.matches) setMenuOpen(false);
-    };
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
+      if (!desktopViewport.matches) return;
+
+      const activeElement = document.activeElement;
+      const focusWasInMobileNavigation =
+        activeElement === menuButtonRef.current ||
+        (activeElement instanceof Node &&
+          mobileMenuRef.current?.contains(activeElement));
+
+      setMenuOpen(false);
+      if (focusWasInMobileNavigation) {
+        window.requestAnimationFrame(() => brandRef.current?.focus());
+      }
     };
 
     desktopViewport.addEventListener("change", closeOnDesktop);
-    window.addEventListener("keydown", closeOnEscape);
     return () => {
       desktopViewport.removeEventListener("change", closeOnDesktop);
-      window.removeEventListener("keydown", closeOnEscape);
     };
   }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const menu = mobileMenuRef.current;
+    const background = [
+      document.querySelector<HTMLElement>(".skip-link"),
+      document.querySelector<HTMLElement>("main"),
+      document.querySelector<HTMLElement>(".site-footer"),
+      document.querySelector<HTMLElement>(".mobile-call"),
+    ].filter((element): element is HTMLElement => Boolean(element));
+    const focusable = [
+      menuButtonRef.current,
+      ...(menu?.querySelectorAll<HTMLAnchorElement>("a[href]") ?? []),
+    ].filter(
+      (
+        element,
+      ): element is HTMLButtonElement | HTMLAnchorElement => element !== null,
+    );
+    const focusFrame = window.requestAnimationFrame(() => {
+      focusable[1]?.focus();
+    });
+
+    background.forEach((element) => {
+      element.inert = true;
+    });
+
+    const handleMenuKeydown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setMenuOpen(false);
+        window.requestAnimationFrame(() => menuButtonRef.current?.focus());
+        return;
+      }
+      if (event.key !== "Tab" || focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable.at(-1);
+      if (!first || !last) return;
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleMenuKeydown);
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      window.removeEventListener("keydown", handleMenuKeydown);
+      background.forEach((element) => {
+        element.inert = false;
+      });
+    };
+  }, [menuOpen]);
 
   useEffect(() => {
     if (currentPage !== "home") return;
@@ -517,13 +606,19 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
     };
   }, [currentPage]);
 
-  const closeMenu = () => setMenuOpen(false);
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+  const closeMenuAndRestoreFocus = () => {
+    setMenuOpen(false);
+    window.requestAnimationFrame(() => menuButtonRef.current?.focus());
+  };
   const teamHref = currentPage === "team" ? "#top" : `${basePath}/team/`;
   const links = [
     ["Leistungen", homeHref("#unternehmen"), "leistungen"],
-    ["Einsatzarten", homeHref("#leistungen"), "einsatzarten"],
-    ["Fuhrpark", homeHref("#fuhrpark"), "fuhrpark"],
-    ["Team", teamHref, ""],
+    ["Einsatzmodelle", homeHref("#leistungen"), "einsatzarten"],
+    ["Technik", homeHref("#fuhrpark"), "fuhrpark"],
+    ["Arbeitsweise", teamHref, ""],
     ["Kontakt", homeHref("#kontakt"), "kontakt"],
   ] as const;
 
@@ -531,7 +626,7 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
     label: (typeof links)[number][0],
     section: (typeof links)[number][2],
   ) => {
-    if (label === "Team" && currentPage === "team") return "page" as const;
+    if (label === "Arbeitsweise" && currentPage === "team") return "page" as const;
     if (
       currentPage === "home" &&
       section &&
@@ -548,11 +643,19 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
       <header className="site-header">
         <div className="header-inner">
           <a
+            ref={brandRef}
             className="brand"
             href={homeHref("#top")}
             aria-label="Universale Startseite"
           >
-            <span className="brand-mark"><img src={assetPath("/media/universale-logo.png")} alt="" /></span>
+            <span className="brand-mark">
+              <img
+                src={assetPath("/media/universale-logo.png")}
+                width="512"
+                height="502"
+                alt=""
+              />
+            </span>
             <span className="brand-name"><strong>Universale</strong><span>Dienstleistungen</span></span>
           </a>
 
@@ -569,10 +672,11 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
           </nav>
 
           <a className="header-call" href="tel:+491738948124">
-            <span>24/7 erreichbar</span><strong>+49 173 8948124</strong>
+            <span>Einsatz besprechen</span><strong>+49 173 8948124</strong>
           </a>
 
           <button
+            ref={menuButtonRef}
             className={`menu-button${menuOpen ? " is-open" : ""}`}
             type="button"
             aria-expanded={menuOpen}
@@ -584,7 +688,12 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
           </button>
         </div>
 
-        <div id="mobile-menu" className={`mobile-menu${menuOpen ? " is-open" : ""}`}>
+        <div
+          ref={mobileMenuRef}
+          id="mobile-menu"
+          className={`mobile-menu${menuOpen ? " is-open" : ""}`}
+          aria-hidden={!menuOpen}
+        >
           <nav aria-label="Mobile Navigation">
             {links.map(([label, href, section], index) => (
               <a
@@ -593,13 +702,23 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
                 onClick={closeMenu}
                 key={label}
               >
-                {label} <span>{String(index + 1).padStart(2, "0")}</span>
+                {label}{" "}
+                <span aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
               </a>
             ))}
           </nav>
           <div className="mobile-menu__contact">
-            <a href="tel:+491738948124">+49 173 8948124</a>
-            <a href="mailto:info@universale-dienstleistungen.de">info@universale-dienstleistungen.de</a>
+            <a href="tel:+491738948124" onClick={closeMenuAndRestoreFocus}>
+              +49 173 8948124
+            </a>
+            <a
+              href="mailto:info@universale-dienstleistungen.de"
+              onClick={closeMenuAndRestoreFocus}
+            >
+              info@universale-dienstleistungen.de
+            </a>
           </div>
         </div>
       </header>
@@ -611,22 +730,40 @@ export function SiteFooter({ currentPage = "home" }: { currentPage?: SitePage })
   return (
     <footer className="site-footer">
       <div className="container footer-main">
-        <a className="brand brand--footer" href={homeHref("#top")} aria-label="Zurück zum Anfang">
-          <span className="brand-mark"><img src={assetPath("/media/universale-logo.png")} alt="" /></span>
+        <a
+          className="brand brand--footer"
+          href={homeHref("#top")}
+          aria-label="Zur Startseite von Universale Dienstleistungen"
+        >
+          <span className="brand-mark">
+            <img
+              src={assetPath("/media/universale-logo.png")}
+              width="512"
+              height="502"
+              alt=""
+            />
+          </span>
           <span className="brand-name"><strong>Universale</strong><span>Dienstleistungen</span></span>
         </a>
-        <p>Gepflegte Flächen. Sichere Wege.<br />Ein zuverlässiger Partner.</p>
-        <div className="footer-links">
+        <p>Gartenpflege. Winterdienst.<br />Hausmeisterservice. Entrümpelung.</p>
+        <nav className="footer-links" aria-label="Footer-Navigation">
           <a href={homeHref("#unternehmen")}>Leistungen</a>
-          <a href={homeHref("#leistungen")}>Einsatzarten</a>
-          <a href={`${basePath}/team/`}>Team</a>
-          <a href={homeHref("#fuhrpark")}>Fuhrpark</a>
+          <a href={homeHref("#leistungen")}>Einsatzmodelle</a>
+          <a href={`${basePath}/team/`}>Arbeitsweise</a>
+          <a href={homeHref("#fuhrpark")}>Technik</a>
           <a href={homeHref("#kontakt")}>Kontakt</a>
-        </div>
+        </nav>
       </div>
+      <address className="container footer-contact">
+        <span>Universale Dienstleistungen GmbH · Westerstraße 3 · 25761 Büsum</span>
+        <a href="tel:+491738948124">+49 173 8948124</a>
+        <a href="mailto:info@universale-dienstleistungen.de">
+          info@universale-dienstleistungen.de
+        </a>
+      </address>
       <div className="container footer-meta">
         <span>© {new Date().getFullYear()} Universale Dienstleistungen GmbH</span>
-        <div>
+        <nav aria-label="Rechtliches">
           <a
             href={`${basePath}/datenschutz/`}
             aria-current={currentPage === "datenschutz" ? "page" : undefined}
@@ -639,19 +776,64 @@ export function SiteFooter({ currentPage = "home" }: { currentPage?: SitePage })
           >
             Impressum
           </a>
-        </div>
-        <a href="#top">Nach oben ↑</a>
+        </nav>
+        <a href="#top" aria-label="Nach oben">
+          Nach oben <span aria-hidden="true">↑</span>
+        </a>
       </div>
     </footer>
   );
 }
 
 export function MobileCall() {
+  const [contextHidden, setContextHidden] = useState(false);
+  const callRef = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    const targets = Array.from(
+      document.querySelectorAll<HTMLElement>("#kontakt, .site-footer"),
+    );
+    if (!targets.length) return;
+
+    const visibility = new Map<Element, boolean>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          visibility.set(entry.target, entry.isIntersecting);
+        });
+        const visibleTarget = targets.find(
+          (target) => visibility.get(target) === true,
+        );
+        const shouldHide = Boolean(visibleTarget);
+
+        if (shouldHide && document.activeElement === callRef.current) {
+          const nextTarget = visibleTarget?.querySelector<HTMLElement>(
+            'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled])',
+          );
+          window.requestAnimationFrame(() => nextTarget?.focus());
+        }
+
+        setContextHidden(shouldHide);
+      },
+      { threshold: 0.02 },
+    );
+
+    targets.forEach((target) => {
+      visibility.set(target, false);
+      observer.observe(target);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <a
-      className="mobile-call"
+      ref={callRef}
+      className={`mobile-call${contextHidden ? " is-context-hidden" : ""}`}
       href="tel:+491738948124"
       aria-label="Jetzt anrufen: +49 173 8948124"
+      aria-hidden={contextHidden ? true : undefined}
+      tabIndex={contextHidden ? -1 : undefined}
       title="Jetzt anrufen"
     >
       <svg

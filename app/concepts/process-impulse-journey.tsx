@@ -11,23 +11,23 @@ const processSteps = [
   {
     id: "anfrage",
     label: "Anfrage",
-    title: "Sie erzählen.",
-    text: "Nennen Sie uns Einsatzort, Aufgabe und gewünschten Zeitraum — telefonisch, per E-Mail oder im Formular.",
+    title: "Aufgabe schildern.",
+    text: "Nennen Sie uns Einsatzort, Aufgabe und gewünschten Zeitraum — telefonisch, per E-Mail oder über den Kontaktbereich.",
     detail: "Ort, Aufgabe und Zeitraum",
   },
   {
     id: "planung",
-    label: "Planung",
-    title: "Wir planen.",
-    text: "Wenn nötig besichtigen wir die Fläche. Danach stimmen wir Umfang, Termin, Personal und Technik mit Ihnen ab.",
+    label: "Abstimmung",
+    title: "Einsatz abstimmen.",
+    text: "Wenn nötig besichtigen wir den Einsatzort. Danach stimmen wir Umfang, Termin, Personal und Technik mit Ihnen ab.",
     detail: "Besichtigung, Aufwand und Termin",
   },
   {
     id: "umsetzung",
-    label: "Umsetzung",
-    title: "Wir erledigen.",
-    text: "Wir setzen den vereinbarten Umfang fachgerecht um, melden Änderungen zurück und übergeben den Bereich geordnet.",
-    detail: "Umsetzung, Rückmeldung und Übergabe",
+    label: "Ausführung",
+    title: "Ausführen und übergeben.",
+    text: "Wir setzen den vereinbarten Umfang um, stimmen notwendige Änderungen mit Ihnen ab und übergeben den Bereich geordnet.",
+    detail: "Ausführung, Abstimmung und Übergabe",
   },
 ] as const;
 
@@ -41,7 +41,8 @@ export function ProcessImpulseJourney() {
   const copyRefs = useRef<Array<HTMLDivElement | null>>([]);
   const actionRef = useRef<HTMLAnchorElement>(null);
   const [staticMode, setStaticMode] = useState(false);
-  const [enhanced, setEnhanced] = useState(true);
+  const [enhanced, setEnhanced] = useState(false);
+  const [actionAvailable, setActionAvailable] = useState(false);
 
   useEffect(() => {
     const media = window.matchMedia(
@@ -83,6 +84,7 @@ export function ProcessImpulseJourney() {
       copies.length !== processSteps.length + 1
     ) {
       setEnhanced(false);
+      setActionAvailable(false);
       return;
     }
 
@@ -167,6 +169,12 @@ export function ProcessImpulseJourney() {
               end: "bottom bottom",
               scrub: isMobile ? 0.55 : 0.65,
               invalidateOnRefresh: true,
+              onUpdate: (trigger) => {
+                const actionIsAvailable = trigger.progress >= 0.9;
+                setActionAvailable((current) =>
+                  current === actionIsAvailable ? current : actionIsAvailable,
+                );
+              },
             },
           });
 
@@ -316,6 +324,7 @@ export function ProcessImpulseJourney() {
 
     return () => {
       alive = false;
+      setActionAvailable(false);
       context.revert();
     };
   }, [staticMode]);
@@ -325,14 +334,15 @@ export function ProcessImpulseJourney() {
       ref={rootRef}
       className={styles.root}
       aria-labelledby="process-impulse-title"
+      data-nav-section=""
       data-enhanced={enhanced ? "true" : "false"}
     >
       <div className={styles.staticStory}>
         <p className={styles.staticChapter}>So arbeiten wir</p>
-        <h2 id="process-impulse-title">Drei Schritte. Kein Umweg.</h2>
+        <h2 id="process-impulse-title">Von der Anfrage bis zur Übergabe.</h2>
         <p className={styles.staticIntro}>
-          Vom ersten Kontakt bis zur Übergabe wissen Sie, was als Nächstes
-          passiert.
+          Vom ersten Kontakt bis zur Übergabe stimmen wir die nächsten Schritte
+          mit Ihnen ab.
         </p>
         <ol>
           {processSteps.map((step) => (
@@ -352,7 +362,7 @@ export function ProcessImpulseJourney() {
           aria-hidden={enhanced ? true : undefined}
           tabIndex={enhanced ? -1 : undefined}
         >
-          Projekt anfragen <span aria-hidden="true">→</span>
+          Anfrage starten <span aria-hidden="true">→</span>
         </a>
       </div>
 
@@ -413,10 +423,10 @@ export function ProcessImpulseJourney() {
             className={styles.copyFrame}
           >
             <p className={styles.chapter}>So arbeiten wir</p>
-            <h2>Drei Schritte. Kein Umweg.</h2>
+            <h2>Von der Anfrage bis zur Übergabe.</h2>
             <p>
-              Vom ersten Kontakt bis zur Übergabe wissen Sie, was als Nächstes
-              passiert.
+              Vom ersten Kontakt bis zur Übergabe stimmen wir die nächsten
+              Schritte mit Ihnen ab.
             </p>
           </div>
 
@@ -440,10 +450,10 @@ export function ProcessImpulseJourney() {
           ref={actionRef}
           className={styles.action}
           href="#kontakt"
-          aria-hidden={enhanced ? undefined : true}
-          tabIndex={enhanced ? undefined : -1}
+          aria-hidden={enhanced && actionAvailable ? undefined : true}
+          tabIndex={enhanced && actionAvailable ? undefined : -1}
         >
-          Projekt anfragen <span aria-hidden="true">→</span>
+          Anfrage starten <span aria-hidden="true">→</span>
         </a>
       </div>
 

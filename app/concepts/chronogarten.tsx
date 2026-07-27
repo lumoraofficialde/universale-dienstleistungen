@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element -- This static export serves pre-generated responsive WebP sources without a runtime image optimizer. */
 "use client";
 
 import {
@@ -36,6 +37,7 @@ const stages = [
     title: [garden.title],
     text: garden.text,
     service: garden,
+    navigationLabel: "Garten",
     sun: 24,
   },
   {
@@ -47,6 +49,7 @@ const stages = [
     title: [property.title],
     text: property.text,
     service: property,
+    navigationLabel: "Hausmeister",
     sun: 40,
   },
   {
@@ -58,6 +61,7 @@ const stages = [
     title: [clearance.title],
     text: clearance.text,
     service: clearance,
+    navigationLabel: "Entrümpelung",
     sun: 61,
   },
   {
@@ -69,6 +73,7 @@ const stages = [
     title: [winter.title],
     text: winter.text,
     service: winter,
+    navigationLabel: "Winter",
     sun: 82,
   },
 ] as const;
@@ -176,11 +181,11 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
               }`}
               src={assetPath(stage.image)}
               srcSet={`${assetPath(stage.smallImage)} 960w, ${assetPath(stage.image)} 1586w`}
-              sizes="100vw"
+              sizes="(max-width: 780px) 160vh, 100vw"
               width="1586"
               height="992"
               alt=""
-              loading={index < 2 ? "eager" : "lazy"}
+              loading="lazy"
               decoding="async"
               key={stage.key}
             />
@@ -189,7 +194,7 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
             className={styles.timeLens}
             src={assetPath(stages[0].image)}
             srcSet={`${assetPath(stages[0].smallImage)} 960w, ${assetPath(stages[0].image)} 1586w`}
-            sizes="100vw"
+            sizes="(max-width: 780px) 160vh, 100vw"
             width="1586"
             height="992"
             alt=""
@@ -214,7 +219,7 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
 
         <div className={styles.copy}>
           <p className={styles.eyebrow}>
-            <span>Chronogarten</span>
+            <span>Unsere Leistungen</span>
             <span>{activeStage.season}</span>
           </p>
           <div className={styles.copyChange} key={activeStage.key}>
@@ -234,7 +239,8 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
               }
             }}
           >
-            Leistung anfragen <span aria-hidden="true">↗</span>
+            {activeStage.service ? `${activeStage.service.formValue} anfragen` : "Anfrage starten"}{" "}
+            <span aria-hidden="true">↗</span>
           </a>
         </div>
 
@@ -247,10 +253,11 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
                 type="button"
                 className={isActive ? styles.timelineActive : undefined}
                 aria-current={isActive ? "step" : undefined}
+                aria-label={`${stage.service?.title ?? stage.navigationLabel} anzeigen`}
                 onClick={() => moveToStage(stageIndex)}
                 key={stage.key}
               >
-                <span>{stage.service?.title}</span>
+                <span>{stage.navigationLabel}</span>
               </button>
             );
           })}
@@ -261,7 +268,7 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
             activeStage.key === "winter" ? styles.lensHintVisible : ""
           }`}
         >
-          Zeitlinse <span>Frühjahr ansehen</span>
+          Bildvergleich <span>Frühjahr ansehen</span>
         </p>
       </div>
 

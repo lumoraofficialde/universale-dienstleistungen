@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element -- This static export serves pre-generated responsive WebP sources without a runtime image optimizer. */
 "use client";
 
 import {
@@ -21,42 +22,46 @@ import { serviceCatalog } from "./service-catalog";
 const situations = [
   {
     number: "01",
-    title: "Laufend betreut.",
+    title: "Regelmäßig betreut.",
     text: "Wiederkehrende Pflege- und Kontrolltermine für Außenflächen und Immobilien. Rhythmus und Umfang stimmen wir auf Objekt und Saison ab.",
-    formValue: serviceCatalog[0].formValue,
     image: assetPath("/media/gardener-trimming.webp"),
-    srcSet: `${assetPath("/media/gardener-trimming-1280.webp")} 1280w, ${assetPath("/media/gardener-trimming.webp")} 2560w`,
-    alt: "Regelmäßige Pflege einer Gartenanlage",
+    width: 2560,
+    height: 1707,
+    srcSet: `${assetPath("/media/gardener-trimming-1280.webp")} 1280w, ${assetPath("/media/gardener-trimming-1920.webp")} 1920w, ${assetPath("/media/gardener-trimming.webp")} 2560w`,
+    alt: "Person beim Formschnitt einer Hecke",
     className: "service-card--garden",
   },
   {
     number: "02",
-    title: "Saisonal vorbereitet.",
-    text: "Gartenpflege und Winterdienst rechtzeitig einplanen — mit direkter Erreichbarkeit, wenn das Wetter kurzfristig umschlägt.",
-    formValue: serviceCatalog[1].formValue,
+    title: "Saisonal geplant.",
+    text: "Gartenpflege und Winterdienst planen wir passend zur Saison. Zeitraum, Umfang und Einsatzort stimmen wir vorab mit Ihnen ab.",
     image: assetPath("/media/snow-clearing.webp"),
+    width: 2560,
+    height: 1707,
     srcSet: `${assetPath("/media/snow-clearing-1280.webp")} 1280w, ${assetPath("/media/snow-clearing.webp")} 2560w`,
-    alt: "Vorbereiteter Einsatz auf einer verschneiten Fläche",
+    alt: "Räumfahrzeug mit Kehrbürste bei Schneefall",
     className: "service-card--winter",
   },
   {
     number: "03",
-    title: "Gebündelt erledigt.",
-    text: "Kontrollen, Pflege und kleinere Arbeiten an einem Objekt werden in einem abgestimmten Einsatz zusammengefasst.",
-    formValue: serviceCatalog[2].formValue,
+    title: "Leistungen gebündelt.",
+    text: "Kontrollen, Pflege und kleinere Arbeiten an einem Objekt bündeln wir in einem abgestimmten Einsatz.",
     image: assetPath("/media/grass-cutting.webp"),
+    width: 1920,
+    height: 1080,
     srcSet: `${assetPath("/media/grass-cutting-1280.webp")} 1280w, ${assetPath("/media/grass-cutting.webp")} 1920w`,
-    alt: "Laufende Betreuung einer weitläufigen Außenfläche",
+    alt: "Person auf einem Aufsitzmäher bei der Pflege einer großen Grünfläche",
     className: "service-card--house",
   },
   {
     number: "04",
-    title: "Einmalig organisiert.",
-    text: "Für Entrümpelungen und klar definierte Einzelaufträge vereinbaren wir Umfang, Termin und Abschluss vorab.",
-    formValue: serviceCatalog[3].formValue,
+    title: "Einmalig beauftragt.",
+    text: "Für Entrümpelungen und andere klar definierte Einzelaufträge stimmen wir Umfang, Termin und Übergabe vorab ab.",
     image: assetPath("/media/winter-vehicle.webp"),
+    width: 1080,
+    height: 1080,
     srcSet: undefined,
-    alt: "Geordnete Übergabe nach einer Entrümpelung",
+    alt: "Zwei Personen beim Transport eines Möbelstücks am Fahrzeug",
     className: "service-card--clear",
   },
 ];
@@ -157,16 +162,19 @@ export default function Home() {
     const subject = `Anfrage: ${data.get("service")}`;
     const body = [
       `Name: ${data.get("name")}`,
-      `Telefon: ${data.get("phone")}`,
+      `Telefon: ${data.get("phone") || "nicht angegeben"}`,
       `E-Mail: ${data.get("email")}`,
       `Leistung: ${data.get("service")}`,
-      `Wunschtermin: ${data.get("date") || "offen"}`,
+      `Wunschtermin/Zeitraum: ${data.get("date") || "offen"}`,
       `Ausführungsort: ${data.get("location")}`,
       "",
+      "Beschreibung:",
       String(data.get("message")),
     ].join("\n");
 
-    setFormStatus("Ihr E-Mail-Programm wird mit der vorbereiteten Anfrage geöffnet.");
+    setFormStatus(
+      "Die Anfrage ist noch nicht versendet. Bitte prüfen und senden Sie die vorbereitete Nachricht in Ihrem E-Mail-Programm.",
+    );
     window.location.href = `mailto:info@universale-dienstleistungen.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
@@ -191,13 +199,13 @@ export default function Home() {
       <SiteMotion />
       <SiteHeader />
 
-      <main id="main">
+      <main id="main" tabIndex={-1}>
         <section className="hero" id="top" aria-labelledby="hero-title">
           <div className="hero-media" aria-hidden="true">
             <img
               src={assetPath("/media/gardener-trimming.webp")}
-              srcSet={`${assetPath("/media/gardener-trimming-1280.webp")} 1280w, ${assetPath("/media/gardener-trimming.webp")} 2560w`}
-              sizes="100vw"
+              srcSet={`${assetPath("/media/gardener-trimming-1280.webp")} 1280w, ${assetPath("/media/gardener-trimming-1920.webp")} 1920w, ${assetPath("/media/gardener-trimming.webp")} 2560w`}
+              sizes="(max-width: 780px) 150vh, 100vw"
               width="2560"
               height="1707"
               alt=""
@@ -209,8 +217,7 @@ export default function Home() {
 
           <div className="hero-inner">
             <div className="hero-kicker">
-              <span className="status-dot" />
-              Büsum · Norddeutschland · deutschlandweit im Einsatz
+              Gartenpflege · Winterdienst · Hausmeisterservice · Entrümpelung
             </div>
 
             <div className="hero-layout">
@@ -223,15 +230,17 @@ export default function Home() {
 
               <aside className="hero-panel" aria-label="Direktanfrage">
                 <p>
-                  Für private Haushalte und gewerbliche Objekte: Gartenpflege,
-                  Winterdienst, Hausmeisterservice und Entrümpelung aus einer Hand.
+                  Vom Standort Büsum aus koordinieren wir Gartenpflege,
+                  Winterdienst, Hausmeisterservice und Entrümpelung für private
+                  Haushalte und gewerbliche Objekte. Einsatzort und Termin klären
+                  wir direkt mit Ihnen.
                 </p>
                 <div className="hero-actions">
                   <a className="button button--accent" href="#kontakt">
-                    Angebot anfragen <span aria-hidden="true">↗</span>
+                    Anfrage starten <span aria-hidden="true">↗</span>
                   </a>
                   <a className="text-link text-link--light" href="tel:+491738948124">
-                    Jetzt anrufen <span aria-hidden="true">→</span>
+                    Einsatz besprechen <span aria-hidden="true">→</span>
                   </a>
                 </div>
               </aside>
@@ -239,7 +248,7 @@ export default function Home() {
 
             <div className="hero-scroll">
               <a className="scroll-cue" href="#unternehmen">
-                <span>Entdecken</span>
+                <span>Leistungen ansehen</span>
                 <i aria-hidden="true">↓</i>
               </a>
             </div>
@@ -252,8 +261,17 @@ export default function Home() {
           className="services section"
           id="leistungen"
           data-nav-section="einsatzarten"
+          aria-labelledby="service-models-title"
         >
           <div className="container">
+            <div className="section-heading services-heading" data-reveal>
+              <h2 id="service-models-title">So können Sie uns beauftragen.</h2>
+              <p>
+                Vom Einzelauftrag bis zur laufenden Betreuung: Umfang, Rhythmus
+                und Zuständigkeiten stimmen wir vor Beginn mit Ihnen ab.
+              </p>
+            </div>
+
             <nav className="services-stack-nav" aria-label="Einsatzmodelle">
               <div className="services-stack-nav__segments">
                 {situations.map((situation, index) => (
@@ -289,8 +307,11 @@ export default function Home() {
                     src={situation.image}
                     srcSet={situation.srcSet}
                     sizes="(max-width: 780px) calc(100vw - 36px), (max-width: 1100px) 55vw, 50vw"
+                    width={situation.width}
+                    height={situation.height}
                     alt={situation.alt}
                     loading="lazy"
+                    decoding="async"
                   />
                   <div className="service-card__shade" aria-hidden="true" />
                   <div className="service-card__top">
@@ -302,10 +323,9 @@ export default function Home() {
                     <p>{situation.text}</p>
                     <a
                       href="#kontakt"
-                      aria-label={`${situation.title} Situation besprechen`}
-                      onClick={() => chooseService(situation.formValue)}
+                      aria-label={`Einsatzmodell „${situation.title}“ besprechen`}
                     >
-                      Situation besprechen <span aria-hidden="true">↗</span>
+                      Einsatzmodell besprechen <span aria-hidden="true">↗</span>
                     </a>
                   </div>
                 </article>
@@ -319,7 +339,8 @@ export default function Home() {
           <div className="container readiness-grid">
             <div
               className="readiness-display"
-              aria-label="24 Stunden am Tag, 7 Tage die Woche erreichbar"
+              role="img"
+              aria-label="Telefonisch 24 Stunden am Tag, 7 Tage die Woche erreichbar"
             >
               <div className="readiness-hours" data-reveal="left" aria-hidden="true">
                 <strong>24</strong>
@@ -327,7 +348,7 @@ export default function Home() {
               </div>
               <div className="readiness-divider" data-reveal="scale" aria-hidden="true">
                 <span />
-                <p><i /> durchgehend erreichbar</p>
+                <p><i /> telefonisch erreichbar</p>
               </div>
               <div className="readiness-days" data-reveal="right" aria-hidden="true">
                 <strong>7</strong>
@@ -338,13 +359,14 @@ export default function Home() {
               <p className="eyebrow">Wenn der Einsatz nicht warten kann</p>
               <h2 id="readiness-title">Erreichbar, wenn es darauf ankommt.</h2>
               <p>
-                Bei plötzlichem Wintereinbruch oder einem dringenden Fall
+                Bei plötzlichem Wintereinbruch oder einem dringenden Einsatz
                 erreichen Sie uns telefonisch rund um die Uhr. Nennen Sie
                 Einsatzort, betroffene Fläche und Zugänglichkeit — wir klären
-                direkt, welches Team und welche Technik benötigt werden.
+                direkt, ob und wann ein Einsatz möglich ist und welche Technik
+                benötigt wird.
               </p>
               <a className="button button--outline" href="tel:+491738948124">
-                Notfall-Hotline anrufen <span aria-hidden="true">↗</span>
+                Dringenden Einsatz telefonisch klären <span aria-hidden="true">↗</span>
               </a>
             </div>
           </div>
@@ -370,19 +392,22 @@ export default function Home() {
           className="contact"
           id="kontakt"
           data-nav-section="kontakt"
+          aria-labelledby="contact-title"
         >
           <div className="container contact-grid">
             <div className="contact-intro" data-reveal="left">
               <p className="eyebrow">Ihre Anfrage</p>
-              <h2>Beschreiben Sie<br />kurz, was ansteht.</h2>
+              <h2 id="contact-title">Aufgabe schildern.<br />Rückmeldung erhalten.</h2>
               <p>
-                Einsatzort, Aufgabe und gewünschter Zeitraum reichen für den
-                Start. Alles Weitere klären wir persönlich.
+                Wählen Sie einen Leistungsbereich und nennen Sie Einsatzort,
+                Aufgabe und gewünschten Zeitraum. Beim Klick auf
+                „E-Mail-Anfrage vorbereiten“ öffnet sich Ihr E-Mail-Programm;
+                versendet wird die Anfrage erst dort.
               </p>
 
               <div className="contact-direct">
                 <a href="tel:+491738948124">
-                  <span>Telefon · 24/7 erreichbar</span>
+                  <span>Telefon</span>
                   <strong>+49 173 8948124</strong>
                 </a>
                 <a href="mailto:info@universale-dienstleistungen.de">
@@ -396,7 +421,12 @@ export default function Home() {
               </div>
             </div>
 
-            <form className="contact-form" onSubmit={handleSubmit} data-reveal="right">
+            <form
+              className="contact-form"
+              aria-label="E-Mail-Anfrage vorbereiten"
+              onSubmit={handleSubmit}
+              data-reveal="right"
+            >
               <fieldset className="service-picker">
                 <legend>Welche Leistung brauchen Sie?</legend>
                 <div className="service-picker__meta">
@@ -432,22 +462,58 @@ export default function Home() {
                   <div className="form-row form-row--two">
                     <label>
                       <span>Name *</span>
-                      <input name="name" type="text" autoComplete="name" required />
+                      <input
+                        name="name"
+                        type="text"
+                        autoComplete="name"
+                        maxLength={100}
+                        required
+                      />
                     </label>
                     <label>
-                      <span>Telefon *</span>
-                      <input name="phone" type="tel" autoComplete="tel" required />
+                      <span>Telefon (optional)</span>
+                      <input
+                        name="phone"
+                        type="tel"
+                        autoComplete="tel"
+                        maxLength={50}
+                      />
                     </label>
                   </div>
 
                   <div className="form-row form-row--two">
                     <label>
                       <span>E-Mail *</span>
-                      <input name="email" type="email" autoComplete="email" required />
+                      <input
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        maxLength={254}
+                        required
+                      />
                     </label>
                     <label>
                       <span>Ausführungsort *</span>
-                      <input name="location" type="text" autoComplete="street-address" required />
+                      <input
+                        name="location"
+                        type="text"
+                        autoComplete="street-address"
+                        maxLength={200}
+                        required
+                      />
+                    </label>
+                  </div>
+
+                  <div className="form-row">
+                    <label>
+                      <span>Wunschtermin oder Zeitraum</span>
+                      <input
+                        name="date"
+                        type="text"
+                        autoComplete="off"
+                        maxLength={100}
+                        placeholder="z. B. August 2026 oder flexibel"
+                      />
                     </label>
                   </div>
 
@@ -456,21 +522,21 @@ export default function Home() {
                     <textarea
                       name="message"
                       rows={4}
-                      placeholder="Fläche, Aufgabe, gewünschter Zeitraum …"
+                      maxLength={1500}
+                      placeholder="z. B. Größe der Fläche, Umfang der Aufgabe, Zugänglichkeit und weitere Hinweise"
                       required
                     />
                   </label>
 
-                  <label className="privacy-check">
-                    <input name="privacy" type="checkbox" required />
-                    <span>
-                      Ich habe die <a href={`${basePath}/datenschutz/`}>Datenschutzerklärung</a> gelesen und stimme der Kontaktaufnahme zu.
-                    </span>
-                  </label>
+                  <p className="privacy-note">
+                    Hinweise zur Verarbeitung Ihrer Angaben finden Sie in der{" "}
+                    <a href={`${basePath}/datenschutz/`}>Datenschutzerklärung</a>.
+                    Die Nachricht wird erst in Ihrem E-Mail-Programm versendet.
+                  </p>
 
                   <div className="form-submit">
                     <button className="button button--accent" type="submit">
-                      Anfrage vorbereiten <span aria-hidden="true">↗</span>
+                      E-Mail-Anfrage vorbereiten <span aria-hidden="true">↗</span>
                     </button>
                     <p aria-live="polite">{formStatus}</p>
                   </div>

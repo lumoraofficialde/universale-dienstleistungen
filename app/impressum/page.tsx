@@ -5,10 +5,42 @@ import {
   legalStyles as styles,
 } from "../legal-page";
 
+const siteUrl = (
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  "https://lumoraofficialde.github.io/universale-dienstleistungen"
+).replace(/\/+$/, "");
+const canonicalUrl = `${siteUrl}/impressum/`;
+const previewImage = `${siteUrl}/og.jpg`;
+const description =
+  "Anbieterkennzeichnung und rechtliche Angaben der Universale Dienstleistungen GmbH in Büsum.";
+
 export const metadata: Metadata = {
   title: "Impressum | Universale Dienstleistungen",
-  description:
-    "Anbieterkennzeichnung und rechtliche Angaben der Universale Dienstleistungen GmbH in Büsum.",
+  description,
+  alternates: {
+    canonical: canonicalUrl,
+  },
+  openGraph: {
+    title: "Impressum | Universale Dienstleistungen",
+    description,
+    type: "website",
+    locale: "de_DE",
+    url: canonicalUrl,
+    images: [
+      {
+        url: previewImage,
+        width: 1200,
+        height: 630,
+        alt: "Universale Dienstleistungen — Alles im Griff. Bei jedem Wetter.",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Impressum | Universale Dienstleistungen",
+    description,
+    images: [previewImage],
+  },
 };
 
 const navigation = [

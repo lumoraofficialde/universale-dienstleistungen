@@ -493,14 +493,14 @@
   .copyFrame > p:not(.chapter) {
     max-width: 36ch;
     margin-top: 0.78rem;
-    font-size: 0.73rem;
+    font-size: 0.8rem;
     line-height: 1.52;
   }
 
   .copyFrame > strong {
     margin-top: 0.86rem;
     padding-top: 0.52rem;
-    font-size: 0.54rem;
+    font-size: 0.65rem;
   }
 
   .action {
@@ -542,7 +542,7 @@
   }
 
   .copyFrame > p:not(.chapter) {
-    font-size: 0.69rem;
+    font-size: 0.78rem;
   }
 
   .action {

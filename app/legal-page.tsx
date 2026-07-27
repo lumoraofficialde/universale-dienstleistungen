@@ -38,7 +38,7 @@ export function LegalPage({
       <SiteMotion />
       <SiteHeader currentPage={currentPage} />
 
-      <main id="main" className={styles.page}>
+      <main id="main" className={styles.page} tabIndex={-1}>
         <section className={styles.hero} id="top" aria-labelledby="legal-title">
           <div className={styles.heroLines} aria-hidden="true" />
           <div className={`container ${styles.heroGrid}`}>
@@ -48,11 +48,13 @@ export function LegalPage({
               <p className={styles.intro}>{intro}</p>
             </div>
 
-            <div className={styles.documentMark} aria-hidden="true">
-              <span>Dokument</span>
-              <strong>{documentNumber}</strong>
-              <i />
-              <small>Stand · 24. Juli 2026</small>
+            <div className={styles.documentMark}>
+              <span aria-hidden="true">Dokument</span>
+              <strong aria-hidden="true">{documentNumber}</strong>
+              <i aria-hidden="true" />
+              <small>
+                <time dateTime="2026-07-27">Stand · 27. Juli 2026</time>
+              </small>
             </div>
           </div>
         </section>

@@ -2,6 +2,31 @@ import assert from "node:assert/strict";
 import { access, readFile, readdir, stat } from "node:fs/promises";
 import test from "node:test";
 
+const defaultSiteUrl =
+  "https://lumoraofficialde.github.io/universale-dienstleistungen";
+const expectedSiteUrl = (
+  process.env.NEXT_PUBLIC_SITE_URL ?? defaultSiteUrl
+).replace(/\/+$/, "");
+
+const readTextTree = async (directoryUrl) => {
+  const entries = await readdir(directoryUrl, { withFileTypes: true });
+  const chunks = [];
+
+  for (const entry of entries) {
+    const entryUrl = new URL(
+      entry.isDirectory() ? `${entry.name}/` : entry.name,
+      directoryUrl,
+    );
+    if (entry.isDirectory()) {
+      chunks.push(await readTextTree(entryUrl));
+    } else if (/\.(?:css|html|js|mjs|txt|xml)$/i.test(entry.name)) {
+      chunks.push(await readFile(entryUrl, "utf8"));
+    }
+  }
+
+  return chunks.join("\n");
+};
+
 test("exports a complete static GitHub Pages site", async () => {
   const html = await readFile(
     new URL("../dist/client/index.html", import.meta.url),
@@ -9,7 +34,10 @@ test("exports a complete static GitHub Pages site", async () => {
   );
 
   assert.match(html, /<html lang="de">/i);
-  assert.match(html, /<title>Universale Dienstleistungen/i);
+  assert.match(
+    html,
+    /<title>Gartenpflege, Winterdienst, Hausmeisterservice &amp; Entrümpelung \| Universale<\/title>/,
+  );
   assert.match(html, /Alles im Griff\./);
   assert.doesNotMatch(html, /Universale Qualit/);
   assert.doesNotMatch(html, /Wir verlassen eine/);
@@ -18,26 +46,26 @@ test("exports a complete static GitHub Pages site", async () => {
   assert.match(html, /Ein Ansprechpartner\./);
   assert.match(html, /private Haushalte und gewerbliche Objekte/);
   assert.match(html, /Vier Leistungsbereiche/);
-  assert.match(html, /Laufend betreut\./);
-  assert.match(html, /Saisonal vorbereitet\./);
-  assert.match(html, /Gebündelt erledigt\./);
-  assert.match(html, /Einmalig organisiert\./);
-  assert.match(html, /Situation besprechen/);
+  assert.match(html, /Regelmäßig betreut\./);
+  assert.match(html, /Saisonal geplant\./);
+  assert.match(html, /Leistungen gebündelt\./);
+  assert.match(html, /Einmalig beauftragt\./);
+  assert.match(html, /Einsatzmodell besprechen/);
   assert.doesNotMatch(html, /Was oben/);
   assert.doesNotMatch(html, /Vorher-Nachher-Vergleich/);
   assert.doesNotMatch(html, /Arbeit, die man sieht\./);
   assert.doesNotMatch(html, /Wir halten Immobilien/);
   assert.match(html, /24 Stunden am Tag, 7 Tage die Woche erreichbar/);
-  assert.match(html, /Von der Kante bis zur Großfläche\./);
-  assert.match(html, /Saubere Konturen\./);
-  assert.match(html, /Präzise am Objekt\./);
-  assert.match(html, /Effizient auf Fläche\./);
-  assert.match(html, /Schnell vor Ort\./);
+  assert.match(html, /Passende Technik für Fläche und Zugang\./);
+  assert.match(html, /Hecken und Gehölze schneiden\./);
+  assert.match(html, /Grünpflege am Objekt\./);
+  assert.match(html, /Größere Flächen pflegen\./);
+  assert.match(html, /Personal und Technik transportieren\./);
   assert.match(html, /Winter/);
-  assert.match(html, /Drei Schritte\./);
-  assert.match(html, /Sie erzählen\./);
-  assert.match(html, /Wir planen\./);
-  assert.match(html, /Wir erledigen\./);
+  assert.match(html, /Von der Anfrage bis zur Übergabe\./);
+  assert.match(html, /Aufgabe schildern\./);
+  assert.match(html, /Einsatz abstimmen\./);
+  assert.match(html, /Ausführen und übergeben\./);
   assert.doesNotMatch(html, /class="[^"]*\bundefined\b/);
   assert.doesNotMatch(html, /Worauf Sie sich verlassen können\./);
   assert.match(html, /Welche Leistung brauchen Sie\?/);
@@ -49,9 +77,19 @@ test("exports a complete static GitHub Pages site", async () => {
     new URL("../dist/client/team/index.html", import.meta.url),
     "utf8",
   );
-  assert.match(teamHtml, /Ein Team\./);
-  assert.match(teamHtml, /Klare Verantwortung\./);
+  assert.match(teamHtml, /Klare Abläufe\./);
+  assert.match(teamHtml, /Verbindliche Abstimmung\./);
   assert.match(teamHtml, /Woran gute Arbeit erkennbar wird\./);
+  assert.ok(
+    teamHtml.includes(
+      `<link rel="canonical" href="${expectedSiteUrl}/team/"`,
+    ),
+  );
+  assert.ok(
+    teamHtml.includes(
+      `<meta property="og:image" content="${expectedSiteUrl}/og.jpg"`,
+    ),
+  );
 
   const impressumHtml = await readFile(
     new URL("../dist/client/impressum/index.html", import.meta.url),
@@ -76,6 +114,21 @@ test("exports a complete static GitHub Pages site", async () => {
     "utf8",
   );
   assert.match(notFoundHtml, /Diese Fläche haben wir nicht gefunden\./);
+  assert.match(notFoundHtml, /<title>Seite nicht gefunden \| Universale Dienstleistungen<\/title>/);
+  assert.match(notFoundHtml, /<meta name="robots" content="noindex, nofollow"/);
+  assert.equal(
+    [...notFoundHtml.matchAll(/<title>/g)].length,
+    1,
+    "404 export must contain exactly one title",
+  );
+  assert.equal(
+    [...notFoundHtml.matchAll(/<meta\b(?=[^>]*\bname="robots")/gi)].length,
+    1,
+    "404 export must contain exactly one robots directive",
+  );
+  assert.doesNotMatch(notFoundHtml, /<link rel="canonical"/);
+  assert.doesNotMatch(notFoundHtml, /<meta\b(?=[^>]*\bproperty="og:)/i);
+  assert.doesNotMatch(notFoundHtml, /<meta\b(?=[^>]*\bname="twitter:)/i);
   assert.match(notFoundHtml, /Zur Startseite/);
   assert.match(notFoundHtml, /Leistungen ansehen/);
   assert.match(notFoundHtml, /Direkt anrufen/);
@@ -93,6 +146,27 @@ test("exports a complete static GitHub Pages site", async () => {
     html,
     /href="(?:\/universale-dienstleistungen)?\/impressum\/"/,
   );
+
+  const robots = await readFile(
+    new URL("../dist/client/robots.txt", import.meta.url),
+    "utf8",
+  );
+  const sitemap = await readFile(
+    new URL("../dist/client/sitemap.xml", import.meta.url),
+    "utf8",
+  );
+  assert.equal(
+    robots,
+    `User-agent: *\nAllow: /\n\nSitemap: ${expectedSiteUrl}/sitemap.xml\n`,
+  );
+  assert.match(sitemap, /<urlset/);
+  for (const route of ["", "team/", "impressum/", "datenschutz/"]) {
+    assert.ok(
+      sitemap.includes(`<loc>${expectedSiteUrl}/${route}</loc>`),
+      `Sitemap is missing ${expectedSiteUrl}/${route}`,
+    );
+  }
+  assert.doesNotMatch(sitemap, /\/404(?:\/|<)/);
 });
 
 test("keeps the Pages asset prefix, original motion, and natural skin wired in", async () => {
@@ -165,7 +239,10 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(chronogarten, /chronogarten-garten-960\.webp/);
   assert.match(chronogarten, /chronogarten-winter\.webp/);
   assert.match(chronogarten, /chronogarten-winter-960\.webp/);
-  assert.doesNotMatch(chronogarten, /max-width:\s*780px/);
+  assert.doesNotMatch(
+    chronogarten,
+    /matchMedia\(\s*["']max-width:\s*780px["']\s*\)/,
+  );
   assert.doesNotMatch(chronogarten, /addEventListener\("scroll"/);
   assert.match(chronogartenCss, /min-height:\s*500dvh/);
   assert.match(chronogartenCss, /--chrono-top:\s*76px/);
@@ -197,7 +274,7 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(page, /data-stack-card/);
   assert.match(page, /data-stack-segment/);
   assert.match(page, /Einsatzmodell/);
-  assert.match(page, /Situation besprechen/);
+  assert.match(page, /Einsatzmodell besprechen/);
   assert.match(shell, /is-stack-active/);
   assert.match(shell, /data-stack-current/);
   assert.match(shell, /\[data-nav-section\]/);
@@ -212,13 +289,13 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.doesNotMatch(page, /function ServicesEmblem/);
   assert.doesNotMatch(page, /Arbeit, die man sieht\./);
   assert.doesNotMatch(page, /Wir halten Immobilien/);
-  assert.doesNotMatch(page, /services-heading/);
+  assert.match(page, /services-heading/);
   assert.doesNotMatch(page, /image-break/);
   assert.doesNotMatch(page, /tree-shaping/);
   assert.match(page, /FleetScaleJourney/);
   assert.doesNotMatch(page, /FleetGlyph/);
   assert.doesNotMatch(page, /fleetScenarios/);
-  assert.match(fleetJourney, /Von der Kante bis zur Großfläche\./);
+  assert.match(fleetJourney, /Passende Technik für Fläche und Zugang\./);
   assert.match(fleetJourney, /gsap/);
   assert.match(fleetJourney, /ScrollTrigger/);
   assert.match(fleetJourney, /ignoreMobileResize:\s*true/);
@@ -241,9 +318,9 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   for (const fleetName of [
     "Räumfahrzeuge mit Streusystem",
     "Mobile Schneefräsen",
-    "Mähwerke für Großflächen",
-    "Mähwerke für Eigenheime",
-    "Technik für Hecken- und Rückschnitt",
+    "Mähtechnik für größere Flächen",
+    "Mähtechnik für kleinere Flächen",
+    "Technik für Hecken- und Gehölzschnitt",
     "3,5-t-Einsatzfahrzeug",
   ]) {
     assert.ok(fleetJourney.includes(fleetName));
@@ -313,7 +390,7 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(processImpulseJourney, /process-impulse-panorama\.webp/);
   assert.match(processImpulseJourney, /Einsatzort, Aufgabe und gewünschten Zeitraum/);
   assert.match(processImpulseJourney, /Umfang, Termin, Personal und Technik/);
-  assert.match(processImpulseJourney, /Umsetzung, Rückmeldung und Übergabe/);
+  assert.match(processImpulseJourney, /Ausführung, Abstimmung und Übergabe/);
   assert.doesNotMatch(processImpulseJourney, /addEventListener\(\s*["']scroll/);
   assert.doesNotMatch(processImpulseJourney, /killAll/);
   assert.match(processImpulseJourneyCss, /min-height:\s*420dvh/);
@@ -328,13 +405,13 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(css, /\.readiness-rail span\s*\{\s*font-size:\s*clamp\(3\.25rem, 15vw, 4\.5rem\)/);
   assert.match(
     css,
-    /@media \(max-width: 780px\)[\s\S]*?\.hero-kicker\s*\{\s*display:\s*none;/,
+    /@media \(max-width: 780px\)[\s\S]*?\.hero-kicker\s*\{[\s\S]*?display:\s*flex;/,
   );
   assert.match(nextConfig, /output:\s*"export"/);
   assert.match(viteConfig, /NEXT_PUBLIC_BASE_PATH/);
   assert.match(viteConfig, /base:/);
   assert.match(team, /SiteHeader currentPage="team"/);
-  assert.match(team, /Gemeinsam im Einsatz/);
+  assert.match(team, /Abgestimmt im Einsatz/);
   assert.match(team, /team-portrait__frame/);
   assert.doesNotMatch(team, /Menschen\. Technik\. Ergebnis\./);
   assert.doesNotMatch(team, /team-gallery/);
@@ -347,7 +424,7 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   );
   assert.match(
     shell,
-    /\["Einsatzarten",\s*homeHref\("#leistungen"\),\s*"einsatzarten"\]/,
+    /\["Einsatzmodelle",\s*homeHref\("#leistungen"\),\s*"einsatzarten"\]/,
   );
   assert.match(css, /\.mobile-call\s*\{[\s\S]*?width:\s*52px[\s\S]*?border-radius:\s*50%/);
   assert.match(css, /\.scroll-progress\s*\{[\s\S]*?transform:\s*scaleX\(0\)/);
@@ -360,13 +437,9 @@ test("ships optimized responsive visual assets", async () => {
   assert.ok(files.includes("natural-paper-texture.webp"));
   assert.ok(files.includes("natural-grass-ornament.webp"));
   assert.ok(files.includes("gardener-trimming-1280.webp"));
+  assert.ok(files.includes("gardener-trimming-1920.webp"));
   assert.ok(files.includes("snow-clearing-1280.webp"));
-  assert.ok(files.includes("tree-shaping-1280.webp"));
   const fleetJourneyAssets = [
-    "einsatzlandschaft-sommer.webp",
-    "einsatzlandschaft-winter.webp",
-    "einsatzlandschaft-sommer-960.webp",
-    "einsatzlandschaft-winter-960.webp",
     "massstabsreise-kante.webp",
     "massstabsreise-kante-960.webp",
     "massstabsreise-landschaft-sommer.webp",
@@ -413,6 +486,24 @@ test("ships optimized responsive visual assets", async () => {
   for (const file of processImpulseAssets) {
     const asset = await stat(new URL(file, mediaRoot));
     assert.ok(asset.size < 400_000, `${file} is still too large: ${asset.size}`);
+  }
+});
+
+test("does not ship orphaned public media or font assets", async () => {
+  const outputText = await readTextTree(
+    new URL("../dist/client/", import.meta.url),
+  );
+
+  for (const directory of ["media", "fonts"]) {
+    const publicDirectory = new URL(`../public/${directory}/`, import.meta.url);
+    const files = await readdir(publicDirectory);
+
+    for (const file of files) {
+      assert.ok(
+        outputText.includes(file),
+        `Public asset is not referenced by the static export: ${directory}/${file}`,
+      );
+    }
   }
 });
 

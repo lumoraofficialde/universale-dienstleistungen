@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element -- Team-page assets are pre-sized and the static deployment has no runtime image optimizer. */
 "use client";
 
 import {
@@ -13,17 +14,17 @@ const principles = [
   {
     number: "01",
     title: "Direkte Abstimmung",
-    text: "Vom ersten Gespräch bis zur Übergabe bleiben Aufgaben, Termine und Zuständigkeiten nachvollziehbar.",
+    text: "Vom ersten Gespräch bis zur Übergabe stimmen wir Aufgaben, Termine und Zuständigkeiten mit Ihnen ab.",
   },
   {
     number: "02",
     title: "Passende Technik",
-    text: "Team und Maschinenpark werden nach Fläche, Aufgabe und Zeitpunkt zusammengestellt.",
+    text: "Personal und benötigte Technik werden nach Fläche, Aufgabe und Zeitpunkt zusammengestellt.",
   },
   {
     number: "03",
     title: "Saubere Übergabe",
-    text: "Das Ergebnis zählt — und der Zustand, in dem wir Wege, Flächen und Objekte hinterlassen.",
+    text: "Wir setzen den vereinbarten Umfang um, stimmen notwendige Änderungen ab und übergeben den bearbeiteten Bereich geordnet.",
   },
 ];
 
@@ -33,22 +34,29 @@ export default function TeamPage() {
       <SiteMotion />
       <SiteHeader currentPage="team" />
 
-      <main id="main" className="team-page">
+      <main id="main" className="team-page" tabIndex={-1}>
         <section className="team-hero" id="top" aria-labelledby="team-hero-title">
           <div className="team-hero__media" aria-hidden="true">
-            <img src={assetPath("/media/winter-team.webp")} alt="" fetchPriority="high" />
+            <img
+              src={assetPath("/media/winter-team.webp")}
+              width="1080"
+              height="1080"
+              alt=""
+              fetchPriority="high"
+            />
           </div>
           <div className="team-hero__shade" aria-hidden="true" />
           <div className="container team-hero__content">
-            <p className="eyebrow">Das Team hinter dem Einsatz</p>
-            <h1 id="team-hero-title"><span>Ein Team.</span><span>Klare Verantwortung.</span></h1>
+            <p className="eyebrow">So organisieren wir Einsätze</p>
+            <h1 id="team-hero-title"><span>Klare Abläufe.</span><span>Verbindliche Abstimmung.</span></h1>
             <div className="team-hero__foot">
               <p>
-                Von Büsum aus koordinieren wir Menschen, Maschinen und Termine —
-                persönlich, nachvollziehbar und passend zur Aufgabe.
+                Von Büsum aus koordinieren wir Anfragen, Einsätze und Termine.
+                Umfang, Termin, Personal und Technik stimmen wir passend zur
+                Aufgabe ab.
               </p>
               <a className="button button--accent" href={`${basePath}/#kontakt`}>
-                Projekt besprechen <span aria-hidden="true">↗</span>
+                Anfrage starten <span aria-hidden="true">↗</span>
               </a>
             </div>
           </div>
@@ -57,35 +65,37 @@ export default function TeamPage() {
         <section className="team-intro section">
           <div className="container team-intro__grid">
             <div data-reveal="left">
-              <p className="eyebrow eyebrow--dark">Wie wir zusammenarbeiten</p>
-              <h2>Nicht viele Wege.<br />Ein verbindlicher.</h2>
+              <p className="eyebrow eyebrow--dark">Unsere Arbeitsweise</p>
+              <h2>Kurze Wege.<br />Verbindliche Abstimmung.</h2>
             </div>
             <div className="team-intro__copy" data-reveal="right">
               <p>
-                Gute Dienstleistung beginnt vor dem ersten Handgriff: mit einer
-                klaren Einschätzung, erreichbaren Ansprechpartnern und einem Plan,
-                der zur Situation vor Ort passt.
+                Vor dem Einsatz klären wir Aufgabe, Einsatzort, Umfang und
+                Termin. Wenn nötig, besichtigen wir den Einsatzort und stimmen
+                Personal und Technik auf die Aufgabe ab.
               </p>
               <p>
-                Entscheidend ist, dass alle Beteiligten wissen, was ansteht —
-                und dass am Ende nicht nur die Aufgabe erledigt, sondern die
-                Fläche ordentlich übergeben ist.
+                Notwendige Änderungen stimmen wir während der Ausführung mit
+                Ihnen ab. Nach Abschluss übergeben wir den bearbeiteten Bereich
+                geordnet.
               </p>
             </div>
           </div>
         </section>
 
-        <section className="team-portrait" aria-label="Team im Einsatz">
+        <section className="team-portrait" aria-label="Abstimmung im Einsatz">
           <figure className="team-portrait__frame" data-reveal="scale">
             <img
               src={assetPath("/media/winter-vehicle.webp")}
-              alt="Mitarbeiter bei einem gemeinsamen Einsatz am Fahrzeug"
+              width="1080"
+              height="1080"
+              alt="Zwei Personen beim Transport eines Möbelstücks am Fahrzeug"
               loading="lazy"
               data-scroll-parallax
             />
             <div className="team-portrait__shade" aria-hidden="true" />
             <figcaption>
-              <span>Gemeinsam im Einsatz</span>
+              <span>Abgestimmt im Einsatz</span>
               <p>Kurze Abstimmung. Klare Aufgaben. Saubere Übergabe.</p>
             </figcaption>
           </figure>
@@ -111,10 +121,13 @@ export default function TeamPage() {
 
         <section className="team-cta">
           <div className="container team-cta__grid" data-reveal>
-            <p className="eyebrow">Lernen wir Ihr Projekt kennen</p>
+            <p className="eyebrow">Ihre Anfrage</p>
             <h2>Eine Aufgabe.<br />Ein klarer nächster Schritt.</h2>
             <div>
-              <p>Schildern Sie kurz, worum es geht. Wir melden uns mit einer ersten Einschätzung.</p>
+              <p>
+                Schildern Sie kurz, worum es geht. Einsatzort, Umfang und Termin
+                klären wir anschließend mit Ihnen.
+              </p>
               <a className="button button--accent" href={`${basePath}/#kontakt`}>
                 Anfrage starten <span aria-hidden="true">↗</span>
               </a>
