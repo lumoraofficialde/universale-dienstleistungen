@@ -17,10 +17,10 @@ const processSteps = [
   },
   {
     id: "planung",
-    label: "Planung",
-    title: "Wir planen.",
-    text: "Wenn nötig besichtigen wir die Fläche. Danach stimmen wir Umfang, Termin, Personal und Technik mit Ihnen ab.",
-    detail: "Besichtigung, Aufwand und Termin",
+    label: "Klärung",
+    title: "Wir klären.",
+    text: "Wenn nötig besichtigen wir die Fläche. Danach stimmen wir Leistungsumfang, Preisgrundlage, Termin, Personal und Technik mit Ihnen ab.",
+    detail: "Umfang, Kostenbasis und Termin",
   },
   {
     id: "umsetzung",
@@ -45,7 +45,7 @@ export function ProcessImpulseJourney() {
 
   useEffect(() => {
     const media = window.matchMedia(
-      "(prefers-reduced-motion: reduce), (max-height: 636px)",
+      "(prefers-reduced-motion: reduce), (max-width: 780px), (max-height: 636px)",
     );
     const syncMode = () => setStaticMode(media.matches);
 
@@ -67,7 +67,7 @@ export function ProcessImpulseJourney() {
     );
 
     const staticMedia = window.matchMedia(
-      "(prefers-reduced-motion: reduce), (max-height: 636px)",
+      "(prefers-reduced-motion: reduce), (max-width: 780px), (max-height: 636px)",
     );
 
     if (
@@ -301,18 +301,17 @@ export function ProcessImpulseJourney() {
       return () => motionQueries.revert();
     }, root);
 
-    const refreshAfterAssets = async () => {
-      await Promise.allSettled([
-        image.complete ? Promise.resolve() : image.decode().catch(() => undefined),
-        document.fonts?.ready,
-      ]);
+    const refreshAfterAsset = () => {
       if (alive) ScrollTrigger.refresh();
     };
-
-    void refreshAfterAssets();
+    if (!image.complete) {
+      image.addEventListener("load", refreshAfterAsset, { once: true });
+    }
+    void document.fonts?.ready.then(refreshAfterAsset);
 
     return () => {
       alive = false;
+      image.removeEventListener("load", refreshAfterAsset);
       context.revert();
     };
   }, [staticMode]);
@@ -320,8 +319,10 @@ export function ProcessImpulseJourney() {
   return (
     <section
       ref={rootRef}
+      id="ablauf"
       className={styles.root}
       aria-labelledby="process-impulse-title"
+      data-nav-section="ablauf"
       data-enhanced={enhanced ? "true" : "false"}
     >
       <div className={styles.staticStory}>
@@ -349,11 +350,14 @@ export function ProcessImpulseJourney() {
           aria-hidden={enhanced ? true : undefined}
           tabIndex={enhanced ? -1 : undefined}
         >
-          Projekt anfragen <span aria-hidden="true">→</span>
+          Anfrage starten <span aria-hidden="true">→</span>
         </a>
       </div>
 
-      <div className={styles.sticky}>
+      <div
+        className={styles.sticky}
+        aria-hidden={enhanced ? undefined : true}
+      >
         <picture className={styles.media}>
           <source
             srcSet={`${assetPath("/media/process-impulse-panorama-960.webp")} 960w, ${assetPath("/media/process-impulse-panorama.webp")} 1672w`}
@@ -362,6 +366,8 @@ export function ProcessImpulseJourney() {
           <img
             ref={imageRef}
             src={assetPath("/media/process-impulse-panorama.webp")}
+            width={1672}
+            height={941}
             alt=""
             loading="lazy"
             decoding="async"
@@ -438,7 +444,7 @@ export function ProcessImpulseJourney() {
           aria-hidden={enhanced ? undefined : true}
           tabIndex={enhanced ? undefined : -1}
         >
-          Projekt anfragen <span aria-hidden="true">→</span>
+          Anfrage starten <span aria-hidden="true">→</span>
         </a>
       </div>
 

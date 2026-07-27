@@ -2,24 +2,36 @@ import assert from "node:assert/strict";
 import { access, readFile, readdir, stat } from "node:fs/promises";
 import test from "node:test";
 
-test("exports a complete static GitHub Pages site", async () => {
+const expectedSiteUrl = (
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  "https://universale-dienstleistungen.de"
+).replace(/\/+$/, "");
+const isPreview = process.env.NEXT_PUBLIC_PREVIEW === "true";
+
+test("exports a complete static site", async () => {
   const html = await readFile(
     new URL("../dist/client/index.html", import.meta.url),
     "utf8",
   );
 
   assert.match(html, /<html lang="de">/i);
+  assert.ok(html.trimEnd().endsWith("</html>"));
+  assert.doesNotMatch(html, /<\/html>\s*<script/i);
   assert.match(html, /<title>Universale Dienstleistungen/i);
-  assert.match(html, /Alles im Griff\./);
+  assert.match(html, /Vier Leistungen\./);
   assert.doesNotMatch(html, /Universale Qualit/);
   assert.doesNotMatch(html, /Wir verlassen eine/);
   assert.match(html, /Ein Objekt\./);
   assert.match(html, /Vier Bereiche\./);
   assert.match(html, /Ein Ansprechpartner\./);
-  assert.match(html, /private Haushalte und gewerbliche Objekte/);
+  assert.match(html, /private und gewerbliche Objekte in Norddeutschland/);
+  assert.match(html, /Was wir konkret/);
+  assert.match(html, /für Sie übernehmen\./);
+  assert.match(html, /Pflege, Reinigung und Betreuung privater/);
+  assert.match(html, /Treppen, Aufgänge und Gehwege/);
   assert.match(html, /Vier Leistungsbereiche/);
-  assert.match(html, /Laufend betreut\./);
-  assert.match(html, /Saisonal vorbereitet\./);
+  assert.match(html, /Regelm\u00e4\u00dfig gepflegt\./);
+  assert.match(html, /Saisonal ger\u00e4umt\./);
   assert.match(html, /Gebündelt erledigt\./);
   assert.match(html, /Einmalig organisiert\./);
   assert.match(html, /Situation besprechen/);
@@ -32,26 +44,42 @@ test("exports a complete static GitHub Pages site", async () => {
   assert.match(html, /Saubere Konturen\./);
   assert.match(html, /Präzise am Objekt\./);
   assert.match(html, /Effizient auf Fläche\./);
-  assert.match(html, /Schnell vor Ort\./);
+  assert.match(html, /Passend transportiert\./);
   assert.match(html, /Winter/);
   assert.match(html, /Drei Schritte\./);
   assert.match(html, /Sie erzählen\./);
-  assert.match(html, /Wir planen\./);
+  assert.match(html, /Wir kl\u00e4ren\./);
   assert.match(html, /Wir erledigen\./);
   assert.doesNotMatch(html, /class="[^"]*\bundefined\b/);
   assert.doesNotMatch(html, /Worauf Sie sich verlassen können\./);
   assert.match(html, /Welche Leistung brauchen Sie\?/);
-  assert.doesNotMatch(html, /id="faq"/);
-  assert.doesNotMatch(html, /Vier Fragen\. Klare Antworten\./);
+  assert.match(html, /id="faq"/);
+  assert.match(html, /Was vor einer Anfrage/);
+  assert.match(html, /Wie wird der Preis bestimmt\?/);
+  assert.match(html, /Welche Flächen deckt der Winterdienst ab\?/);
+  assert.match(html, /Universale Dienstleistungen GmbH · Amtsgericht Pinneberg/);
+  assert.match(html, /Räumfahrzeuge mit integriertem Streusystem/);
+  assert.match(html, /3,5-t-Einsatzfahrzeug/);
   assert.match(html, /id="kontakt"/);
+  assert.ok(
+    html.includes(`rel="canonical" href="${expectedSiteUrl}/"`),
+    "the canonical URL should match NEXT_PUBLIC_SITE_URL",
+  );
+  assert.match(html, /og\.jpg/);
+  assert.match(html, /application\/ld\+json/);
+  assert.match(html, /"@type":"Organization"/);
+  assert.match(html, /"postalCode":"25761"/);
 
   const teamHtml = await readFile(
     new URL("../dist/client/team/index.html", import.meta.url),
     "utf8",
   );
-  assert.match(teamHtml, /Ein Team\./);
+  assert.match(teamHtml, /Klare Abl\u00e4ufe\./);
   assert.match(teamHtml, /Klare Verantwortung\./);
   assert.match(teamHtml, /Woran gute Arbeit erkennbar wird\./);
+  assert.match(teamHtml, /Nachvollziehbare Unternehmensangaben/);
+  assert.match(teamHtml, /Amtsgericht Pinneberg · HRB 18480 PI/);
+  assert.match(teamHtml, /Barran Uca/);
 
   const impressumHtml = await readFile(
     new URL("../dist/client/impressum/index.html", import.meta.url),
@@ -60,6 +88,7 @@ test("exports a complete static GitHub Pages site", async () => {
   assert.match(impressumHtml, /Angaben gem\u00e4\u00df \u00a7 5 DDG/);
   assert.match(impressumHtml, /Amtsgericht Pinneberg/);
   assert.match(impressumHtml, /HRB 18480 PI/);
+  assert.match(impressumHtml, /Geschäftsführer/);
   assert.match(impressumHtml, /Verbraucherstreitbeilegung/);
 
   const datenschutzHtml = await readFile(
@@ -79,10 +108,24 @@ test("exports a complete static GitHub Pages site", async () => {
   assert.match(notFoundHtml, /Zur Startseite/);
   assert.match(notFoundHtml, /Leistungen ansehen/);
   assert.match(notFoundHtml, /Direkt anrufen/);
+  assert.match(
+    notFoundHtml,
+    /<title>Seite nicht gefunden \| Universale Dienstleistungen<\/title>/,
+  );
+  assert.equal(
+    [...notFoundHtml.matchAll(/<meta name="robots"[^>]*>/g)].length,
+    1,
+  );
+  assert.match(
+    notFoundHtml,
+    /<meta name="robots" content="noindex, nofollow"\/>/,
+  );
+  assert.doesNotMatch(notFoundHtml, /<link\b[^>]*rel="canonical"/i);
+  assert.doesNotMatch(notFoundHtml, /<meta\b[^>]*property="og:url"/i);
   assert.doesNotMatch(notFoundHtml, /Unexpectedly client reference/);
   assert.match(
     notFoundHtml,
-    /href="(?:\/universale-dienstleistungen)?\/#unternehmen"/,
+    /href="(?:\/universale-dienstleistungen)?\/#leistungen"/,
   );
 
   assert.match(
@@ -156,10 +199,10 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(chronogarten, /IntersectionObserver/);
   assert.match(chronogarten, /prefers-reduced-motion/);
   assert.match(chronogarten, /serviceCatalog/);
-  assert.match(chronogarten, /chronogarten-garten\.jpg/);
-  assert.match(chronogarten, /chronogarten-winter\.jpg/);
+  assert.match(chronogarten, /chronogarten-garten\.webp/);
+  assert.match(chronogarten, /chronogarten-winter\.webp/);
   assert.doesNotMatch(chronogarten, /addEventListener\("scroll"/);
-  assert.match(chronogartenCss, /min-height:\s*500dvh/);
+  assert.match(chronogartenCss, /min-height:\s*380dvh/);
   assert.match(chronogartenCss, /--chrono-top:\s*76px/);
   assert.match(
     chronogartenCss,
@@ -168,7 +211,7 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(chronogartenCss, /prefers-reduced-motion:\s*reduce/);
   assert.equal([...serviceCatalog.matchAll(/\bid:\s*"/g)].length, 4);
   for (const serviceName of [
-    "Garten & Grundstück",
+    "Garten & Hauspflege",
     "Winterdienst",
     "Hausmeisterservice",
     "Entrümpelung",
@@ -177,6 +220,8 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   }
   assert.match(page, /service-picker__grid/);
   assert.match(page, /selectedService/);
+  assert.match(page, /Anfrage als E-Mail öffnen/);
+  assert.match(page, /request-fallback/);
   assert.match(
     page,
     /import\s*\{[\s\S]*?\bbasePath\b[\s\S]*?\}\s*from\s*["']\.\/site-shell["']/,
@@ -194,7 +239,8 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(page, /data-nav-section="einsatzarten"/);
   assert.match(page, /data-nav-section="kontakt"/);
   assert.match(chronogarten, /data-nav-section="leistungen"/);
-  assert.match(fleetJourney, /data-nav-section="fuhrpark"/);
+  assert.doesNotMatch(fleetJourney, /data-nav-section=/);
+  assert.match(chronogarten, /aria-live="polite"/);
   assert.doesNotMatch(page, /service-marquee/);
   assert.doesNotMatch(page, /Objektservice/);
   assert.doesNotMatch(page, /function ServicesEmblem/);
@@ -218,10 +264,10 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(fleetJourney, /massstabsreise-kante\.webp/);
   assert.doesNotMatch(fleetJourney, /addEventListener\(\s*["']scroll/);
   for (const fleetName of [
-    "Räumfahrzeuge mit Streusystem",
+    "Räumfahrzeuge mit integriertem Streusystem",
     "Mobile Schneefräsen",
     "Mähwerke für Großflächen",
-    "Mähwerke für Eigenheime",
+    "Wendige Mähtechnik",
     "Technik für Hecken- und Rückschnitt",
     "3,5-t-Einsatzfahrzeug",
   ]) {
@@ -262,7 +308,7 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     css,
     /\.mobile-call\s*\{[\s\S]*?background:\s*var\(--acid\)/,
   );
-  assert.match(fleetJourneyCss, /min-height:\s*500dvh/);
+  assert.match(fleetJourneyCss, /min-height:\s*360dvh/);
   assert.match(fleetJourneyCss, /position:\s*sticky/);
   assert.match(fleetJourneyCss, /@media \(max-width: 780px\)/);
   assert.match(fleetJourneyCss, /prefers-reduced-motion:\s*reduce/);
@@ -282,12 +328,12 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(processImpulseJourney, /aria-labelledby="process-impulse-title"/);
   assert.match(processImpulseJourney, /process-impulse-panorama\.webp/);
   assert.match(processImpulseJourney, /Einsatzort, Aufgabe und gewünschten Zeitraum/);
-  assert.match(processImpulseJourney, /Umfang, Termin, Personal und Technik/);
+  assert.match(processImpulseJourney, /Leistungsumfang, Preisgrundlage, Termin, Personal und Technik/);
   assert.match(processImpulseJourney, /Umsetzung, Rückmeldung und Übergabe/);
   assert.doesNotMatch(processImpulseJourney, /addEventListener\(\s*["']scroll/);
   assert.doesNotMatch(processImpulseJourney, /killAll/);
-  assert.match(processImpulseJourneyCss, /min-height:\s*420dvh/);
-  assert.match(processImpulseJourneyCss, /min-height:\s*360dvh/);
+  assert.match(processImpulseJourneyCss, /min-height:\s*300dvh/);
+  assert.match(processImpulseJourneyCss, /min-height:\s*280dvh/);
   assert.match(processImpulseJourneyCss, /position:\s*sticky/);
   assert.match(processImpulseJourneyCss, /prefers-reduced-motion:\s*reduce/);
   assert.match(processImpulseJourneyCss, /min-height:\s*auto/);
@@ -300,20 +346,20 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(viteConfig, /NEXT_PUBLIC_BASE_PATH/);
   assert.match(viteConfig, /base:/);
   assert.match(team, /SiteHeader currentPage="team"/);
-  assert.match(team, /Gemeinsam im Einsatz/);
+  assert.match(team, /Symbolbild · abgestimmter Einsatz/);
   assert.match(team, /team-portrait__frame/);
   assert.doesNotMatch(team, /Menschen\. Technik\. Ergebnis\./);
   assert.doesNotMatch(team, /team-gallery/);
   assert.match(shell, /<strong>24\/7 anrufen<\/strong>/);
   assert.match(
     shell,
-    /\["Leistungen",\s*homeHref\("#unternehmen",\s*currentPage\),\s*"leistungen"\]/,
+    /\["Leistungen",\s*homeHref\("#leistungen",\s*currentPage\),\s*"leistungen"\]/,
   );
   assert.match(
     shell,
-    /\["Einsatzarten",\s*homeHref\("#leistungen",\s*currentPage\),\s*"einsatzarten"\]/,
+    /\["Einsatzmodelle",\s*homeHref\("#einsatzmodelle",\s*currentPage\),\s*"einsatzarten"\]/,
   );
-  assert.doesNotMatch(shell, /\["Über uns",/);
+  assert.match(shell, /\["Über uns",/);
 });
 
 test("ships optimized responsive visual assets", async () => {
@@ -321,14 +367,10 @@ test("ships optimized responsive visual assets", async () => {
   const files = await readdir(mediaRoot);
   assert.ok(files.includes("natural-paper-texture.webp"));
   assert.ok(files.includes("natural-grass-ornament.webp"));
+  assert.ok(files.includes("universale-logo-160.webp"));
   assert.ok(files.includes("gardener-trimming-1280.webp"));
   assert.ok(files.includes("snow-clearing-1280.webp"));
-  assert.ok(files.includes("tree-shaping-1280.webp"));
   const fleetJourneyAssets = [
-    "einsatzlandschaft-sommer.webp",
-    "einsatzlandschaft-winter.webp",
-    "einsatzlandschaft-sommer-960.webp",
-    "einsatzlandschaft-winter-960.webp",
     "massstabsreise-kante.webp",
     "massstabsreise-kante-960.webp",
     "massstabsreise-landschaft-sommer.webp",
@@ -338,11 +380,16 @@ test("ships optimized responsive visual assets", async () => {
   ];
   fleetJourneyAssets.forEach((file) => assert.ok(files.includes(file)));
   const chronogartenAssets = [
-    "chronogarten-intro.jpg",
-    "chronogarten-garten.jpg",
-    "chronogarten-hausmeister.jpg",
-    "chronogarten-entruempelung.jpg",
-    "chronogarten-winter.jpg",
+    "chronogarten-intro.webp",
+    "chronogarten-intro-960.webp",
+    "chronogarten-garten.webp",
+    "chronogarten-garten-960.webp",
+    "chronogarten-hausmeister.webp",
+    "chronogarten-hausmeister-960.webp",
+    "chronogarten-entruempelung.webp",
+    "chronogarten-entruempelung-960.webp",
+    "chronogarten-winter.webp",
+    "chronogarten-winter-960.webp",
   ];
   chronogartenAssets.forEach((file) => assert.ok(files.includes(file)));
   const processImpulseAssets = [
@@ -413,4 +460,69 @@ test("exports valid prefixed asset references", async () => {
       : reference.slice(1);
     await access(new URL(withoutBasePath, outputRoot));
   }
+});
+
+test("keeps every rendered internal link and anchor reachable", async () => {
+  const outputRoot = new URL("../dist/client/", import.meta.url);
+  const routes = new Map([
+    ["/", "index.html"],
+    ["/team/", "team/index.html"],
+    ["/impressum/", "impressum/index.html"],
+    ["/datenschutz/", "datenschutz/index.html"],
+  ]);
+  const htmlByRoute = new Map(
+    await Promise.all(
+      [...routes].map(async ([route, file]) => [
+        route,
+        await readFile(new URL(file, outputRoot), "utf8"),
+      ]),
+    ),
+  );
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
+  for (const [currentRoute, html] of htmlByRoute) {
+    const currentUrl = `https://example.test${basePath}${currentRoute}`;
+    const hrefs = [...html.matchAll(/<a\b[^>]*\bhref="([^"]+)"/gi)].map(
+      (match) => match[1].replaceAll("&amp;", "&"),
+    );
+
+    for (const href of hrefs) {
+      if (/^(?:mailto:|tel:|https?:\/\/)/i.test(href)) continue;
+
+      const resolved = new URL(href, currentUrl);
+      let route = resolved.pathname;
+      if (basePath && route.startsWith(basePath)) {
+        route = route.slice(basePath.length) || "/";
+      }
+      if (!route.endsWith("/")) route += "/";
+
+      assert.ok(
+        htmlByRoute.has(route),
+        `Missing route for ${href} linked from ${currentRoute}`,
+      );
+
+      if (resolved.hash) {
+        const id = decodeURIComponent(resolved.hash.slice(1));
+        assert.match(
+          htmlByRoute.get(route),
+          new RegExp(`\\bid="${id.replaceAll(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}"`),
+          `Missing #${id} target for ${href} linked from ${currentRoute}`,
+        );
+      }
+    }
+  }
+
+  await access(new URL("robots.txt", outputRoot));
+  await access(new URL("sitemap.xml", outputRoot));
+  const robots = await readFile(new URL("robots.txt", outputRoot), "utf8");
+  const sitemap = await readFile(new URL("sitemap.xml", outputRoot), "utf8");
+  if (isPreview) {
+    assert.match(robots, /Disallow: \//);
+    assert.doesNotMatch(robots, /Sitemap:/);
+  } else {
+    assert.match(robots, new RegExp(`Sitemap: ${expectedSiteUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/sitemap\\.xml`));
+  }
+  assert.match(sitemap, new RegExp(`<loc>${expectedSiteUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/</loc>`));
+  await access(new URL("favicon.png", outputRoot));
+  await access(new URL("og.jpg", outputRoot));
 });

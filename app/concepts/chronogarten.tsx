@@ -18,8 +18,9 @@ const clearance = serviceCatalog[3];
 const stages = [
   {
     key: "intro",
-    image: "/media/chronogarten-intro.jpg",
-    season: "Ein Jahr",
+    image: "/media/chronogarten-intro.webp",
+    smallImage: "/media/chronogarten-intro-960.webp",
+    season: "Überblick",
     number: "365",
     title: ["Ein Objekt.", "Vier Bereiche.", "Ein Ansprechpartner."],
     text: "Für private Haushalte und gewerbliche Objekte — einzeln beauftragt oder passend kombiniert.",
@@ -28,8 +29,10 @@ const stages = [
   },
   {
     key: "garden",
-    image: "/media/chronogarten-garten.jpg",
-    season: "Frühling",
+    image: "/media/chronogarten-garten.webp",
+    smallImage: "/media/chronogarten-garten-960.webp",
+    season: "Gartenpflege",
+    shortTitle: "Garten",
     number: "01",
     title: [garden.title],
     text: garden.text,
@@ -38,8 +41,10 @@ const stages = [
   },
   {
     key: "property",
-    image: "/media/chronogarten-hausmeister.jpg",
-    season: "Sommer",
+    image: "/media/chronogarten-hausmeister.webp",
+    smallImage: "/media/chronogarten-hausmeister-960.webp",
+    season: "Hausservice",
+    shortTitle: "Hausservice",
     number: "02",
     title: [property.title],
     text: property.text,
@@ -48,8 +53,10 @@ const stages = [
   },
   {
     key: "clear",
-    image: "/media/chronogarten-entruempelung.jpg",
-    season: "Herbst",
+    image: "/media/chronogarten-entruempelung.webp",
+    smallImage: "/media/chronogarten-entruempelung-960.webp",
+    season: "Entrümpelung",
+    shortTitle: "Räumung",
     number: "03",
     title: [clearance.title],
     text: clearance.text,
@@ -58,8 +65,10 @@ const stages = [
   },
   {
     key: "winter",
-    image: "/media/chronogarten-winter.jpg",
-    season: "Winter",
+    image: "/media/chronogarten-winter.webp",
+    smallImage: "/media/chronogarten-winter-960.webp",
+    season: "Winterdienst",
+    shortTitle: "Winter",
     number: "04",
     title: [winter.title],
     text: winter.text,
@@ -82,7 +91,9 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
   const activeStage = stages[activeIndex];
 
   useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const media = window.matchMedia(
+      "(prefers-reduced-motion: reduce), (max-width: 780px)",
+    );
     const syncPreference = () => setReducedMotion(media.matches);
 
     syncPreference();
@@ -143,7 +154,7 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
   return (
     <section
       className={styles.root}
-      id="unternehmen"
+      id="leistungsreise"
       aria-labelledby="chronogarten-title"
       data-nav-section="leistungen"
       data-stage={activeStage.key}
@@ -170,8 +181,12 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
                 index === activeIndex ? styles.imageActive : ""
               }`}
               src={assetPath(stage.image)}
+              srcSet={`${assetPath(stage.smallImage)} 960w, ${assetPath(stage.image)} 1586w`}
+              sizes="100vw"
+              width={1586}
+              height={992}
               alt=""
-              loading={index < 2 ? "eager" : "lazy"}
+              loading="lazy"
               decoding="async"
               key={stage.key}
             />
@@ -179,6 +194,10 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
           <img
             className={styles.timeLens}
             src={assetPath(stages[0].image)}
+            srcSet={`${assetPath(stages[0].smallImage)} 960w, ${assetPath(stages[0].image)} 1586w`}
+            sizes="100vw"
+            width={1586}
+            height={992}
             alt=""
             loading="lazy"
             decoding="async"
@@ -201,16 +220,18 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
 
         <div className={styles.copy}>
           <p className={styles.eyebrow}>
-            <span>Chronogarten</span>
+            <span>Vier Leistungsbereiche</span>
             <span>{activeStage.season}</span>
           </p>
-          <div className={styles.copyChange} key={activeStage.key}>
-            <h2 id="chronogarten-title">
-              {activeStage.title.map((line) => (
-                <span key={line}>{line}</span>
-              ))}
-            </h2>
-            <p>{activeStage.text}</p>
+          <div aria-live="polite" aria-atomic="true">
+            <div className={styles.copyChange} key={activeStage.key}>
+              <h2 id="chronogarten-title">
+                {activeStage.title.map((line) => (
+                  <span key={line}>{line}</span>
+                ))}
+              </h2>
+              <p>{activeStage.text}</p>
+            </div>
           </div>
           <a
             className={styles.cta}
@@ -221,7 +242,8 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
               }
             }}
           >
-            Leistung anfragen <span aria-hidden="true">↗</span>
+            {activeStage.service ? "Leistung anfragen" : "Leistung auswählen"}{" "}
+            <span aria-hidden="true">↗</span>
           </a>
         </div>
 
@@ -234,10 +256,11 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
                 type="button"
                 className={isActive ? styles.timelineActive : undefined}
                 aria-current={isActive ? "step" : undefined}
+                aria-label={stage.service?.title}
                 onClick={() => moveToStage(stageIndex)}
                 key={stage.key}
               >
-                <span>{stage.service?.title}</span>
+                <span>{stage.shortTitle}</span>
               </button>
             );
           })}
@@ -247,8 +270,9 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
           className={`${styles.lensHint} ${
             activeStage.key === "winter" ? styles.lensHintVisible : ""
           }`}
+          aria-hidden="true"
         >
-          Zeitlinse <span>Frühjahr ansehen</span>
+          Detailansicht <span>Überblick ansehen</span>
         </p>
       </div>
 

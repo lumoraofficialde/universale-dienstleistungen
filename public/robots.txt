@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://universale-dienstleistungen.de/sitemap.xml

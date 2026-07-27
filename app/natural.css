@@ -16,12 +16,20 @@
   --paper: #f5f1e7;
   --sand: #e8ead7;
   --sage: #cbd2ae;
-  --muted: #69776d;
+  --muted: #5d6b62;
   --line: rgba(24, 51, 40, 0.18);
   --white-line: rgba(255, 255, 255, 0.24);
   --moss: #72874c;
   --moss-deep: #5c713d;
   --paper-bright: #fbf8ef;
+  --radius-control: 4px 4px 16px 4px;
+  --radius-card: 6px 32px 6px 32px;
+  --radius-card-alt: 32px 6px 32px 6px;
+  --radius-media: 6px 40px 6px 36px;
+  --radius-round: 999px;
+  --shadow-sm: 0 8px 24px rgba(16, 45, 35, 0.1);
+  --shadow-md: 0 18px 48px rgba(16, 45, 35, 0.14);
+  --shadow-lg: 0 28px 80px rgba(16, 45, 35, 0.18);
 }
 
 html,
@@ -63,7 +71,7 @@ body::after {
   background-image: url("/media/natural-paper-texture.webp");
   background-size: 640px auto;
   background-blend-mode: soft-light;
-  box-shadow: 0 14px 42px rgba(31, 58, 45, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
 .brand-mark,
@@ -99,12 +107,12 @@ body::after {
 
 /* Shared controls */
 .button {
-  border-radius: 4px 4px 18px 4px;
+  border-radius: var(--radius-control);
 }
 
 .button--accent {
   background: var(--acid);
-  box-shadow: 0 18px 44px rgba(10, 38, 29, 0.18);
+  box-shadow: var(--shadow-md);
 }
 
 .button--accent:hover,
@@ -195,28 +203,58 @@ body::after {
 }
 
 .services.section {
-  padding-block: clamp(1.5rem, 3vw, 3rem) clamp(5.5rem, 7.25vw, 8rem);
+  padding-block: clamp(4.5rem, 7vw, 7rem) clamp(5.5rem, 7.25vw, 8rem);
+}
+
+.services-intro {
+  max-width: 960px;
+  margin-bottom: clamp(3rem, 5vw, 5rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.65fr);
+  gap: 1.5rem 4rem;
+  align-items: end;
+}
+
+.services-intro .eyebrow {
+  grid-column: 1 / -1;
+}
+
+.services-intro h2 {
+  max-width: 12ch;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(3.4rem, 6.5vw, 6.8rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 0.86;
+  text-transform: uppercase;
+}
+
+.services-intro > p:last-child {
+  max-width: 48ch;
+  color: var(--pine-soft);
+  font-size: 0.98rem;
+  line-height: 1.75;
 }
 
 .service-card {
   border: 1px solid rgba(24, 51, 40, 0.1);
-  box-shadow: 0 26px 72px rgba(34, 67, 49, 0.12);
+  box-shadow: var(--shadow-lg);
 }
 
 .service-card--garden {
-  border-radius: 4px 38px 4px 32px;
+  border-radius: var(--radius-card);
 }
 
 .service-card--winter {
-  border-radius: 32px 4px 38px 4px;
+  border-radius: var(--radius-card-alt);
 }
 
 .service-card--house {
-  border-radius: 4px 32px 4px 38px;
+  border-radius: var(--radius-card);
 }
 
 .service-card--clear {
-  border-radius: 38px 4px 32px 4px;
+  border-radius: var(--radius-card-alt);
 }
 
 .service-card__shade {
@@ -297,7 +335,7 @@ body::after {
 }
 
 .service-choice {
-  border-radius: 5px 5px 24px 5px;
+  border-radius: var(--radius-control);
 }
 
 .service-choice.is-selected {
@@ -305,7 +343,7 @@ body::after {
   background-image: url("/media/natural-paper-texture.webp");
   background-size: 520px auto;
   background-blend-mode: soft-light;
-  box-shadow: 0 18px 42px rgba(6, 28, 20, 0.18);
+  box-shadow: var(--shadow-md);
 }
 
 /* Team page: the same natural visual language with a calmer editorial rhythm. */
@@ -377,10 +415,22 @@ body::after {
   color: var(--muted);
 }
 
+.footer-summary address {
+  color: #526159;
+}
+
+.footer-summary address a {
+  color: var(--ink);
+}
+
 .site-footer .brand-name strong,
 .footer-tagline,
+.footer-summary address a:hover,
+.footer-summary address a:focus-visible,
 .footer-links a:hover,
-.footer-links a:focus-visible {
+.footer-links a:focus-visible,
+.footer-meta a:hover,
+.footer-meta a:focus-visible {
   color: var(--ink);
 }
 
@@ -394,7 +444,25 @@ body::after {
   }
 
   .services.section {
-    padding-block: 1.25rem 5.75rem;
+    padding-block: 4.5rem 5.75rem;
+  }
+
+  .services-intro {
+    margin-bottom: 2.75rem;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .services-intro .eyebrow {
+    grid-column: auto;
+  }
+
+  .services-intro h2 {
+    font-size: clamp(3.2rem, 14vw, 5rem);
+  }
+
+  .services-intro > p:last-child {
+    font-size: 0.94rem;
   }
 
   .hero::after {
@@ -428,19 +496,19 @@ body::after {
   }
 
   .service-card--garden {
-    border-radius: 5px 30px 6px 34px;
+    border-radius: var(--radius-card);
   }
 
   .service-card--winter {
-    border-radius: 30px 5px 34px 6px;
+    border-radius: var(--radius-card-alt);
   }
 
   .service-card--house {
-    border-radius: 6px 34px 5px 30px;
+    border-radius: var(--radius-card);
   }
 
   .service-card--clear {
-    border-radius: 34px 6px 30px 5px;
+    border-radius: var(--radius-card-alt);
   }
 
   .service-card--garden img {

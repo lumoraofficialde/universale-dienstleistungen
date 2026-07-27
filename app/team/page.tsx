@@ -27,6 +27,25 @@ const principles = [
   },
 ];
 
+const companyFacts = [
+  {
+    label: "Unternehmen",
+    value: "Universale Dienstleistungen GmbH",
+  },
+  {
+    label: "Geschäftsführung",
+    value: "Barran Uca",
+  },
+  {
+    label: "Sitz",
+    value: "Westerstraße 3 · 25761 Büsum",
+  },
+  {
+    label: "Register",
+    value: "Amtsgericht Pinneberg · HRB 18480 PI",
+  },
+] as const;
+
 export default function TeamPage() {
   return (
     <>
@@ -36,19 +55,26 @@ export default function TeamPage() {
       <main id="main" className="team-page">
         <section className="team-hero" id="top" aria-labelledby="team-hero-title">
           <div className="team-hero__media" aria-hidden="true">
-            <img src={assetPath("/media/winter-team.webp")} alt="" fetchPriority="high" />
+            <img
+              src={assetPath("/media/winter-team.webp")}
+              width={1080}
+              height={1080}
+              alt=""
+              fetchPriority="high"
+            />
           </div>
           <div className="team-hero__shade" aria-hidden="true" />
           <div className="container team-hero__content">
-            <p className="eyebrow">Das Team hinter dem Einsatz</p>
-            <h1 id="team-hero-title"><span>Ein Team.</span><span>Klare Verantwortung.</span></h1>
+            <p className="eyebrow">Unternehmen & Arbeitsweise</p>
+            <p className="team-hero__media-note">Bildmotiv · Symbolbild</p>
+            <h1 id="team-hero-title"><span>Klare Abläufe.</span><span>Klare Verantwortung.</span></h1>
             <div className="team-hero__foot">
               <p>
-                Von Büsum aus koordinieren wir Menschen, Maschinen und Termine —
+                Von Büsum aus koordinieren wir Aufgaben, Technik und Termine —
                 persönlich, nachvollziehbar und passend zur Aufgabe.
               </p>
               <a className="button button--accent" href={`${basePath}/#kontakt`}>
-                Projekt besprechen <span aria-hidden="true">↗</span>
+                Aufgabe besprechen <span aria-hidden="true">↗</span>
               </a>
             </div>
           </div>
@@ -58,34 +84,74 @@ export default function TeamPage() {
           <div className="container team-intro__grid">
             <div data-reveal="left">
               <p className="eyebrow eyebrow--dark">Wie wir zusammenarbeiten</p>
-              <h2>Nicht viele Wege.<br />Ein verbindlicher.</h2>
+              <h2>Klare Abstimmung.<br />Vom Start bis zur Übergabe.</h2>
             </div>
             <div className="team-intro__copy" data-reveal="right">
               <p>
-                Gute Dienstleistung beginnt vor dem ersten Handgriff: mit einer
-                klaren Einschätzung, erreichbaren Ansprechpartnern und einem Plan,
-                der zur Situation vor Ort passt.
+                Gute Dienstleistung beginnt vor dem ersten Handgriff: mit einem
+                unverbindlichen Beratungsgespräch, einer klaren Einschätzung und
+                einem Plan, der zur Situation vor Ort passt.
               </p>
               <p>
-                Entscheidend ist, dass alle Beteiligten wissen, was ansteht —
-                und dass am Ende nicht nur die Aufgabe erledigt, sondern die
-                Fläche ordentlich übergeben ist.
+                Von Büsum aus betreuen wir private und gewerbliche Objekte.
+                Wenn Aufgabe und Umfang nicht aus der Ferne belastbar geklärt
+                werden können, vereinbaren wir eine Besichtigung vor Ort.
               </p>
             </div>
           </div>
         </section>
 
-        <section className="team-portrait" aria-label="Team im Einsatz">
+        <section
+          className="team-company"
+          aria-labelledby="team-company-title"
+        >
+          <div className="container">
+            <div className="team-company__head" data-reveal>
+              <p className="eyebrow">Nachvollziehbare Unternehmensangaben</p>
+              <h2 id="team-company-title">
+                Das Unternehmen
+                <span>hinter dem Auftrag.</span>
+              </h2>
+              <p>
+                Universale Dienstleistungen bündelt Garten- und Hauspflege,
+                Winterdienst, Hausmeisterservice und Entrümpelung über einen
+                zentralen Ansprechpartner. Einsatzgebiet, Leistungsumfang und
+                notwendige Technik klären wir passend zum Auftrag.
+              </p>
+            </div>
+            <dl className="team-company__facts">
+              {companyFacts.map((fact, index) => (
+                <div data-reveal={index % 2 ? "right" : "left"} key={fact.label}>
+                  <dt>{String(index + 1).padStart(2, "0")} · {fact.label}</dt>
+                  <dd>{fact.value}</dd>
+                </div>
+              ))}
+            </dl>
+            <div className="team-company__contact" data-reveal>
+              <p>
+                Standort Büsum · Einsätze in Norddeutschland und je nach
+                Auftrag darüber hinaus nach individueller Abstimmung.
+              </p>
+              <a className="button button--accent" href="tel:+491738948124">
+                Verfügbarkeit besprechen <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section className="team-portrait" aria-label="Abgestimmter Arbeitseinsatz">
           <figure className="team-portrait__frame" data-reveal="scale">
             <img
               src={assetPath("/media/winter-vehicle.webp")}
-              alt="Mitarbeiter bei einem gemeinsamen Einsatz am Fahrzeug"
+              width={1080}
+              height={1080}
+              alt="Zwei Helfer tragen ein Möbelstück aus einem Transportfahrzeug"
               loading="lazy"
               data-scroll-parallax
             />
             <div className="team-portrait__shade" aria-hidden="true" />
             <figcaption>
-              <span>Gemeinsam im Einsatz</span>
+              <span>Symbolbild · abgestimmter Einsatz</span>
               <p>Kurze Abstimmung. Klare Aufgaben. Saubere Übergabe.</p>
             </figcaption>
           </figure>
@@ -116,7 +182,7 @@ export default function TeamPage() {
             <div>
               <p>Schildern Sie kurz, worum es geht. Wir melden uns mit einer ersten Einschätzung.</p>
               <a className="button button--accent" href={`${basePath}/#kontakt`}>
-                Anfrage starten <span aria-hidden="true">↗</span>
+                Unverbindlich anfragen <span aria-hidden="true">↗</span>
               </a>
             </div>
           </div>
