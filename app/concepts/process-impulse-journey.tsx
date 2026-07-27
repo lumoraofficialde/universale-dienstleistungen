@@ -40,13 +40,14 @@ export function ProcessImpulseJourney() {
   const sweepRef = useRef<HTMLDivElement>(null);
   const copyRefs = useRef<Array<HTMLDivElement | null>>([]);
   const actionRef = useRef<HTMLAnchorElement>(null);
+  const actionAvailableRef = useRef(false);
   const [staticMode, setStaticMode] = useState(false);
   const [enhanced, setEnhanced] = useState(false);
   const [actionAvailable, setActionAvailable] = useState(false);
 
   useEffect(() => {
     const media = window.matchMedia(
-      "(prefers-reduced-motion: reduce), (max-height: 636px)",
+      "(prefers-reduced-motion: reduce), (max-width: 780px) and (orientation: landscape), (min-width: 781px) and (max-height: 636px)",
     );
     const syncMode = () => setStaticMode(media.matches);
 
@@ -68,7 +69,7 @@ export function ProcessImpulseJourney() {
     );
 
     const staticMedia = window.matchMedia(
-      "(prefers-reduced-motion: reduce), (max-height: 636px)",
+      "(prefers-reduced-motion: reduce), (max-width: 780px) and (orientation: landscape), (min-width: 781px) and (max-height: 636px)",
     );
 
     if (
@@ -84,6 +85,7 @@ export function ProcessImpulseJourney() {
       copies.length !== processSteps.length + 1
     ) {
       setEnhanced(false);
+      actionAvailableRef.current = false;
       setActionAvailable(false);
       return;
     }
@@ -167,13 +169,13 @@ export function ProcessImpulseJourney() {
               trigger: root,
               start: () => `top top+=${topOffset}`,
               end: "bottom bottom",
-              scrub: isMobile ? 0.55 : 0.65,
+              scrub: isMobile ? true : 0.65,
               invalidateOnRefresh: true,
               onUpdate: (trigger) => {
                 const actionIsAvailable = trigger.progress >= 0.9;
-                setActionAvailable((current) =>
-                  current === actionIsAvailable ? current : actionIsAvailable,
-                );
+                if (actionIsAvailable === actionAvailableRef.current) return;
+                actionAvailableRef.current = actionIsAvailable;
+                setActionAvailable(actionIsAvailable);
               },
             },
           });
@@ -324,6 +326,7 @@ export function ProcessImpulseJourney() {
 
     return () => {
       alive = false;
+      actionAvailableRef.current = false;
       setActionAvailable(false);
       context.revert();
     };

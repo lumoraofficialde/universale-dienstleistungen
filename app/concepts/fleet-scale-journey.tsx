@@ -68,7 +68,7 @@ export function FleetScaleJourney() {
 
   useEffect(() => {
     const media = window.matchMedia(
-      "(prefers-reduced-motion: reduce), (max-width: 780px) and (max-height: 620px)",
+      "(prefers-reduced-motion: reduce), (max-width: 780px) and (orientation: landscape)",
     );
     const syncMode = () => setStaticMode(media.matches);
 
@@ -177,7 +177,7 @@ export function FleetScaleJourney() {
               trigger: root,
               start: () => `top top+=${topOffset}`,
               end: "bottom bottom",
-              scrub: 0.7,
+              scrub: isMobile ? true : 0.7,
               invalidateOnRefresh: true,
               onUpdate: (self) => {
                 const nextIndex = Math.min(

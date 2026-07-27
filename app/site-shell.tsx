@@ -36,12 +36,16 @@ export function SiteMotion() {
     const root = document.documentElement;
     const header = document.querySelector<HTMLElement>(".site-header");
     const progress = document.querySelector<HTMLElement>(".scroll-progress");
+    const backToTop = document.querySelector<HTMLElement>(".back-to-top");
     const hero = document.querySelector<HTMLElement>(".hero, .team-hero");
     let animationFrame = 0;
     let measureFrame = 0;
     let headerScrolled: boolean | null = null;
+    let backToTopVisible: boolean | null = null;
     let activeStackIndex = -1;
     let stackThresholds: number[] = [];
+    let measuredViewportWidth = window.innerWidth;
+    let staticMotionEnabled: boolean | null = null;
     let alive = true;
     const parallaxElements = Array.from(
       document.querySelectorAll<HTMLElement>("[data-scroll-parallax]"),
@@ -122,34 +126,48 @@ export function SiteMotion() {
       return nextIndex;
     };
 
+    const syncStaticMotion = () => {
+      const nextStaticMotion =
+        reducedMotion.matches || mobileStack.matches;
+      if (nextStaticMotion === staticMotionEnabled) {
+        return nextStaticMotion;
+      }
+
+      staticMotionEnabled = nextStaticMotion;
+      if (nextStaticMotion) {
+        hero?.style.setProperty("--hero-shift", "0px");
+        hero?.style.setProperty("--hero-content-y", "0px");
+        hero?.style.setProperty("--hero-fade", "1");
+        parallaxElements.forEach((element) => {
+          element.style.setProperty("--parallax-y", "0px");
+        });
+      }
+      return nextStaticMotion;
+    };
+
     const updateScrollEffects = () => {
       const y = window.scrollY;
       const viewportHeight = window.innerHeight;
+      const hasStaticMotion = syncStaticMotion();
       const max = document.documentElement.scrollHeight - viewportHeight;
       progress?.style.setProperty(
         "transform",
         `scaleX(${max > 0 ? y / max : 0})`,
       );
 
-      if (hero && y <= viewportHeight * 1.25) {
-        if (reducedMotion.matches) {
-          hero.style.setProperty("--hero-shift", "0px");
-          hero.style.setProperty("--hero-content-y", "0px");
-          hero.style.setProperty("--hero-fade", "1");
-        } else {
-          hero.style.setProperty(
-            "--hero-shift",
-            `${Math.min(y * 0.58, 280)}px`,
-          );
-          hero.style.setProperty(
-            "--hero-content-y",
-            `${Math.min(y * 0.1, 84)}px`,
-          );
-          hero.style.setProperty(
-            "--hero-fade",
-            `${Math.max(0.08, 1 - y / (viewportHeight * 0.82))}`,
-          );
-        }
+      if (hero && !hasStaticMotion && y <= viewportHeight * 1.25) {
+        hero.style.setProperty(
+          "--hero-shift",
+          `${Math.min(y * 0.58, 280)}px`,
+        );
+        hero.style.setProperty(
+          "--hero-content-y",
+          `${Math.min(y * 0.1, 84)}px`,
+        );
+        hero.style.setProperty(
+          "--hero-fade",
+          `${Math.max(0.08, 1 - y / (viewportHeight * 0.82))}`,
+        );
       }
 
       const nextHeaderScrolled = y > 40;
@@ -158,23 +176,34 @@ export function SiteMotion() {
         header?.classList.toggle("is-scrolled", nextHeaderScrolled);
       }
 
-      parallaxElements.forEach((element) => {
-        if (reducedMotion.matches) {
-          element.style.setProperty("--parallax-y", "0px");
-          return;
-        }
-        const rect = element.getBoundingClientRect();
-        if (rect.bottom < -viewportHeight || rect.top > viewportHeight * 2) {
-          return;
-        }
-        const distanceFromCenter =
-          (rect.top + rect.height / 2 - viewportHeight / 2) /
-          (viewportHeight + rect.height);
-        element.style.setProperty(
-          "--parallax-y",
-          `${Math.max(-44, Math.min(44, distanceFromCenter * -96))}px`,
+      const nextBackToTopVisible = y > Math.max(560, viewportHeight * 0.9);
+      if (nextBackToTopVisible !== backToTopVisible) {
+        backToTopVisible = nextBackToTopVisible;
+        backToTop?.classList.toggle("is-visible", nextBackToTopVisible);
+        backToTop?.setAttribute(
+          "aria-hidden",
+          nextBackToTopVisible ? "false" : "true",
         );
-      });
+        if (backToTop instanceof HTMLAnchorElement) {
+          backToTop.tabIndex = nextBackToTopVisible ? 0 : -1;
+        }
+      }
+
+      if (!hasStaticMotion) {
+        parallaxElements.forEach((element) => {
+          const rect = element.getBoundingClientRect();
+          if (rect.bottom < -viewportHeight || rect.top > viewportHeight * 2) {
+            return;
+          }
+          const distanceFromCenter =
+            (rect.top + rect.height / 2 - viewportHeight / 2) /
+            (viewportHeight + rect.height);
+          element.style.setProperty(
+            "--parallax-y",
+            `${Math.max(-44, Math.min(44, distanceFromCenter * -96))}px`,
+          );
+        });
+      }
 
       applyStackState(getActiveStackIndex(y));
 
@@ -188,6 +217,17 @@ export function SiteMotion() {
     };
 
     const onResize = () => {
+      const nextViewportWidth = window.innerWidth;
+      const isHeightOnlyMobileResize =
+        mobileStack.matches &&
+        Math.abs(nextViewportWidth - measuredViewportWidth) < 1;
+      measuredViewportWidth = nextViewportWidth;
+
+      if (isHeightOnlyMobileResize) {
+        onScroll();
+        return;
+      }
+
       if (measureFrame) window.cancelAnimationFrame(measureFrame);
       measureFrame = window.requestAnimationFrame(() => {
         measureStack();
@@ -202,7 +242,11 @@ export function SiteMotion() {
           if (entry.isIntersecting) {
             entry.target.classList.add("is-visible");
             entry.target.classList.remove("is-past");
+            if (mobileStack.matches) {
+              observer.unobserve(entry.target);
+            }
           } else {
+            if (mobileStack.matches) return;
             entry.target.classList.remove("is-visible");
             entry.target.classList.toggle(
               "is-past",
@@ -397,7 +441,9 @@ export function SiteMotion() {
 
       const behavior =
         mobileViewport.matches || reducedMotion.matches ? "auto" : "smooth";
-      const focusTarget = Boolean(link.closest(".mobile-menu"));
+      const focusTarget = Boolean(
+        link.closest(".mobile-menu") || link.matches(".back-to-top"),
+      );
       window.requestAnimationFrame(() => {
         moveToTarget(id, behavior, focusTarget);
         window.history.pushState(null, "", nextUrl.href);
@@ -433,7 +479,21 @@ export function SiteMotion() {
     };
   }, []);
 
-  return <div className="scroll-progress" aria-hidden="true" />;
+  return (
+    <>
+      <div className="scroll-progress" aria-hidden="true" />
+      <a
+        className="back-to-top"
+        href="#top"
+        aria-label="Zum Seitenanfang"
+        aria-hidden="true"
+        tabIndex={-1}
+        title="Zum Seitenanfang"
+      >
+        <span aria-hidden="true">↑</span>
+      </a>
+    </>
+  );
 }
 
 export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage }) {
@@ -486,6 +546,7 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
       document.querySelector<HTMLElement>("main"),
       document.querySelector<HTMLElement>(".site-footer"),
       document.querySelector<HTMLElement>(".mobile-call"),
+      document.querySelector<HTMLElement>(".back-to-top"),
     ].filter((element): element is HTMLElement => Boolean(element));
     const focusable = [
       menuButtonRef.current,
@@ -540,6 +601,7 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
     let animationFrame = 0;
     let resizeFrame = 0;
     let alive = true;
+    let measuredViewportWidth = window.innerWidth;
     let navigationStops: Array<{
       section: HomeNavSection | "";
       top: number;
@@ -579,6 +641,16 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
     };
 
     const scheduleMeasure = () => {
+      const nextViewportWidth = window.innerWidth;
+      if (
+        nextViewportWidth <= 780 &&
+        Math.abs(nextViewportWidth - measuredViewportWidth) < 1
+      ) {
+        scheduleUpdate();
+        return;
+      }
+      measuredViewportWidth = nextViewportWidth;
+
       if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
       resizeFrame = window.requestAnimationFrame(() => {
         measureNavigationStops();
@@ -831,11 +903,14 @@ export function MobileCall() {
       ref={callRef}
       className={`mobile-call${contextHidden ? " is-context-hidden" : ""}`}
       href="tel:+491738948124"
-      aria-label="Jetzt anrufen: +49 173 8948124"
+      aria-label="24/7 erreichbar – jetzt anrufen: +49 173 8948124"
       aria-hidden={contextHidden ? true : undefined}
       tabIndex={contextHidden ? -1 : undefined}
-      title="Jetzt anrufen"
+      title="24/7 erreichbar – jetzt anrufen"
     >
+      <span className="mobile-call__label" aria-hidden="true">
+        24/7 erreichbar
+      </span>
       <svg
         viewBox="0 0 24 24"
         width="24"

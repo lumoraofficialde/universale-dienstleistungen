@@ -536,17 +536,40 @@
 @media (max-width: 780px) {
   .root {
     --chrono-top: 68px;
-    min-height: 500dvh;
+    min-height: 500svh;
   }
 
   .sticky {
-    min-height: 560px;
+    height: calc(100svh - var(--chrono-top));
+    min-height: min(560px, calc(100svh - var(--chrono-top)));
   }
 
   .image,
   .timeLens {
     object-position: 61% center;
     transform-origin: 62% 52%;
+    will-change: auto;
+  }
+
+  .image {
+    transition:
+      opacity 280ms cubic-bezier(0.2, 0.78, 0.2, 1),
+      transform 420ms cubic-bezier(0.2, 0.78, 0.2, 1),
+      filter 280ms ease;
+  }
+
+  .timeLens,
+  .seasonWipe {
+    display: none;
+  }
+
+  .weather i {
+    animation-play-state: paused;
+  }
+
+  .root[data-stage="clear"] .weather i,
+  .root[data-stage="winter"] .weather i {
+    animation-play-state: running;
   }
 
   .root[data-stage="garden"] .imageActive {
@@ -617,6 +640,10 @@
     right: 18px;
     left: 18px;
     width: auto;
+  }
+
+  .copyChange {
+    animation-duration: 320ms;
   }
 
   .eyebrow {
@@ -754,7 +781,7 @@
 }
 
 @media (prefers-reduced-motion: reduce),
-  (max-width: 780px) and (max-height: 620px) {
+  (max-width: 780px) and (orientation: landscape) {
   .root {
     min-height: auto;
     background:
@@ -825,7 +852,7 @@
 }
 
 @media (max-width: 780px) and (prefers-reduced-motion: reduce),
-  (max-width: 780px) and (max-height: 620px) {
+  (max-width: 780px) and (orientation: landscape) {
   .sticky {
     height: 58svh;
     min-height: 320px;

@@ -406,7 +406,7 @@ body::after {
 
 @media (max-width: 780px) {
   body::after {
-    opacity: 0.032;
+    display: none;
   }
 
   .services.section {
@@ -477,6 +477,7 @@ body::after {
 
   .site-header.is-scrolled {
     background-color: rgba(247, 244, 235, 0.96);
+    background-blend-mode: normal;
   }
 }
 

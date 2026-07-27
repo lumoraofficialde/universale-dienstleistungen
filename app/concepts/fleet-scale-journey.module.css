@@ -277,10 +277,17 @@
 @media (max-width: 780px) {
   .root {
     --journey-top: 68px;
+    min-height: 500svh;
+  }
+
+  .lightSweep,
+  .frostFront {
+    display: none;
   }
 
   .sticky {
-    min-height: 520px;
+    height: calc(100svh - var(--journey-top));
+    min-height: min(520px, calc(100svh - var(--journey-top)));
   }
 
   .layer img {
@@ -422,7 +429,7 @@
 }
 
 @media (prefers-reduced-motion: reduce),
-  (max-width: 780px) and (max-height: 620px) {
+  (max-width: 780px) and (orientation: landscape) {
   .root {
     min-height: auto;
     color: var(--ink);
@@ -534,7 +541,7 @@
 }
 
 @media (max-width: 780px) and (prefers-reduced-motion: reduce),
-  (max-width: 780px) and (max-height: 620px) {
+  (max-width: 780px) and (orientation: landscape) {
   .sticky {
     height: 62svh;
     min-height: 390px;

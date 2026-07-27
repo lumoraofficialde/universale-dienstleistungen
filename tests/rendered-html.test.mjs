@@ -250,6 +250,10 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     chronogartenCss,
     /@media \(max-width: 780px\)[\s\S]*?--chrono-top:\s*68px/,
   );
+  assert.match(
+    chronogartenCss,
+    /@media \(max-width: 780px\)[\s\S]*?min-height:\s*500svh[\s\S]*?height:\s*calc\(100svh - var\(--chrono-top\)\)/,
+  );
   assert.match(chronogartenCss, /prefers-reduced-motion:\s*reduce/);
   assert.doesNotMatch(
     chronogartenCss,
@@ -299,13 +303,17 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(fleetJourney, /gsap/);
   assert.match(fleetJourney, /ScrollTrigger/);
   assert.match(fleetJourney, /ignoreMobileResize:\s*true/);
-  assert.match(fleetJourney, /scrub:\s*0\.7/);
+  assert.match(fleetJourney, /scrub:\s*isMobile\s*\?\s*true\s*:\s*0\.7/);
   assert.match(fleetJourney, /data-fleet-journey-marker/);
   assert.match(fleetJourney, /aria-current/);
   assert.match(fleetJourney, /prefers-reduced-motion/);
   assert.match(
     fleetJourney,
-    /\(max-width: 780px\) and \(max-height: 620px\)/,
+    /\(max-width: 780px\) and \(orientation: landscape\)/,
+  );
+  assert.doesNotMatch(
+    fleetJourney,
+    /\(max-width: 780px\) and \(max-height:/,
   );
   assert.doesNotMatch(
     fleetJourney,
@@ -361,6 +369,14 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     /\.mobile-call\s*\{[\s\S]*?background:\s*var\(--acid\)/,
   );
   assert.match(fleetJourneyCss, /min-height:\s*500dvh/);
+  assert.match(
+    fleetJourneyCss,
+    /@media \(max-width: 780px\)[\s\S]*?min-height:\s*500svh[\s\S]*?height:\s*calc\(100svh - var\(--journey-top\)\)/,
+  );
+  assert.match(
+    fleetJourneyCss,
+    /@media \(max-width: 780px\)[\s\S]*?\.lightSweep,[\s\S]*?\.frostFront\s*\{[\s\S]*?display:\s*none/,
+  );
   assert.match(fleetJourneyCss, /position:\s*sticky/);
   assert.match(fleetJourneyCss, /@media \(max-width: 780px\)/);
   assert.match(fleetJourneyCss, /prefers-reduced-motion:\s*reduce/);
@@ -380,7 +396,7 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(processImpulseJourney, /ignoreMobileResize:\s*true/);
   assert.match(processImpulseJourney, /getTotalLength\(\)/);
   assert.match(processImpulseJourney, /strokeDasharray/);
-  assert.match(processImpulseJourney, /scrub:\s*isMobile\s*\?\s*0\.55\s*:\s*0\.65/);
+  assert.match(processImpulseJourney, /scrub:\s*isMobile\s*\?\s*true\s*:\s*0\.65/);
   assert.match(processImpulseJourney, /prefers-reduced-motion/);
   assert.doesNotMatch(
     processImpulseJourney,
@@ -394,8 +410,22 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.doesNotMatch(processImpulseJourney, /addEventListener\(\s*["']scroll/);
   assert.doesNotMatch(processImpulseJourney, /killAll/);
   assert.match(processImpulseJourneyCss, /min-height:\s*420dvh/);
-  assert.match(processImpulseJourneyCss, /min-height:\s*360dvh/);
+  assert.match(processImpulseJourneyCss, /min-height:\s*360svh/);
+  assert.match(processImpulseJourneyCss, /height:\s*calc\(100svh - 68px\)/);
   assert.match(processImpulseJourneyCss, /position:\s*sticky/);
+  for (const mobileMotionSource of [
+    chronogartenCss,
+    fleetJourney,
+    fleetJourneyCss,
+    processImpulseJourney,
+    processImpulseJourneyCss,
+    css,
+  ]) {
+    assert.doesNotMatch(
+      mobileMotionSource,
+      /\(max-width: 780px\) and \(max-height:/,
+    );
+  }
   assert.match(processImpulseJourneyCss, /prefers-reduced-motion:\s*reduce/);
   assert.doesNotMatch(
     processImpulseJourneyCss,
@@ -415,7 +445,8 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(team, /team-portrait__frame/);
   assert.doesNotMatch(team, /Menschen\. Technik\. Ergebnis\./);
   assert.doesNotMatch(team, /team-gallery/);
-  assert.match(shell, /aria-label="Jetzt anrufen: \+49 173 8948124"/);
+  assert.match(shell, /aria-label="24\/7 erreichbar – jetzt anrufen: \+49 173 8948124"/);
+  assert.match(shell, /className="mobile-call__label"[\s\S]*?24\/7 erreichbar/);
   assert.match(shell, /<svg[\s\S]*?viewBox="0 0 24 24"/);
   assert.doesNotMatch(shell, /<strong>24\/7 anrufen<\/strong>/);
   assert.match(
@@ -428,6 +459,12 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   );
   assert.match(css, /\.mobile-call\s*\{[\s\S]*?width:\s*52px[\s\S]*?border-radius:\s*50%/);
   assert.match(css, /\.scroll-progress\s*\{[\s\S]*?transform:\s*scaleX\(0\)/);
+  assert.match(shell, /className="back-to-top"/);
+  assert.match(
+    shell,
+    /link\.closest\("\.mobile-menu"\) \|\| link\.matches\("\.back-to-top"\)/,
+  );
+  assert.match(css, /\.back-to-top\s*\{[\s\S]*?width:\s*44px[\s\S]*?height:\s*44px/);
   assert.doesNotMatch(shell, /\["Über uns",/);
 });
 
