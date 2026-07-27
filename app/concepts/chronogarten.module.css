@@ -553,7 +553,7 @@
 
   .image {
     transition:
-      opacity 280ms cubic-bezier(0.2, 0.78, 0.2, 1),
+      opacity 600ms ease-in-out,
       transform 420ms cubic-bezier(0.2, 0.78, 0.2, 1),
       filter 280ms ease;
   }

@@ -254,6 +254,10 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     chronogartenCss,
     /@media \(max-width: 780px\)[\s\S]*?min-height:\s*500svh[\s\S]*?height:\s*calc\(100svh - var\(--chrono-top\)\)/,
   );
+  assert.match(
+    chronogartenCss,
+    /@media \(max-width: 780px\)[\s\S]*?\.image\s*\{[\s\S]*?opacity\s+600ms\s+ease-in-out/,
+  );
   assert.match(chronogartenCss, /prefers-reduced-motion:\s*reduce/);
   assert.doesNotMatch(
     chronogartenCss,
