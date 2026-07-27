@@ -304,18 +304,13 @@ export function SiteMotion() {
         normalizePathname(nextUrl.pathname) ===
           normalizePathname(currentUrl.pathname) &&
         nextUrl.search === currentUrl.search;
-      const homeSection = link.dataset.homeSection;
-      const localHomeTarget = homeSection
-        ? document.getElementById(homeSection)
-        : null;
-      if ((!isSameDocument && !localHomeTarget) || !nextUrl.hash) return;
+      if (!isSameDocument || !nextUrl.hash) return;
 
-      const id =
-        homeSection ?? decodeURIComponent(nextUrl.hash.slice(1));
+      const id = decodeURIComponent(nextUrl.hash.slice(1));
       const target =
         id === "top"
           ? document.documentElement
-          : localHomeTarget ?? document.getElementById(id);
+          : document.getElementById(id);
       if (!target) return;
 
       event.preventDefault();
@@ -502,7 +497,6 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
           <a
             className="brand"
             href={homeHref("#top")}
-            data-home-section={currentPage === "home" ? "top" : undefined}
             aria-label="Universale Startseite"
           >
             <span className="brand-mark"><img src={assetPath("/media/universale-logo-160.webp")} width={160} height={157} alt="" /></span>
@@ -513,7 +507,6 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
             {links.map(([label, href, section]) => (
               <a
                 href={href}
-                data-home-section={section ? href.split("#")[1] : undefined}
                 aria-current={getAriaCurrent(label, section)}
                 key={label}
               >
@@ -544,7 +537,6 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
             {links.map(([label, href, section], index) => (
               <a
                 href={href}
-                data-home-section={section ? href.split("#")[1] : undefined}
                 aria-current={getAriaCurrent(label, section)}
                 onClick={closeMenu}
                 key={label}
@@ -570,7 +562,6 @@ export function SiteFooter({ currentPage = "home" }: { currentPage?: SitePage })
         <a
           className="brand brand--footer"
           href={homeHref("#top")}
-          data-home-section={currentPage === "home" ? "top" : undefined}
           aria-label="Zurück zum Anfang"
         >
           <span className="brand-mark"><img src={assetPath("/media/universale-logo-160.webp")} width={160} height={157} alt="" /></span>
@@ -588,11 +579,11 @@ export function SiteFooter({ currentPage = "home" }: { currentPage?: SitePage })
           </address>
         </div>
         <div className="footer-links">
-          <a href={homeHref("#leistungen")} data-home-section="leistungen">Leistungen</a>
-          <a href={homeHref("#einsatzmodelle")} data-home-section="einsatzmodelle">Einsatzmodelle</a>
-          <a href={homeHref("#ablauf")} data-home-section="ablauf">Ablauf</a>
+          <a href={homeHref("#leistungen")}>Leistungen</a>
+          <a href={homeHref("#einsatzmodelle")}>Einsatzmodelle</a>
+          <a href={homeHref("#ablauf")}>Ablauf</a>
           <a href={`${basePath}/team/`}>Über uns</a>
-          <a href={homeHref("#kontakt")} data-home-section="kontakt">Kontakt</a>
+          <a href={homeHref("#kontakt")}>Kontakt</a>
         </div>
       </div>
       <div className="container footer-meta">
