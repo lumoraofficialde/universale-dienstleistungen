@@ -550,7 +550,7 @@
 
 @media (max-width: 360px) {
   .copyFrame {
-    bottom: calc(164px + env(safe-area-inset-bottom));
+    bottom: calc(176px + env(safe-area-inset-bottom));
   }
 
   .copyFrame h2,

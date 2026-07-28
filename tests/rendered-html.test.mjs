@@ -21,6 +21,17 @@ const servicePageCases = [
     heading: "Gartenpflege.",
     coreContent: "Rasen- und Grünpflege",
     schemaName: "Gartenpflege",
+    insightHeading: "Pflege, die zur Fläche passt.",
+    whatsappText:
+      "Moin, ich interessiere mich für Gartenpflege durch Universale Dienstleistungen.",
+    visualAssets: [
+      "service-gartenpflege-hero.webp",
+      "gardener-trimming.webp",
+      "massstabsreise-kante.webp",
+      "grass-cutting.webp",
+      "massstabsreise-landschaft-sommer.webp",
+      "service-gartenpflege-insight.webp",
+    ],
   },
   {
     route: "/leistungen/winterdienst/",
@@ -30,6 +41,17 @@ const servicePageCases = [
     heading: "Winterdienst.",
     coreContent: "Zufahrten",
     schemaName: "Winterdienst",
+    insightHeading: "Winterflächen. Vorher klar festgelegt.",
+    whatsappText:
+      "Moin, ich interessiere mich für Winterdienst durch Universale Dienstleistungen.",
+    visualAssets: [
+      "service-winterdienst-hero.webp",
+      "snow-clearing.webp",
+      "chronogarten-winter.webp",
+      "massstabsreise-landschaft-winter.webp",
+      "service-winterdienst-technik.webp",
+      "service-winterdienst-insight.webp",
+    ],
   },
   {
     route: "/leistungen/hausmeisterservice/",
@@ -39,6 +61,17 @@ const servicePageCases = [
     heading: "Hausmeisterservice.",
     coreContent: "Kleinreparaturen.",
     schemaName: "Hausmeisterservice",
+    insightHeading: "Kontrolle mit klarer Grenze.",
+    whatsappText:
+      "Moin, ich interessiere mich für den Hausmeisterservice von Universale Dienstleistungen.",
+    visualAssets: [
+      "service-hausmeisterservice-hero.webp",
+      "chronogarten-hausmeister.webp",
+      "process-impulse-panorama.webp",
+      "service-hausmeisterservice-reparatur.webp",
+      "chronogarten-intro.webp",
+      "service-hausmeisterservice-insight.webp",
+    ],
   },
   {
     route: "/leistungen/entruempelung/",
@@ -48,6 +81,17 @@ const servicePageCases = [
     heading: "Entrümpelung.",
     coreContent: "Haushaltsauflösungen",
     schemaName: "Entrümpelung",
+    insightHeading: "Erst abstimmen. Dann geordnet räumen.",
+    whatsappText:
+      "Moin, ich interessiere mich für eine Entrümpelung durch Universale Dienstleistungen.",
+    visualAssets: [
+      "service-entruempelung-hero.webp",
+      "chronogarten-entruempelung.webp",
+      "service-entruempelung-gewerbe.webp",
+      "service-entruempelung-demontage.webp",
+      "service-entruempelung-renovierung.webp",
+      "service-entruempelung-insight.webp",
+    ],
   },
   {
     route: "/leistungen/objektbetreuung/",
@@ -58,6 +102,17 @@ const servicePageCases = [
     heading: "Ein Objekt.",
     coreContent: "Pflege. Reinigung. Betreuung.",
     schemaName: "Gewerbliche Objektbetreuung",
+    insightHeading: "Ein Objekt. Ein abgestimmtes Paket.",
+    whatsappText:
+      "Moin, ich interessiere mich für gewerbliche Objektbetreuung durch Universale Dienstleistungen.",
+    visualAssets: [
+      "service-objektbetreuung-hero.webp",
+      "chronogarten-hausmeister.webp",
+      "grass-cutting.webp",
+      "massstabsreise-landschaft-winter.webp",
+      "process-impulse-panorama.webp",
+      "service-objektbetreuung-insight.webp",
+    ],
   },
 ];
 
@@ -279,6 +334,32 @@ test("exports five German service pages with metadata, links, and Service schema
       serviceHtml.includes(servicePage.coreContent),
       `${servicePage.route} is missing its core service content`,
     );
+    assert.ok(
+      serviceHtml.includes(servicePage.insightHeading),
+      `${servicePage.route} is missing its individual second journey`,
+    );
+    assert.equal(
+      new Set(servicePage.visualAssets).size,
+      servicePage.visualAssets.length,
+      `${servicePage.route} must use distinct journey visuals`,
+    );
+    for (const visualAsset of servicePage.visualAssets) {
+      assert.ok(
+        serviceHtml.includes(visualAsset),
+        `${servicePage.route} is missing ${visualAsset}`,
+      );
+    }
+    const whatsappHref = `https://wa.me/491738948124?text=${encodeURIComponent(
+      servicePage.whatsappText,
+    )}`;
+    assert.ok(
+      serviceHtml.includes(`href="${whatsappHref}"`),
+      `${servicePage.route} is missing its service-specific WhatsApp link`,
+    );
+    assert.match(
+      serviceHtml,
+      /href="https:\/\/wa\.me\/491738948124\?text=[^"]+"[^>]*target="_blank"[^>]*rel="noopener noreferrer"/,
+    );
     assert.match(
       serviceHtml,
       /<script\b[^>]*type="application\/ld\+json"[^>]*>/i,
@@ -381,6 +462,11 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(chronogarten, /IntersectionObserver/);
   assert.match(chronogarten, /prefers-reduced-motion/);
   assert.match(chronogarten, /serviceCatalog/);
+  assert.match(chronogarten, /activeStage\.service \? "Mehr erfahren"/);
+  assert.doesNotMatch(
+    chronogarten,
+    /`\$\{activeStage\.service\.formValue\} ansehen`/,
+  );
   assert.match(chronogarten, /chronogarten-garten\.webp/);
   assert.match(chronogarten, /chronogarten-garten-960\.webp/);
   assert.match(chronogarten, /chronogarten-garten-mobile\.webp/);
@@ -634,6 +720,14 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.doesNotMatch(team, /team-gallery/);
   assert.match(shell, /aria-label="24\/7 erreichbar – jetzt anrufen: \+49 173 8948124"/);
   assert.match(shell, /className="mobile-call__label"[\s\S]*?24\/7 erreichbar/);
+  assert.match(shell, /https:\/\/wa\.me\/491738948124\?text=/);
+  assert.match(shell, /className="mobile-whatsapp"/);
+  assert.match(shell, /target="_blank"/);
+  assert.match(shell, /rel="noopener noreferrer"/);
+  assert.match(
+    shell,
+    /aria-label="WhatsApp-Chat mit Universale Dienstleistungen öffnen"/,
+  );
   assert.match(shell, /<svg[\s\S]*?viewBox="0 0 24 24"/);
   assert.doesNotMatch(shell, /<strong>24\/7 anrufen<\/strong>/);
   assert.match(
@@ -644,7 +738,14 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     shell,
     /\["Einsatzmodelle",\s*homeHref\("#leistungen"\),\s*"einsatzarten"\]/,
   );
-  assert.match(css, /\.mobile-call\s*\{[\s\S]*?width:\s*52px[\s\S]*?border-radius:\s*50%/);
+  assert.match(
+    css,
+    /\.mobile-call,\s*[\r\n]+\s*\.mobile-whatsapp\s*\{[\s\S]*?width:\s*52px[\s\S]*?border-radius:\s*50%/,
+  );
+  assert.match(
+    css,
+    /\.mobile-contact-actions\s*\{[\s\S]*?display:\s*grid[\s\S]*?gap:\s*10px/,
+  );
   assert.match(css, /\.scroll-progress\s*\{[\s\S]*?transform:\s*scaleX\(0\)/);
   assert.match(shell, /className="back-to-top"/);
   assert.match(
@@ -695,6 +796,28 @@ test("ships optimized responsive visual assets", async () => {
     "process-impulse-panorama-960.webp",
   ];
   processImpulseAssets.forEach((file) => assert.ok(files.includes(file)));
+  const serviceJourneyAssetBases = [
+    "service-gartenpflege-hero",
+    "service-gartenpflege-insight",
+    "service-winterdienst-hero",
+    "service-winterdienst-technik",
+    "service-winterdienst-insight",
+    "service-hausmeisterservice-hero",
+    "service-hausmeisterservice-reparatur",
+    "service-hausmeisterservice-insight",
+    "service-entruempelung-hero",
+    "service-entruempelung-gewerbe",
+    "service-entruempelung-demontage",
+    "service-entruempelung-renovierung",
+    "service-entruempelung-insight",
+    "service-objektbetreuung-hero",
+    "service-objektbetreuung-insight",
+  ];
+  const serviceJourneyAssets = serviceJourneyAssetBases.flatMap((base) => [
+    `${base}.webp`,
+    `${base}-960.webp`,
+  ]);
+  serviceJourneyAssets.forEach((file) => assert.ok(files.includes(file)));
   assert.ok(!files.includes("terraschnitt-finished.jpg"));
   assert.ok(!files.includes("terraschnitt-before.jpg"));
   assert.ok(!files.includes("natural-paper-texture.png"));
@@ -715,6 +838,10 @@ test("ships optimized responsive visual assets", async () => {
   for (const file of processImpulseAssets) {
     const asset = await stat(new URL(file, mediaRoot));
     assert.ok(asset.size < 400_000, `${file} is still too large: ${asset.size}`);
+  }
+  for (const file of serviceJourneyAssets) {
+    const asset = await stat(new URL(file, mediaRoot));
+    assert.ok(asset.size < 500_000, `${file} is still too large: ${asset.size}`);
   }
 });
 

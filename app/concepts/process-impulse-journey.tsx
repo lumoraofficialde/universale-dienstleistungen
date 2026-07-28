@@ -7,31 +7,89 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { assetPath } from "../site-shell";
 import styles from "./process-impulse-journey.module.css";
 
-const processSteps = [
-  {
-    id: "anfrage",
-    label: "Anfrage",
-    title: "Aufgabe schildern.",
-    text: "Nennen Sie uns Einsatzort, Aufgabe und gewünschten Zeitraum — telefonisch, per E-Mail oder über den Kontaktbereich.",
-    detail: "Ort, Aufgabe und Zeitraum",
-  },
-  {
-    id: "planung",
-    label: "Abstimmung",
-    title: "Einsatz abstimmen.",
-    text: "Wenn nötig besichtigen wir den Einsatzort. Danach stimmen wir Umfang, Termin, Personal und Technik mit Ihnen ab.",
-    detail: "Besichtigung, Aufwand und Termin",
-  },
-  {
-    id: "umsetzung",
-    label: "Ausführung",
-    title: "Ausführen und übergeben.",
-    text: "Wir setzen den vereinbarten Umfang um, stimmen notwendige Änderungen mit Ihnen ab und übergeben den Bereich geordnet.",
-    detail: "Ausführung, Abstimmung und Übergabe",
-  },
-] as const;
+export type ProcessImpulseStep = {
+  id: string;
+  label: string;
+  title: string;
+  text: string;
+  detail: string;
+};
 
-export function ProcessImpulseJourney() {
+export type ProcessImpulseJourneyData = {
+  eyebrow: string;
+  title: string;
+  intro: string;
+  image: {
+    src: string;
+    srcSet?: string;
+    width: number;
+    height: number;
+    position?: string;
+  };
+  steps: readonly [
+    ProcessImpulseStep,
+    ProcessImpulseStep,
+    ProcessImpulseStep,
+  ];
+  actionLabel?: string;
+};
+
+const defaultJourney: ProcessImpulseJourneyData = {
+  eyebrow: "So arbeiten wir",
+  title: "Von der Anfrage bis zur Übergabe.",
+  intro:
+    "Vom ersten Kontakt bis zur Übergabe stimmen wir die nächsten Schritte mit Ihnen ab.",
+  image: {
+    src: "/media/process-impulse-panorama.webp",
+    srcSet:
+      "/media/process-impulse-panorama-960.webp 960w, /media/process-impulse-panorama.webp 1672w",
+    width: 1672,
+    height: 941,
+    position: "center",
+  },
+  steps: [
+    {
+      id: "anfrage",
+      label: "Anfrage",
+      title: "Aufgabe schildern.",
+      text: "Nennen Sie uns Einsatzort, Aufgabe und gewünschten Zeitraum — telefonisch, per E-Mail oder über den Kontaktbereich.",
+      detail: "Ort, Aufgabe und Zeitraum",
+    },
+    {
+      id: "planung",
+      label: "Abstimmung",
+      title: "Einsatz abstimmen.",
+      text: "Wenn nötig besichtigen wir den Einsatzort. Danach stimmen wir Umfang, Termin, Personal und Technik mit Ihnen ab.",
+      detail: "Besichtigung, Aufwand und Termin",
+    },
+    {
+      id: "umsetzung",
+      label: "Ausführung",
+      title: "Ausführen und übergeben.",
+      text: "Wir setzen den vereinbarten Umfang um, stimmen notwendige Änderungen mit Ihnen ab und übergeben den Bereich geordnet.",
+      detail: "Ausführung, Abstimmung und Übergabe",
+    },
+  ],
+};
+
+function withAssetPathInSrcSet(srcSet?: string) {
+  if (!srcSet) return undefined;
+
+  return srcSet
+    .split(",")
+    .map((candidate) => {
+      const [path, descriptor] = candidate.trim().split(/\s+/, 2);
+      return `${assetPath(path)}${descriptor ? ` ${descriptor}` : ""}`;
+    })
+    .join(", ");
+}
+
+export function ProcessImpulseJourney({
+  data = defaultJourney,
+}: {
+  data?: ProcessImpulseJourneyData;
+}) {
+  const { eyebrow, title, intro, image, steps } = data;
   const rootRef = useRef<HTMLElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const desktopPathRef = useRef<SVGPathElement>(null);
@@ -87,7 +145,7 @@ export function ProcessImpulseJourney() {
       !pulse ||
       !sweep ||
       !action ||
-      copies.length !== processSteps.length + 1
+      copies.length !== steps.length + 1
     ) {
       actionAvailableRef.current = false;
       setActionAvailable(false);
@@ -320,7 +378,7 @@ export function ProcessImpulseJourney() {
       setActionAvailable(false);
       context.revert();
     };
-  }, [enhanced, staticMode]);
+  }, [enhanced, staticMode, steps]);
 
   return (
     <section
@@ -331,14 +389,11 @@ export function ProcessImpulseJourney() {
       data-enhanced={enhanced ? "true" : "false"}
     >
       <div className={styles.staticStory}>
-        <p className={styles.staticChapter}>So arbeiten wir</p>
-        <h2 id="process-impulse-title">Von der Anfrage bis zur Übergabe.</h2>
-        <p className={styles.staticIntro}>
-          Vom ersten Kontakt bis zur Übergabe stimmen wir die nächsten Schritte
-          mit Ihnen ab.
-        </p>
+        <p className={styles.staticChapter}>{eyebrow}</p>
+        <h2 id="process-impulse-title">{title}</h2>
+        <p className={styles.staticIntro}>{intro}</p>
         <ol>
-          {processSteps.map((step) => (
+          {steps.map((step) => (
             <li key={step.id}>
               <p>{step.label}</p>
               <div>
@@ -355,24 +410,28 @@ export function ProcessImpulseJourney() {
           aria-hidden={enhanced ? true : undefined}
           tabIndex={enhanced ? -1 : undefined}
         >
-          Anfrage starten <span aria-hidden="true">→</span>
+          {data.actionLabel ?? "Anfrage starten"}{" "}
+          <span aria-hidden="true">→</span>
         </a>
       </div>
 
       <div className={styles.sticky}>
         <picture className={styles.media}>
-          <source
-            srcSet={`${assetPath("/media/process-impulse-panorama-960.webp")} 960w, ${assetPath("/media/process-impulse-panorama.webp")} 1672w`}
-            sizes="(max-width: 780px) 178vh, 100vw"
-          />
+          {image.srcSet ? (
+            <source
+              srcSet={withAssetPathInSrcSet(image.srcSet)}
+              sizes="(max-width: 780px) 178vh, 100vw"
+            />
+          ) : null}
           <img
             ref={imageRef}
-            src={assetPath("/media/process-impulse-panorama.webp")}
-            width="1672"
-            height="941"
+            src={assetPath(image.src)}
+            width={image.width}
+            height={image.height}
             alt=""
             loading="lazy"
             decoding="async"
+            style={{ objectPosition: image.position ?? "center" }}
           />
         </picture>
 
@@ -415,15 +474,12 @@ export function ProcessImpulseJourney() {
             }}
             className={styles.copyFrame}
           >
-            <p className={styles.chapter}>So arbeiten wir</p>
-            <h2>Von der Anfrage bis zur Übergabe.</h2>
-            <p>
-              Vom ersten Kontakt bis zur Übergabe stimmen wir die nächsten
-              Schritte mit Ihnen ab.
-            </p>
+            <p className={styles.chapter}>{eyebrow}</p>
+            <h2>{title}</h2>
+            <p>{intro}</p>
           </div>
 
-          {processSteps.map((step, index) => (
+          {steps.map((step, index) => (
             <div
               ref={(node) => {
                 copyRefs.current[index + 1] = node;
@@ -446,7 +502,8 @@ export function ProcessImpulseJourney() {
           aria-hidden={enhanced && actionAvailable ? undefined : true}
           tabIndex={enhanced && actionAvailable ? undefined : -1}
         >
-          Anfrage starten <span aria-hidden="true">→</span>
+          {data.actionLabel ?? "Anfrage starten"}{" "}
+          <span aria-hidden="true">→</span>
         </a>
       </div>
 

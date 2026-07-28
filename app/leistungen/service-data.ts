@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ProcessImpulseJourneyData } from "../concepts/process-impulse-journey";
 
 export type ServiceImage = {
   src: string;
@@ -36,6 +37,7 @@ export type ServicePageData = {
   metaDescription: string;
   schemaServiceType: string;
   stages: ServiceStage[];
+  insight: ProcessImpulseJourneyData;
   closingTitle: string[];
   closingText: string;
   whatsappText: string;
@@ -167,6 +169,156 @@ const images = {
     position: "center",
     mobilePosition: "64% center",
   },
+  gardenHero: {
+    src: "/media/service-gartenpflege-hero.webp",
+    srcSet:
+      "/media/service-gartenpflege-hero-960.webp 960w, /media/service-gartenpflege-hero.webp 1536w",
+    width: 1672,
+    height: 941,
+    alt: "Mitarbeiter beim präzisen Heckenschnitt an einem norddeutschen Grundstück",
+    position: "center",
+    mobilePosition: "68% center",
+  },
+  gardenInsight: {
+    src: "/media/service-gartenpflege-insight.webp",
+    srcSet:
+      "/media/service-gartenpflege-insight-960.webp 960w, /media/service-gartenpflege-insight.webp 1536w",
+    width: 1672,
+    height: 941,
+    alt: "Abstimmung der Gartenpflege an gepflegten Beeten und Rasenkanten",
+    position: "center",
+    mobilePosition: "64% center",
+  },
+  winterHero: {
+    src: "/media/service-winterdienst-hero.webp",
+    srcSet:
+      "/media/service-winterdienst-hero-960.webp 960w, /media/service-winterdienst-hero.webp 1536w",
+    width: 1672,
+    height: 941,
+    alt: "Winterdienst an einem geräumten Zugang zu einem Gewerbeobjekt",
+    position: "center",
+    mobilePosition: "68% center",
+  },
+  winterEquipment: {
+    src: "/media/service-winterdienst-technik.webp",
+    srcSet:
+      "/media/service-winterdienst-technik-960.webp 960w, /media/service-winterdienst-technik.webp 1536w",
+    width: 1672,
+    height: 941,
+    alt: "Kompakte Räumtechnik im Einsatz auf einem schmalen Winterweg",
+    position: "center",
+    mobilePosition: "66% center",
+  },
+  winterInsight: {
+    src: "/media/service-winterdienst-insight.webp",
+    srcSet:
+      "/media/service-winterdienst-insight-960.webp 960w, /media/service-winterdienst-insight.webp 1536w",
+    width: 1672,
+    height: 941,
+    alt: "Vorbereitung eines Winterdiensteinsatzes an einem Gewerbeobjekt",
+    position: "center",
+    mobilePosition: "66% center",
+  },
+  caretakerHero: {
+    src: "/media/service-hausmeisterservice-hero.webp",
+    srcSet:
+      "/media/service-hausmeisterservice-hero-960.webp 960w, /media/service-hausmeisterservice-hero.webp 1536w",
+    width: 1672,
+    height: 941,
+    alt: "Mitarbeiter kontrolliert den Eingang eines modernen Objekts",
+    position: "center",
+    mobilePosition: "66% center",
+  },
+  caretakerRepair: {
+    src: "/media/service-hausmeisterservice-reparatur.webp",
+    srcSet:
+      "/media/service-hausmeisterservice-reparatur-960.webp 960w, /media/service-hausmeisterservice-reparatur.webp 1536w",
+    width: 1672,
+    height: 941,
+    alt: "Mitarbeiter bei einer zulässigen Kleinreparatur an einer Tür",
+    position: "center",
+    mobilePosition: "65% center",
+  },
+  caretakerInsight: {
+    src: "/media/service-hausmeisterservice-insight.webp",
+    srcSet:
+      "/media/service-hausmeisterservice-insight-960.webp 960w, /media/service-hausmeisterservice-insight.webp 1536w",
+    width: 1672,
+    height: 941,
+    alt: "Strukturierter Kontrollgang durch ein betreutes Objekt",
+    position: "center",
+    mobilePosition: "66% center",
+  },
+  clearanceHero: {
+    src: "/media/service-entruempelung-hero.webp",
+    srcSet:
+      "/media/service-entruempelung-hero-960.webp 960w, /media/service-entruempelung-hero.webp 1536w",
+    width: 1672,
+    height: 941,
+    alt: "Zwei Mitarbeiter tragen geordnet ein Möbelstück aus einer Wohnung",
+    position: "center",
+    mobilePosition: "68% center",
+  },
+  clearanceBusiness: {
+    src: "/media/service-entruempelung-gewerbe.webp",
+    srcSet:
+      "/media/service-entruempelung-gewerbe-960.webp 960w, /media/service-entruempelung-gewerbe.webp 1536w",
+    width: 1672,
+    height: 941,
+    alt: "Geordnete Räumung eines kleinen Gewerberaums",
+    position: "center",
+    mobilePosition: "66% center",
+  },
+  clearanceDismantling: {
+    src: "/media/service-entruempelung-demontage.webp",
+    srcSet:
+      "/media/service-entruempelung-demontage-960.webp 960w, /media/service-entruempelung-demontage.webp 1536w",
+    width: 1672,
+    height: 941,
+    alt: "Sichere Demontage eines Regalelements mit Handwerkzeug",
+    position: "center",
+    mobilePosition: "66% center",
+  },
+  clearanceRenovation: {
+    src: "/media/service-entruempelung-renovierung.webp",
+    srcSet:
+      "/media/service-entruempelung-renovierung-960.webp 960w, /media/service-entruempelung-renovierung.webp 1536w",
+    width: 1672,
+    height: 941,
+    alt: "Vorbereitung kleiner Renovierungsarbeiten in einem geräumten Raum",
+    position: "center",
+    mobilePosition: "66% center",
+  },
+  clearanceInsight: {
+    src: "/media/service-entruempelung-insight.webp",
+    srcSet:
+      "/media/service-entruempelung-insight-960.webp 960w, /media/service-entruempelung-insight.webp 1536w",
+    width: 1672,
+    height: 941,
+    alt: "Abstimmung zur geordneten Übergabe eines geräumten Raums",
+    position: "center",
+    mobilePosition: "66% center",
+  },
+  commercialHero: {
+    src: "/media/service-objektbetreuung-hero.webp",
+    srcSet:
+      "/media/service-objektbetreuung-hero-960.webp 960w, /media/service-objektbetreuung-hero.webp 1536w",
+    width: 1672,
+    height: 941,
+    alt: "Kontrolle von Gebäudezugang und Außenbereich eines Gewerbeobjekts",
+    position: "center",
+    mobilePosition: "66% center",
+  },
+  commercialInsight: {
+    src: "/media/service-objektbetreuung-insight.webp",
+    srcSet:
+      "/media/service-objektbetreuung-insight-960.webp 960w, /media/service-objektbetreuung-insight.webp 1536w",
+    width: 1672,
+    height: 941,
+    alt: "Koordinierte Betreuung eines gewerblichen Objekts innen und außen",
+    position: "center",
+    mobilePosition: "66% center",
+  },
 } satisfies Record<string, ServiceImage>;
 
 export const servicePages: Record<ServiceSlug, ServicePageData> = {
@@ -190,7 +342,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Kleine und größere Flächen",
           "Umfang vorab abgestimmt",
         ],
-        image: images.gardenStory,
+        image: images.gardenHero,
       },
       {
         key: "hecke",
@@ -245,6 +397,37 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
         image: images.summerGrounds,
       },
     ],
+    insight: {
+      eyebrow: "Pflege nach Maß",
+      title: "Pflege, die zur Fläche passt.",
+      intro:
+        "Bewuchs, Zugang und Größe bestimmen, welche Arbeiten und welche Technik für ein Grundstück sinnvoll sind.",
+      image: images.gardenInsight,
+      steps: [
+        {
+          id: "garten-bestand",
+          label: "Bestand",
+          title: "Fläche und Bewuchs lesen.",
+          text: "Rasen, Kanten, Hecken und Gehölze werden getrennt betrachtet. So wird sichtbar, welche Pflege tatsächlich gebraucht wird.",
+          detail: "Rasen, Gehölze und Zugänge",
+        },
+        {
+          id: "garten-umfang",
+          label: "Umfang",
+          title: "Leistungen passend verbinden.",
+          text: "Rasenpflege, Heckenformschnitt und Rückschnitt lassen sich als klar beschriebenes Aufgabenpaket zusammenstellen.",
+          detail: "Aufgaben auswählen und abgrenzen",
+        },
+        {
+          id: "garten-technik",
+          label: "Technik",
+          title: "Die passende Maschine wählen.",
+          text: "Wendige Mähtechnik eignet sich für kleinere Bereiche, größere Mähwerke für entsprechend weitläufige Grünflächen.",
+          detail: "Fläche, Zugang und Mähtechnik",
+        },
+      ],
+      actionLabel: "Gartenpflege anfragen",
+    },
     closingTitle: ["Ihre Fläche.", "Klar besprochen."],
     closingText:
       "Nennen Sie uns Fläche, Gehölze und gewünschten Umfang. Vom Standort Büsum aus stimmen wir Aufgabe und Termin direkt mit Ihnen ab.",
@@ -271,7 +454,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Flächen streuen",
           "Einsatzumfang vorab klären",
         ],
-        image: images.winterStory,
+        image: images.winterHero,
       },
       {
         key: "raeumen",
@@ -327,9 +510,40 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Integrierte Streusysteme",
           "Mobile Schneefräsen",
         ],
-        image: images.snowWork,
+        image: images.winterEquipment,
       },
     ],
+    insight: {
+      eyebrow: "Vor dem ersten Einsatz",
+      title: "Winterflächen. Vorher klar festgelegt.",
+      intro:
+        "Treppen, Wege und größere Flächen brauchen unterschiedliche Abläufe. Deshalb wird der Einsatzbereich vorab eindeutig beschrieben.",
+      image: images.winterInsight,
+      steps: [
+        {
+          id: "winter-bereiche",
+          label: "Bereiche",
+          title: "Zonen eindeutig benennen.",
+          text: "Treppen, Aufgänge, Gehwege, Zufahrten, Parkplätze und Höfe werden als konkrete Arbeitsbereiche festgelegt.",
+          detail: "Treppen, Wege und Flächen",
+        },
+        {
+          id: "winter-zugang",
+          label: "Zugang",
+          title: "Engstellen mitdenken.",
+          text: "Breite Zufahrten und schmale Zugänge stellen andere Anforderungen an Personal und Räumtechnik.",
+          detail: "Breite, Zugang und Hindernisse",
+        },
+        {
+          id: "winter-technik",
+          label: "Technik",
+          title: "Räumen und Streuen abstimmen.",
+          text: "Räumfahrzeuge, integrierte Streusysteme und mobile Schneefräsen werden passend zum vereinbarten Bereich eingesetzt.",
+          detail: "Räumgerät, Fräse und Streusystem",
+        },
+      ],
+      actionLabel: "Winterdienst anfragen",
+    },
     closingTitle: ["Ihre Winterflächen.", "Direkt abstimmen."],
     closingText:
       "Nennen Sie uns die zu räumenden Wege und Flächen. Vom Standort Büsum aus klären wir Umfang und Einsatz mit Ihnen.",
@@ -356,7 +570,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Gewerbliche Objekte",
           "Aufgaben klar abgestimmt",
         ],
-        image: images.propertyStory,
+        image: images.caretakerHero,
       },
       {
         key: "kontrolle",
@@ -395,7 +609,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Nur im zulässigen Rahmen",
           "Facharbeiten bleiben beim Fachbetrieb",
         ],
-        image: images.propertyStory,
+        image: images.caretakerRepair,
       },
       {
         key: "objektpflege",
@@ -411,6 +625,37 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
         image: images.objectStory,
       },
     ],
+    insight: {
+      eyebrow: "Am Objekt",
+      title: "Kontrolle mit klarer Grenze.",
+      intro:
+        "Welche Anlagen und Bereiche betreut werden, wird für jedes private oder gewerbliche Objekt konkret vereinbart.",
+      image: images.caretakerInsight,
+      steps: [
+        {
+          id: "hausmeister-punkte",
+          label: "Kontrolle",
+          title: "Kontrollpunkte festlegen.",
+          text: "Die vereinbarten Anlagen und Bereiche bilden die Grundlage für jeden Kontrollgang am Objekt.",
+          detail: "Anlagen, Bereiche und Umfang",
+        },
+        {
+          id: "hausmeister-wartung",
+          label: "Wartung",
+          title: "Aufgaben sauber abgrenzen.",
+          text: "Kontrolle, Wartung, Pflege und Reinigung werden als verständliches Aufgabenpaket beschrieben.",
+          detail: "Aufgabe, Intervall und Zuständigkeit",
+        },
+        {
+          id: "hausmeister-grenze",
+          label: "Kleinreparatur",
+          title: "Oder ein Fall für den Fachbetrieb.",
+          text: "Kleinreparaturen übernehmen wir im zulässigen Rahmen. Facharbeiten bleiben ausdrücklich beim zuständigen Fachbetrieb.",
+          detail: "Kleinreparatur mit klarer Grenze",
+        },
+      ],
+      actionLabel: "Hausmeisterservice anfragen",
+    },
     closingTitle: ["Ihr Objekt.", "Aufgaben klar verteilt."],
     closingText:
       "Beschreiben Sie uns Objekt, Anlagen und gewünschte Aufgaben. Vom Standort Büsum aus stimmen wir den Hausmeisterservice direkt mit Ihnen ab.",
@@ -437,7 +682,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Gewerbliche Objekte",
           "Umfang vorab abgestimmt",
         ],
-        image: images.clearanceStory,
+        image: images.clearanceHero,
       },
       {
         key: "haushalt",
@@ -467,11 +712,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Betriebsauflösungen",
           "Größere Aufträge",
         ],
-        image: {
-          ...images.clearanceStory,
-          position: "82% center",
-          mobilePosition: "72% center",
-        },
+        image: images.clearanceBusiness,
       },
       {
         key: "demontage",
@@ -484,11 +725,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Arbeitsumfang festlegen",
           "Auftrag direkt abstimmen",
         ],
-        image: {
-          ...images.clearanceStory,
-          position: "76% center",
-          mobilePosition: "70% center",
-        },
+        image: images.clearanceDismantling,
       },
       {
         key: "renovierung",
@@ -501,13 +738,40 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Als vereinbarte Ergänzung",
           "Demontagearbeiten nach Abstimmung",
         ],
-        image: {
-          ...images.clearanceStory,
-          position: "64% center",
-          mobilePosition: "68% center",
-        },
+        image: images.clearanceRenovation,
       },
     ],
+    insight: {
+      eyebrow: "Vor dem Räumen",
+      title: "Erst abstimmen. Dann geordnet räumen.",
+      intro:
+        "Räume, Menge und gewünschte Ergänzungen bestimmen den Auftrag. Eine klare Vorbesprechung hält die Ausführung nachvollziehbar.",
+      image: images.clearanceInsight,
+      steps: [
+        {
+          id: "entruempelung-umfang",
+          label: "Umfang",
+          title: "Räume und Menge erfassen.",
+          text: "Ob Wohnung, Haushalt oder Gewerberaum: Die betroffenen Bereiche und der gewünschte Umfang werden zuerst festgelegt.",
+          detail: "Räume, Gegenstände und Zugang",
+        },
+        {
+          id: "entruempelung-zusatz",
+          label: "Ergänzung",
+          title: "Demontage mit vereinbaren.",
+          text: "Notwendige Demontage- oder ergänzende Renovierungsarbeiten werden nur als ausdrücklich abgestimmter Teil des Auftrags eingeplant.",
+          detail: "Demontage und Ergänzungen",
+        },
+        {
+          id: "entruempelung-uebergabe",
+          label: "Übergabe",
+          title: "Geordnet zum Abschluss kommen.",
+          text: "Die vereinbarten Arbeiten werden umgesetzt und der bearbeitete Bereich anschließend gemeinsam eingeordnet.",
+          detail: "Ausführung und klare Übergabe",
+        },
+      ],
+      actionLabel: "Entrümpelung anfragen",
+    },
     closingTitle: ["Ihr Auftrag.", "Vorher klar besprochen."],
     closingText:
       "Nennen Sie uns Räume, Umfang und gewünschte Ergänzungen. Vom Standort Büsum aus klären wir den Auftrag direkt mit Ihnen.",
@@ -535,7 +799,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Außenpflege",
           "Winterdienst",
         ],
-        image: images.objectStory,
+        image: images.commercialHero,
       },
       {
         key: "kontrolle",
@@ -561,7 +825,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Reinigung",
           "Innen- und Außenbereiche",
         ],
-        image: images.workPlanning,
+        image: images.grassWork,
       },
       {
         key: "aussen",
@@ -574,7 +838,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Hecken und Gehölze",
           "Räumen und Streuen",
         ],
-        image: images.grassWork,
+        image: images.winterGrounds,
       },
       {
         key: "abstimmung",
@@ -587,9 +851,40 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Umfang vereinbaren",
           "Ein Ansprechpartner",
         ],
-        image: images.summerGrounds,
+        image: images.workPlanning,
       },
     ],
+    insight: {
+      eyebrow: "Leistungen kombinieren",
+      title: "Ein Objekt. Ein abgestimmtes Paket.",
+      intro:
+        "Gewerbliche Objektbetreuung verbindet nur die Bausteine, die am konkreten Standort tatsächlich gebraucht werden.",
+      image: images.commercialInsight,
+      steps: [
+        {
+          id: "objekt-bedarf",
+          label: "Bedarf",
+          title: "Aufgaben am Objekt ordnen.",
+          text: "Kontrolle, Wartung, Innenbereiche und Außenflächen werden getrennt betrachtet und als konkrete Aufgaben benannt.",
+          detail: "Gebäude, Anlagen und Außenbereich",
+        },
+        {
+          id: "objekt-paket",
+          label: "Paket",
+          title: "Bausteine zusammenführen.",
+          text: "Hausmeisterservice, Gartenpflege und Winterdienst lassen sich passend zum gewerblichen Objekt kombinieren.",
+          detail: "Leistungen auswählen und verbinden",
+        },
+        {
+          id: "objekt-kontakt",
+          label: "Abstimmung",
+          title: "Ein Ansprechpartner.",
+          text: "Umfang und Zuständigkeiten werden in einem Auftrag gebündelt und direkt für das Objekt abgestimmt.",
+          detail: "Ein Auftrag, klarer Kontakt",
+        },
+      ],
+      actionLabel: "Objektbetreuung anfragen",
+    },
     closingTitle: ["Ihr Objekt.", "Leistungen passend kombiniert."],
     closingText:
       "Beschreiben Sie uns Objekt und gewünschte Aufgaben. Vom Standort Büsum aus stimmen wir die passenden Leistungsbausteine direkt mit Ihnen ab.",

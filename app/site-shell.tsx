@@ -584,7 +584,7 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
       document.querySelector<HTMLElement>(".skip-link"),
       document.querySelector<HTMLElement>("main"),
       document.querySelector<HTMLElement>(".site-footer"),
-      document.querySelector<HTMLElement>(".mobile-call"),
+      document.querySelector<HTMLElement>(".mobile-contact-actions"),
       document.querySelector<HTMLElement>(".back-to-top"),
     ].filter((element): element is HTMLElement => Boolean(element));
     const focusable = [
@@ -920,9 +920,16 @@ export function SiteFooter({ currentPage = "home" }: { currentPage?: SitePage })
   );
 }
 
-export function MobileCall() {
+export function MobileCall({
+  whatsappText = "Moin, ich möchte einen Einsatz mit Universale Dienstleistungen besprechen.",
+}: {
+  whatsappText?: string;
+} = {}) {
   const [contextHidden, setContextHidden] = useState(false);
-  const callRef = useRef<HTMLAnchorElement>(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
+  const whatsappHref = `https://wa.me/491738948124?text=${encodeURIComponent(
+    whatsappText,
+  )}`;
 
   useEffect(() => {
     const targets = Array.from(
@@ -941,7 +948,11 @@ export function MobileCall() {
         );
         const shouldHide = Boolean(visibleTarget);
 
-        if (shouldHide && document.activeElement === callRef.current) {
+        if (
+          shouldHide &&
+          document.activeElement instanceof Node &&
+          actionsRef.current?.contains(document.activeElement)
+        ) {
           const nextTarget = visibleTarget?.querySelector<HTMLElement>(
             'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled])',
           );
@@ -962,34 +973,72 @@ export function MobileCall() {
   }, []);
 
   return (
-    <a
-      ref={callRef}
-      className={`mobile-call${contextHidden ? " is-context-hidden" : ""}`}
-      href="tel:+491738948124"
-      aria-label="24/7 erreichbar – jetzt anrufen: +49 173 8948124"
+    <div
+      ref={actionsRef}
+      className={`mobile-contact-actions${
+        contextHidden ? " is-context-hidden" : ""
+      }`}
+      aria-label="Direktkontakt"
       aria-hidden={contextHidden ? true : undefined}
-      tabIndex={contextHidden ? -1 : undefined}
-      title="24/7 erreichbar – jetzt anrufen"
     >
-      <span className="mobile-call__label" aria-hidden="true">
-        24/7 erreichbar
-      </span>
-      <svg
-        viewBox="0 0 24 24"
-        width="24"
-        height="24"
-        aria-hidden="true"
-        focusable="false"
+      <a
+        className="mobile-call"
+        href="tel:+491738948124"
+        aria-label="24/7 erreichbar – jetzt anrufen: +49 173 8948124"
+        tabIndex={contextHidden ? -1 : undefined}
+        title="24/7 erreichbar – jetzt anrufen"
       >
-        <path
-          d="M7.2 3.5 9.5 8l-1.9 1.9a15.7 15.7 0 0 0 6.5 6.5l1.9-1.9 4.5 2.3-.7 3.3c-.2.8-.9 1.4-1.8 1.4A15.5 15.5 0 0 1 2.5 6c0-.9.6-1.6 1.4-1.8l3.3-.7Z"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </a>
+        <span className="mobile-call__label" aria-hidden="true">
+          24/7 erreichbar
+        </span>
+        <svg
+          viewBox="0 0 24 24"
+          width="24"
+          height="24"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path
+            d="M7.2 3.5 9.5 8l-1.9 1.9a15.7 15.7 0 0 0 6.5 6.5l1.9-1.9 4.5 2.3-.7 3.3c-.2.8-.9 1.4-1.8 1.4A15.5 15.5 0 0 1 2.5 6c0-.9.6-1.6 1.4-1.8l3.3-.7Z"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </a>
+
+      <a
+        className="mobile-whatsapp"
+        href={whatsappHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="WhatsApp-Chat mit Universale Dienstleistungen öffnen"
+        tabIndex={contextHidden ? -1 : undefined}
+        title="Per WhatsApp schreiben"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          width="26"
+          height="26"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path
+            d="M20.4 11.8a8.4 8.4 0 0 1-12.5 7.3L3.5 20.3l1.2-4.2a8.4 8.4 0 1 1 15.7-4.3Z"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M8.2 7.8c.2-.4.4-.4.7-.4h.5c.2 0 .4.1.5.5l.7 1.7c.1.3.1.5-.1.7l-.6.8c-.2.2-.1.4 0 .6.6 1.1 1.5 2 2.6 2.6.2.1.4.1.6-.1l.8-1c.2-.2.4-.3.7-.1l1.7.8c.3.2.4.3.4.6 0 .3-.2 1.4-1 1.9-.6.4-1.4.6-2.3.4-1.1-.2-2.6-.8-4.2-2.2-1.3-1.2-2.3-2.7-2.6-3.9-.3-1.1 0-2 .3-2.5Z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+    </div>
   );
 }

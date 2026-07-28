@@ -401,7 +401,7 @@ body.menu-is-open .back-to-top {
 
 .menu-button,
 .mobile-menu,
-.mobile-call {
+.mobile-contact-actions {
   display: none;
 }
 
@@ -2379,28 +2379,47 @@ main[tabindex="-1"]:focus {
   .footer-meta { grid-template-columns: 1fr; gap: 1rem; }
   .footer-meta > a { justify-self: start; }
 
-  .mobile-call {
+  .mobile-contact-actions {
     position: fixed;
     z-index: 45;
     right: calc(16px + env(safe-area-inset-right));
     bottom: calc(16px + env(safe-area-inset-bottom));
     left: auto;
+    display: grid;
+    gap: 10px;
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease;
+  }
+
+  .mobile-call,
+  .mobile-whatsapp {
+    position: relative;
     width: 52px;
     height: 52px;
     min-height: 52px;
     display: grid;
     place-items: center;
-    color: var(--pine-deep);
-    background: var(--acid);
-    border: 1px solid rgba(10, 38, 29, 0.2);
     border-radius: 50%;
-    box-shadow: 0 14px 35px rgba(7, 26, 19, 0.22);
     transform: translateZ(0);
     transition:
       background-color 180ms ease,
       box-shadow 180ms ease,
-      opacity 180ms ease,
       transform 180ms ease;
+  }
+
+  .mobile-call {
+    color: var(--pine-deep);
+    background: var(--acid);
+    border: 1px solid rgba(10, 38, 29, 0.2);
+    box-shadow: 0 14px 35px rgba(7, 26, 19, 0.22);
+  }
+
+  .mobile-whatsapp {
+    color: #fff;
+    background: #1eaa59;
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    box-shadow: 0 14px 35px rgba(7, 45, 25, 0.28);
   }
 
   .mobile-call__label {
@@ -2422,21 +2441,24 @@ main[tabindex="-1"]:focus {
     white-space: nowrap;
   }
 
-  .mobile-call svg {
+  .mobile-call svg,
+  .mobile-whatsapp svg {
     display: block;
   }
 
-  .mobile-call:active {
+  .mobile-call:active,
+  .mobile-whatsapp:active {
     transform: translateY(1px) scale(0.97);
   }
 
-  .mobile-call:focus-visible {
+  .mobile-call:focus-visible,
+  .mobile-whatsapp:focus-visible {
     outline: 3px solid var(--pine-deep);
     outline-offset: 3px;
   }
 
-  body.menu-is-open .mobile-call,
-  .mobile-call.is-context-hidden {
+  body.menu-is-open .mobile-contact-actions,
+  .mobile-contact-actions.is-context-hidden {
     opacity: 0;
     pointer-events: none;
     transform: translateY(8px);
@@ -2452,6 +2474,12 @@ main[tabindex="-1"]:focus {
   .mobile-call:hover {
     background: #f0f7a8;
     box-shadow: 0 18px 42px rgba(7, 26, 19, 0.28);
+    transform: translateY(-2px);
+  }
+
+  .mobile-whatsapp:hover {
+    background: #189b4e;
+    box-shadow: 0 18px 42px rgba(7, 45, 25, 0.34);
     transform: translateY(-2px);
   }
 }

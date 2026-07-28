@@ -762,7 +762,7 @@
   .stageNavigation {
     top: auto;
     right: 18px;
-    bottom: calc(86px + env(safe-area-inset-bottom));
+    bottom: calc(176px + env(safe-area-inset-bottom));
     left: 18px;
     width: auto;
     display: grid;

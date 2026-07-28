@@ -31,7 +31,7 @@ export function ServicePage({ service }: { service: ServicePageData }) {
       <main id="main" className={styles.page} tabIndex={-1}>
         <ServiceJourney service={service} />
 
-        <ProcessImpulseJourney />
+        <ProcessImpulseJourney data={service.insight} />
 
         <section
           className={styles.contact}
@@ -79,7 +79,7 @@ export function ServicePage({ service }: { service: ServicePageData }) {
       </main>
 
       <SiteFooter currentPage="service" />
-      <MobileCall />
+      <MobileCall whatsappText={service.whatsappText} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

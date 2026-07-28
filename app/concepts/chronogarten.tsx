@@ -262,15 +262,18 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
                 ? `${basePath}${activeStage.service.href}`
                 : "#kontakt"
             }
+            aria-label={
+              activeStage.service
+                ? `Mehr über ${activeStage.service.formValue} erfahren`
+                : undefined
+            }
             onClick={() => {
               if (activeStage.service) {
                 onChooseService?.(activeStage.service.formValue);
               }
             }}
           >
-            {activeStage.service
-              ? `${activeStage.service.formValue} ansehen`
-              : "Anfrage starten"}{" "}
+            {activeStage.service ? "Mehr erfahren" : "Anfrage starten"}{" "}
             <span aria-hidden="true">↗︎</span>
           </a>
         </div>
