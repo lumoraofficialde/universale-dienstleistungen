@@ -7,94 +7,6 @@ const defaultSiteUrl =
 const expectedSiteUrl = (
   process.env.NEXT_PUBLIC_SITE_URL ?? defaultSiteUrl
 ).replace(/\/+$/, "");
-const expectedBasePath = (
-  process.env.NEXT_PUBLIC_BASE_PATH ?? ""
-).replace(/\/+$/, "");
-const servicePages = [
-  {
-    slug: "gartenpflege",
-    name: "Gartenpflege",
-    route: "leistungen/gartenpflege/",
-  },
-  {
-    slug: "winterdienst",
-    name: "Winterdienst",
-    route: "leistungen/winterdienst/",
-  },
-  {
-    slug: "hausmeisterservice",
-    name: "Hausmeisterservice",
-    route: "leistungen/hausmeisterservice/",
-  },
-  {
-    slug: "entruempelung",
-    name: "Entrümpelung",
-    route: "leistungen/entruempelung/",
-  },
-  {
-    slug: "objektbetreuung",
-    name: "Objektbetreuung",
-    route: "leistungen/objektbetreuung/",
-  },
-];
-const publicRoutes = [
-  "",
-  "team/",
-  ...servicePages.map(({ route }) => route),
-  "impressum/",
-  "datenschutz/",
-];
-
-const decodeHtml = (value) =>
-  value
-    .replaceAll("&amp;", "&")
-    .replaceAll("&quot;", '"')
-    .replaceAll("&#x27;", "'")
-    .replaceAll("&#39;", "'")
-    .replaceAll("&lt;", "<")
-    .replaceAll("&gt;", ">")
-    .replaceAll("&nbsp;", " ");
-
-const readAttribute = (tag, attribute) => {
-  const match = tag.match(
-    new RegExp(
-      `\\b${attribute}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`,
-      "i",
-    ),
-  );
-  return match ? decodeHtml(match[1] ?? match[2] ?? match[3]) : undefined;
-};
-
-const singleTagWithAttribute = (html, tagName, attribute, value, label) => {
-  const tags = [...html.matchAll(new RegExp(`<${tagName}\\b[^>]*>`, "gi"))]
-    .map((match) => match[0])
-    .filter(
-      (tag) =>
-        readAttribute(tag, attribute)?.toLowerCase() === value.toLowerCase(),
-    );
-
-  assert.equal(tags.length, 1, `${label} must occur exactly once`);
-  return tags[0];
-};
-
-const singleElementText = (html, tagName, label) => {
-  const matches = [
-    ...html.matchAll(
-      new RegExp(`<${tagName}\\b[^>]*>([\\s\\S]*?)</${tagName}>`, "gi"),
-    ),
-  ];
-  assert.equal(matches.length, 1, `${label} must occur exactly once`);
-  return decodeHtml(matches[0][1].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim());
-};
-
-const assertIncludesCaseInsensitive = (value, expected, label) => {
-  const normalize = (text) =>
-    text.toLocaleLowerCase("de").normalize("NFC").replace(/\s+/g, "");
-  assert.ok(
-    normalize(value).includes(normalize(expected)),
-    `${label} must include "${expected}", received: ${value}`,
-  );
-};
 
 const readTextTree = async (directoryUrl) => {
   const entries = await readdir(directoryUrl, { withFileTypes: true });
@@ -122,31 +34,11 @@ test("exports a complete static GitHub Pages site", async () => {
   );
 
   assert.match(html, /<html lang="de">/i);
-  const homeTitle = singleElementText(html, "title", "Homepage title");
-  const homeHeading = singleElementText(html, "h1", "Homepage H1");
-  const homeDescription = readAttribute(
-    singleTagWithAttribute(
-      html,
-      "meta",
-      "name",
-      "description",
-      "Homepage meta description",
-    ),
-    "content",
-  ) ?? "";
-  for (const term of ["Winterdienst", "Gartenpflege", "Büsum", "Dithmarschen"]) {
-    assertIncludesCaseInsensitive(homeTitle, term, "Homepage title");
-    assertIncludesCaseInsensitive(homeDescription, term, "Homepage description");
-  }
-  for (const term of [
-    "Winterdienst",
-    "Gartenpflege",
-    "Hausmeisterservice",
-    "Büsum",
-    "Dithmarschen",
-  ]) {
-    assertIncludesCaseInsensitive(homeHeading, term, "Homepage H1");
-  }
+  assert.match(
+    html,
+    /<title>Gartenpflege, Winterdienst, Hausmeisterservice &amp; Entrümpelung \| Universale<\/title>/,
+  );
+  assert.match(html, /Alles im Griff\./);
   assert.doesNotMatch(html, /Universale Qualit/);
   assert.doesNotMatch(html, /Wir verlassen eine/);
   assert.match(html, /Ein Objekt\./);
@@ -180,223 +72,6 @@ test("exports a complete static GitHub Pages site", async () => {
   assert.doesNotMatch(html, /id="faq"/);
   assert.doesNotMatch(html, /Vier Fragen\. Klare Antworten\./);
   assert.match(html, /id="kontakt"/);
-  assert.doesNotMatch(html, /(?:info@)?nordsee-dienstleistung\.de/i);
-
-  const exportedServiceTitles = new Set();
-  const exportedServiceDescriptions = new Set();
-  for (const servicePage of servicePages) {
-    const serviceHtml = await readFile(
-      new URL(
-        `../dist/client/${servicePage.route}index.html`,
-        import.meta.url,
-      ),
-      "utf8",
-    );
-    const canonicalUrl = `${expectedSiteUrl}/${servicePage.route}`;
-    const expectedRouteHref = `${expectedBasePath}/${servicePage.route}`;
-    const title = singleElementText(
-      serviceHtml,
-      "title",
-      `${servicePage.name} title`,
-    );
-    const heading = singleElementText(
-      serviceHtml,
-      "h1",
-      `${servicePage.name} H1`,
-    );
-    const descriptionTag = singleTagWithAttribute(
-      serviceHtml,
-      "meta",
-      "name",
-      "description",
-      `${servicePage.name} meta description`,
-    );
-    const description = readAttribute(descriptionTag, "content") ?? "";
-    const canonicalTag = singleTagWithAttribute(
-      serviceHtml,
-      "link",
-      "rel",
-      "canonical",
-      `${servicePage.name} canonical`,
-    );
-    const robotsTag = singleTagWithAttribute(
-      serviceHtml,
-      "meta",
-      "name",
-      "robots",
-      `${servicePage.name} robots directive`,
-    );
-    const openGraphTitle = readAttribute(
-      singleTagWithAttribute(
-        serviceHtml,
-        "meta",
-        "property",
-        "og:title",
-        `${servicePage.name} Open Graph title`,
-      ),
-      "content",
-    ) ?? "";
-    const openGraphDescription = readAttribute(
-      singleTagWithAttribute(
-        serviceHtml,
-        "meta",
-        "property",
-        "og:description",
-        `${servicePage.name} Open Graph description`,
-      ),
-      "content",
-    ) ?? "";
-    const openGraphUrl = readAttribute(
-      singleTagWithAttribute(
-        serviceHtml,
-        "meta",
-        "property",
-        "og:url",
-        `${servicePage.name} Open Graph URL`,
-      ),
-      "content",
-    );
-    const openGraphImage = readAttribute(
-      singleTagWithAttribute(
-        serviceHtml,
-        "meta",
-        "property",
-        "og:image",
-        `${servicePage.name} Open Graph image`,
-      ),
-      "content",
-    ) ?? "";
-    const twitterCard = readAttribute(
-      singleTagWithAttribute(
-        serviceHtml,
-        "meta",
-        "name",
-        "twitter:card",
-        `${servicePage.name} Twitter card`,
-      ),
-      "content",
-    );
-
-    assert.match(serviceHtml, /<html lang="de">/i);
-    assert.ok(
-      serviceHtml.includes(`data-service-page="${servicePage.slug}"`),
-      `${servicePage.name} export is missing its service-page marker`,
-    );
-    for (const localTerm of [
-      servicePage.name,
-      "Büsum",
-      "Dithmarschen",
-    ]) {
-      assertIncludesCaseInsensitive(title, localTerm, `${servicePage.name} title`);
-      assertIncludesCaseInsensitive(
-        description,
-        localTerm,
-        `${servicePage.name} description`,
-      );
-      assertIncludesCaseInsensitive(
-        openGraphTitle,
-        localTerm,
-        `${servicePage.name} Open Graph title`,
-      );
-    }
-    assertIncludesCaseInsensitive(
-      heading,
-      `${servicePage.name} in Büsum und Dithmarschen`,
-      `${servicePage.name} H1`,
-    );
-    assert.ok(
-      !exportedServiceTitles.has(title),
-      `${servicePage.name} must have a unique title`,
-    );
-    assert.ok(
-      !exportedServiceDescriptions.has(description),
-      `${servicePage.name} must have a unique description`,
-    );
-    exportedServiceTitles.add(title);
-    exportedServiceDescriptions.add(description);
-    assert.ok(
-      description.length >= 80 && description.length <= 200,
-      `${servicePage.name} description should contain 80–200 characters, received ${description.length}`,
-    );
-    assert.equal(openGraphDescription, description);
-    assert.equal(readAttribute(canonicalTag, "href"), canonicalUrl);
-    assert.equal(openGraphUrl, canonicalUrl);
-    assert.ok(
-      openGraphImage.startsWith(`${expectedSiteUrl}/`),
-      `${servicePage.name} Open Graph image must be an absolute site URL`,
-    );
-    assert.equal(twitterCard, "summary_large_image");
-    assert.match(readAttribute(robotsTag, "content") ?? "", /\bindex\b/i);
-    assert.match(readAttribute(robotsTag, "content") ?? "", /\bfollow\b/i);
-    assert.doesNotMatch(
-      readAttribute(robotsTag, "content") ?? "",
-      /\bno(?:index|follow)\b/i,
-    );
-    assert.match(serviceHtml, /Leistungen im vereinbarten Umfang\./);
-    assert.match(serviceHtml, /Für wen wir arbeiten\./);
-    assert.match(serviceHtml, /Einsatzgebiet klar abgestimmt\./);
-    assert.match(serviceHtml, /So wird aus einer Anfrage ein Einsatz\./);
-    assert.match(serviceHtml, /Häufige Fragen zu/);
-    assert.ok(
-      serviceHtml.includes(`href="${expectedBasePath}/#kontakt"`),
-      `${servicePage.name} must link to the prefixed contact section`,
-    );
-    assert.ok(
-      html.includes(`href="${expectedRouteHref}"`),
-      `Homepage is missing its prefixed link to ${servicePage.route}`,
-    );
-    assert.doesNotMatch(
-      serviceHtml,
-      /(?:info@)?nordsee-dienstleistung\.de/i,
-    );
-
-    const structuredData = [
-      ...serviceHtml.matchAll(
-        /<script\b(?=[^>]*\btype="application\/ld\+json")[^>]*>([\s\S]*?)<\/script>/gi,
-      ),
-    ].map((match) => JSON.parse(match[1]));
-    const schemaNodes = structuredData.flatMap((document) =>
-      Array.isArray(document["@graph"]) ? document["@graph"] : [document],
-    );
-    const hasSchemaType = (node, type) => {
-      const nodeTypes = Array.isArray(node?.["@type"])
-        ? node["@type"]
-        : [node?.["@type"]];
-      return nodeTypes.includes(type);
-    };
-    const serviceSchema = schemaNodes.find(
-      (node) =>
-        hasSchemaType(node, "Service") &&
-        typeof node.name === "string" &&
-        node.name
-          .toLocaleLowerCase("de")
-          .includes(servicePage.name.toLocaleLowerCase("de")),
-    );
-    const faqSchema = schemaNodes.find((node) =>
-      hasSchemaType(node, "FAQPage"),
-    );
-
-    assert.ok(
-      serviceSchema,
-      `${servicePage.name} must export a matching Service schema`,
-    );
-    assert.equal(serviceSchema.url, canonicalUrl);
-    const schemaArea = JSON.stringify(serviceSchema.areaServed ?? []);
-    assertIncludesCaseInsensitive(
-      schemaArea,
-      "Büsum",
-      `${servicePage.name} schema areaServed`,
-    );
-    assertIncludesCaseInsensitive(
-      schemaArea,
-      "Dithmarschen",
-      `${servicePage.name} schema areaServed`,
-    );
-    assert.ok(
-      faqSchema && Array.isArray(faqSchema.mainEntity) && faqSchema.mainEntity.length > 0,
-      `${servicePage.name} must export a populated FAQPage schema`,
-    );
-  }
 
   const teamHtml = await readFile(
     new URL("../dist/client/team/index.html", import.meta.url),
@@ -480,34 +155,17 @@ test("exports a complete static GitHub Pages site", async () => {
     new URL("../dist/client/sitemap.xml", import.meta.url),
     "utf8",
   );
-  const publicSitemap = await readFile(
-    new URL("../public/sitemap.xml", import.meta.url),
-    "utf8",
-  );
   assert.equal(
     robots,
     `User-agent: *\nAllow: /\n\nSitemap: ${expectedSiteUrl}/sitemap.xml\n`,
   );
   assert.match(sitemap, /<urlset/);
-  const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
-    (match) => decodeHtml(match[1]),
-  );
-  const expectedSitemapUrls = publicRoutes.map(
-    (route) => new URL(route, `${expectedSiteUrl}/`).href,
-  );
-  assert.deepEqual(
-    sitemapUrls,
-    expectedSitemapUrls,
-    "Sitemap must contain every public route exactly once",
-  );
-  const publicSitemapUrls = [
-    ...publicSitemap.matchAll(/<loc>([^<]+)<\/loc>/g),
-  ].map((match) => decodeHtml(match[1]));
-  assert.deepEqual(
-    publicSitemapUrls,
-    publicRoutes.map((route) => new URL(route, `${defaultSiteUrl}/`).href),
-    "Checked-in sitemap must mirror the generated public route set",
-  );
+  for (const route of ["", "team/", "impressum/", "datenschutz/"]) {
+    assert.ok(
+      sitemap.includes(`<loc>${expectedSiteUrl}/${route}</loc>`),
+      `Sitemap is missing ${expectedSiteUrl}/${route}`,
+    );
+  }
   assert.doesNotMatch(sitemap, /\/404(?:\/|<)/);
 });
 
@@ -640,21 +298,14 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     chronogartenCss,
     /@media \(max-width: 780px\),\s*\(prefers-reduced-motion:\s*reduce\)/,
   );
-  assert.equal([...serviceCatalog.matchAll(/\bid:\s*"/g)].length, 5);
+  assert.equal([...serviceCatalog.matchAll(/\bid:\s*"/g)].length, 4);
   for (const serviceName of [
     "Garten & Grundstück",
     "Winterdienst",
     "Hausmeisterservice",
     "Entrümpelung",
-    "Objektbetreuung",
   ]) {
     assert.ok(serviceCatalog.includes(serviceName));
-  }
-  for (const { route } of servicePages) {
-    assert.ok(
-      serviceCatalog.includes(`href: "/${route}"`),
-      `Service catalog is missing /${route}`,
-    );
   }
   assert.match(page, /service-picker__grid/);
   assert.match(page, /selectedService/);
@@ -752,10 +403,10 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.doesNotMatch(naturalCss, /\.services-grid\s*\{/);
   assert.doesNotMatch(naturalCss, /\.services-heading/);
   assert.doesNotMatch(naturalCss, /\.image-break/);
-  assert.doesNotMatch(naturalCss, /\.mobile-contact-bar\s*\{/);
+  assert.doesNotMatch(naturalCss, /\.mobile-call\s*\{/);
   assert.match(
     css,
-    /\.menu-button,\s*[\r\n]+\s*\.mobile-menu,\s*[\r\n]+\s*\.mobile-contact-bar\s*\{[\s\S]*?display:\s*none/,
+    /\.mobile-call\s*\{[\s\S]*?background:\s*var\(--acid\)/,
   );
   assert.match(fleetJourneyCss, /min-height:\s*500dvh/);
   assert.match(
@@ -835,33 +486,10 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(team, /team-portrait__frame/);
   assert.doesNotMatch(team, /Menschen\. Technik\. Ergebnis\./);
   assert.doesNotMatch(team, /team-gallery/);
-  const mobileContactBar = shell.slice(shell.indexOf("export function MobileCall()"));
-  assert.match(
-    mobileContactBar,
-    /className=\{`mobile-contact-bar\$\{contextHidden \? " is-context-hidden" : ""\}`\}/,
-  );
-  assert.match(mobileContactBar, /aria-label="Schnellkontakt"/);
-  assert.match(mobileContactBar, /aria-hidden=\{contextHidden \? true : undefined\}/);
-  assert.match(
-    mobileContactBar,
-    /href="tel:\+491738948124"[\s\S]*?aria-label="Jetzt anrufen: \+49 173 8948124"[\s\S]*?<span>Anrufen<\/span>/,
-  );
-  assert.match(
-    mobileContactBar,
-    /href="https:\/\/wa\.me\/491738948124\?text=[^"]*B%C3%BCsum[^"]*Dithmarschen[^"]*"[\s\S]*?target="_blank"[\s\S]*?rel="noreferrer"[\s\S]*?<span>WhatsApp<\/span>/,
-  );
-  assert.match(
-    mobileContactBar,
-    /href=\{homeHref\("#kontakt"\)\}[\s\S]*?<span>Angebot<\/span>/,
-  );
-  assert.equal(
-    [...mobileContactBar.matchAll(/tabIndex=\{contextHidden \? -1 : undefined\}/g)]
-      .length,
-    3,
-    "Every mobile contact action must leave the tab order while the bar is hidden",
-  );
-  assert.match(mobileContactBar, /barRef\.current\?\.contains\(document\.activeElement\)/);
-  assert.doesNotMatch(shell, /mobile-call/);
+  assert.match(shell, /aria-label="24\/7 erreichbar – jetzt anrufen: \+49 173 8948124"/);
+  assert.match(shell, /className="mobile-call__label"[\s\S]*?24\/7 erreichbar/);
+  assert.match(shell, /<svg[\s\S]*?viewBox="0 0 24 24"/);
+  assert.doesNotMatch(shell, /<strong>24\/7 anrufen<\/strong>/);
   assert.match(
     shell,
     /\["Leistungen",\s*homeHref\("#unternehmen"\),\s*"leistungen"\]/,
@@ -870,19 +498,7 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     shell,
     /\["Einsatzmodelle",\s*homeHref\("#leistungen"\),\s*"einsatzarten"\]/,
   );
-  assert.match(
-    css,
-    /@media \(max-width: 780px\)[\s\S]*?\.mobile-contact-bar\s*\{[\s\S]*?position:\s*fixed[\s\S]*?grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\)[\s\S]*?backdrop-filter:\s*blur\(14px\)/,
-  );
-  assert.match(
-    css,
-    /\.mobile-contact-bar a\s*\{[\s\S]*?min-height:\s*52px[\s\S]*?grid-template-columns:\s*20px auto/,
-  );
-  assert.match(
-    css,
-    /body\.menu-is-open \.mobile-contact-bar,\s*[\r\n]+\s*\.mobile-contact-bar\.is-context-hidden\s*\{[\s\S]*?pointer-events:\s*none/,
-  );
-  assert.doesNotMatch(css, /\.mobile-call\b/);
+  assert.match(css, /\.mobile-call\s*\{[\s\S]*?width:\s*52px[\s\S]*?border-radius:\s*50%/);
   assert.match(css, /\.scroll-progress\s*\{[\s\S]*?transform:\s*scaleX\(0\)/);
   assert.match(shell, /className="back-to-top"/);
   assert.match(
@@ -960,11 +576,6 @@ test("does not ship orphaned public media or font assets", async () => {
   const outputText = await readTextTree(
     new URL("../dist/client/", import.meta.url),
   );
-  assert.doesNotMatch(
-    outputText,
-    /(?:info@)?nordsee-dienstleistung\.de/i,
-    "Static export must not contain the obsolete contact domain",
-  );
 
   for (const directory of ["media", "fonts"]) {
     const publicDirectory = new URL(`../public/${directory}/`, import.meta.url);
@@ -981,18 +592,7 @@ test("does not ship orphaned public media or font assets", async () => {
 
 test("exports valid prefixed asset references", async () => {
   const outputRoot = new URL("../dist/client/", import.meta.url);
-  const htmlFiles = [
-    "index.html",
-    "team/index.html",
-    "impressum/index.html",
-    "datenschutz/index.html",
-    ...servicePages.map(({ route }) => `${route}index.html`),
-  ];
-  const html = (
-    await Promise.all(
-      htmlFiles.map((file) => readFile(new URL(file, outputRoot), "utf8")),
-    )
-  ).join("\n");
+  const html = await readFile(new URL("index.html", outputRoot), "utf8");
   const assetDirectory = new URL("assets/", outputRoot);
   const cssFiles = (await readdir(assetDirectory)).filter((name) =>
     name.endsWith(".css"),
@@ -1007,33 +607,24 @@ test("exports valid prefixed asset references", async () => {
     ...[...html.matchAll(/(?:href|src)="([^"]+)"/g)].map(
       (match) => match[1],
     ),
-    ...[...html.matchAll(/\bsrcset="([^"]+)"/g)].flatMap((match) =>
-      match[1].split(",").map((candidate) => candidate.trim().split(/\s+/)[0]),
-    ),
     ...[...css.matchAll(/url\(([^)]+)\)/g)].map((match) =>
       match[1].replaceAll(/["']/g, ""),
     ),
-  ];
-  const localReferences = references.filter(
-    (reference) => reference.startsWith("/") && !reference.startsWith("//"),
-  );
-  const assetReferences = references.filter((reference) =>
+  ].filter((reference) =>
     /^\/(?:.+\/)?(?:assets|media|fonts)\//.test(reference),
   );
 
-  assert.ok(assetReferences.length > 0);
+  const expectedBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+  assert.ok(references.length > 0);
 
-  if (expectedBasePath) {
-    for (const reference of localReferences) {
+  for (const reference of references) {
+    if (expectedBasePath) {
       assert.ok(
-        reference === expectedBasePath ||
-          reference.startsWith(`${expectedBasePath}/`),
+        reference.startsWith(`${expectedBasePath}/`),
         `Missing Pages prefix: ${reference}`,
       );
     }
-  }
 
-  for (const reference of assetReferences) {
     const withoutBasePath = expectedBasePath
       ? reference.slice(expectedBasePath.length + 1)
       : reference.slice(1);

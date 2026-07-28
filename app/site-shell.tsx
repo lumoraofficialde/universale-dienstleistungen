@@ -13,7 +13,6 @@ type VinextNavigate = (
 
 export type SitePage =
   | "home"
-  | "service"
   | "team"
   | "impressum"
   | "datenschutz"
@@ -584,7 +583,7 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
       document.querySelector<HTMLElement>(".skip-link"),
       document.querySelector<HTMLElement>("main"),
       document.querySelector<HTMLElement>(".site-footer"),
-      document.querySelector<HTMLElement>(".mobile-contact-bar"),
+      document.querySelector<HTMLElement>(".mobile-call"),
       document.querySelector<HTMLElement>(".back-to-top"),
     ].filter((element): element is HTMLElement => Boolean(element));
     const focusable = [
@@ -753,7 +752,6 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
     section: (typeof links)[number][2],
   ) => {
     if (label === "Arbeitsweise" && currentPage === "team") return "page" as const;
-    if (label === "Leistungen" && currentPage === "service") return "page" as const;
     if (
       currentPage === "home" &&
       section &&
@@ -841,14 +839,6 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
               +49 173 8948124
             </a>
             <a
-              href="https://wa.me/491738948124?text=Hallo%20Universale%20Dienstleistungen%2C%20ich%20m%C3%B6chte%20einen%20Einsatz%20besprechen."
-              target="_blank"
-              rel="noreferrer"
-              onClick={closeMenuAndRestoreFocus}
-            >
-              WhatsApp-Nachricht senden
-            </a>
-            <a
               href="mailto:info@universale-dienstleistungen.de"
               onClick={closeMenuAndRestoreFocus}
             >
@@ -882,12 +872,10 @@ export function SiteFooter({ currentPage = "home" }: { currentPage?: SitePage })
         </a>
         <p>Gartenpflege. Winterdienst.<br />Hausmeisterservice. Entrümpelung.</p>
         <nav className="footer-links" aria-label="Footer-Navigation">
-          <a href={`${basePath}/leistungen/gartenpflege/`}>Gartenpflege</a>
-          <a href={`${basePath}/leistungen/winterdienst/`}>Winterdienst</a>
-          <a href={`${basePath}/leistungen/hausmeisterservice/`}>Hausmeisterservice</a>
-          <a href={`${basePath}/leistungen/entruempelung/`}>Entrümpelung</a>
-          <a href={`${basePath}/leistungen/objektbetreuung/`}>Objektbetreuung</a>
+          <a href={homeHref("#unternehmen")}>Leistungen</a>
+          <a href={homeHref("#leistungen")}>Einsatzmodelle</a>
           <a href={`${basePath}/team/`}>Arbeitsweise</a>
+          <a href={homeHref("#fuhrpark")}>Technik</a>
           <a href={homeHref("#kontakt")}>Kontakt</a>
         </nav>
       </div>
@@ -924,7 +912,7 @@ export function SiteFooter({ currentPage = "home" }: { currentPage?: SitePage })
 
 export function MobileCall() {
   const [contextHidden, setContextHidden] = useState(false);
-  const barRef = useRef<HTMLElement>(null);
+  const callRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     const targets = Array.from(
@@ -943,11 +931,7 @@ export function MobileCall() {
         );
         const shouldHide = Boolean(visibleTarget);
 
-        if (
-          shouldHide &&
-          document.activeElement instanceof Node &&
-          barRef.current?.contains(document.activeElement)
-        ) {
+        if (shouldHide && document.activeElement === callRef.current) {
           const nextTarget = visibleTarget?.querySelector<HTMLElement>(
             'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled])',
           );
@@ -968,44 +952,34 @@ export function MobileCall() {
   }, []);
 
   return (
-    <nav
-      ref={barRef}
-      className={`mobile-contact-bar${contextHidden ? " is-context-hidden" : ""}`}
-      aria-label="Schnellkontakt"
+    <a
+      ref={callRef}
+      className={`mobile-call${contextHidden ? " is-context-hidden" : ""}`}
+      href="tel:+491738948124"
+      aria-label="24/7 erreichbar – jetzt anrufen: +49 173 8948124"
       aria-hidden={contextHidden ? true : undefined}
+      tabIndex={contextHidden ? -1 : undefined}
+      title="24/7 erreichbar – jetzt anrufen"
     >
-      <a
-        href="tel:+491738948124"
-        aria-label="Jetzt anrufen: +49 173 8948124"
-        tabIndex={contextHidden ? -1 : undefined}
+      <span className="mobile-call__label" aria-hidden="true">
+        24/7 erreichbar
+      </span>
+      <svg
+        viewBox="0 0 24 24"
+        width="24"
+        height="24"
+        aria-hidden="true"
+        focusable="false"
       >
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M7.2 3.5 9.5 8l-1.9 1.9a15.7 15.7 0 0 0 6.5 6.5l1.9-1.9 4.5 2.3-.7 3.3c-.2.8-.9 1.4-1.8 1.4A15.5 15.5 0 0 1 2.5 6c0-.9.6-1.6 1.4-1.8l3.3-.7Z" />
-        </svg>
-        <span>Anrufen</span>
-      </a>
-      <a
-        href="https://wa.me/491738948124?text=Hallo%20Universale%20Dienstleistungen%2C%20ich%20m%C3%B6chte%20einen%20Einsatz%20in%20B%C3%BCsum%20oder%20Dithmarschen%20besprechen."
-        target="_blank"
-        rel="noreferrer"
-        tabIndex={contextHidden ? -1 : undefined}
-      >
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M20.2 11.7a8.1 8.1 0 0 1-11.9 7.1L4 20l1.2-4.1A8.1 8.1 0 1 1 20.2 11.7Z" />
-          <path d="M8.4 7.8c.2-.4.4-.4.7-.4h.4c.2 0 .3 0 .5.4l.8 1.9c.1.3 0 .5-.2.7l-.6.7c-.2.2-.2.4 0 .7.5.9 1.4 1.8 2.4 2.3.3.2.5.2.7 0l.8-1c.2-.3.5-.3.8-.2l1.8.8c.3.1.5.3.5.5 0 .3-.2 1.5-1 2.1-.7.6-1.6.8-2.6.5-1.1-.3-2.5-.8-4.2-2.3-2.1-1.9-3.4-4.2-3.5-5.4 0-.7.2-1.1.7-1.3Z" />
-        </svg>
-        <span>WhatsApp</span>
-      </a>
-      <a
-        href={homeHref("#kontakt")}
-        tabIndex={contextHidden ? -1 : undefined}
-      >
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M4 5h16v12H8l-4 3V5Z" />
-          <path d="M8 9h8M8 13h5" />
-        </svg>
-        <span>Angebot</span>
-      </a>
-    </nav>
+        <path
+          d="M7.2 3.5 9.5 8l-1.9 1.9a15.7 15.7 0 0 0 6.5 6.5l1.9-1.9 4.5 2.3-.7 3.3c-.2.8-.9 1.4-1.8 1.4A15.5 15.5 0 0 1 2.5 6c0-.9.6-1.6 1.4-1.8l3.3-.7Z"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </a>
   );
 }

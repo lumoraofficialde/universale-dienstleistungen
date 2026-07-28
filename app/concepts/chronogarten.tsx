@@ -8,7 +8,7 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { serviceCatalog } from "../service-catalog";
-import { assetPath, basePath } from "../site-shell";
+import { assetPath } from "../site-shell";
 import styles from "./chronogarten.module.css";
 
 const garden = serviceCatalog[0];
@@ -255,28 +255,18 @@ export function Chronogarten({ onChooseService }: ChronogartenProps) {
             </h2>
             <p>{activeStage.text}</p>
           </div>
-          <div className={styles.actions}>
-            <a
-              className={styles.cta}
-              href="#kontakt"
-              onClick={() => {
-                if (activeStage.service) {
-                  onChooseService?.(activeStage.service.formValue);
-                }
-              }}
-            >
-              {activeStage.service ? `${activeStage.service.formValue} anfragen` : "Anfrage starten"}{" "}
-              <span aria-hidden="true">↗︎</span>
-            </a>
-            {activeStage.service ? (
-              <a
-                className={styles.detailLink}
-                href={`${basePath}${activeStage.service.href}`}
-              >
-                Leistung im Detail <span aria-hidden="true">→</span>
-              </a>
-            ) : null}
-          </div>
+          <a
+            className={styles.cta}
+            href="#kontakt"
+            onClick={() => {
+              if (activeStage.service) {
+                onChooseService?.(activeStage.service.formValue);
+              }
+            }}
+          >
+            {activeStage.service ? `${activeStage.service.formValue} anfragen` : "Anfrage starten"}{" "}
+            <span aria-hidden="true">↗︎</span>
+          </a>
         </div>
 
         <nav className={styles.timeline} aria-label="Vier Leistungsbereiche">

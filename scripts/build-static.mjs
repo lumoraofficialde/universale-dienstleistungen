@@ -4,17 +4,7 @@ import { spawn } from "node:child_process";
 
 const defaultSiteUrl =
   "https://lumoraofficialde.github.io/universale-dienstleistungen";
-const publicRoutes = [
-  "",
-  "team/",
-  "leistungen/gartenpflege/",
-  "leistungen/winterdienst/",
-  "leistungen/hausmeisterservice/",
-  "leistungen/entruempelung/",
-  "leistungen/objektbetreuung/",
-  "impressum/",
-  "datenschutz/",
-];
+const publicRoutes = ["", "team/", "impressum/", "datenschutz/"];
 
 const resolveSiteUrl = () => {
   const configuredSiteUrl =
