@@ -13,6 +13,7 @@ type VinextNavigate = (
 
 export type SitePage =
   | "home"
+  | "service"
   | "team"
   | "impressum"
   | "datenschutz"
@@ -751,6 +752,9 @@ export function SiteHeader({ currentPage = "home" }: { currentPage?: SitePage })
     label: (typeof links)[number][0],
     section: (typeof links)[number][2],
   ) => {
+    if (label === "Leistungen" && currentPage === "service") {
+      return "page" as const;
+    }
     if (label === "Arbeitsweise" && currentPage === "team") return "page" as const;
     if (
       currentPage === "home" &&
@@ -872,10 +876,16 @@ export function SiteFooter({ currentPage = "home" }: { currentPage?: SitePage })
         </a>
         <p>Gartenpflege. Winterdienst.<br />Hausmeisterservice. Entrümpelung.</p>
         <nav className="footer-links" aria-label="Footer-Navigation">
-          <a href={homeHref("#unternehmen")}>Leistungen</a>
-          <a href={homeHref("#leistungen")}>Einsatzmodelle</a>
+          <a href={`${basePath}/leistungen/gartenpflege/`}>Gartenpflege</a>
+          <a href={`${basePath}/leistungen/winterdienst/`}>Winterdienst</a>
+          <a href={`${basePath}/leistungen/hausmeisterservice/`}>
+            Hausmeisterservice
+          </a>
+          <a href={`${basePath}/leistungen/entruempelung/`}>Entrümpelung</a>
+          <a href={`${basePath}/leistungen/objektbetreuung/`}>
+            Gewerbliche Objektbetreuung
+          </a>
           <a href={`${basePath}/team/`}>Arbeitsweise</a>
-          <a href={homeHref("#fuhrpark")}>Technik</a>
           <a href={homeHref("#kontakt")}>Kontakt</a>
         </nav>
       </div>

@@ -4,6 +4,7 @@ export const serviceCatalog = [
     number: "01",
     title: "Garten & Grundstück",
     formValue: "Gartenpflege",
+    href: "/leistungen/gartenpflege/",
     text: "Rasen- und Grünpflege sowie Form- und Rückschnitt von Hecken und Gehölzen — für Eigenheime, kleinere Objekte und größere Außenanlagen.",
   },
   {
@@ -11,6 +12,7 @@ export const serviceCatalog = [
     number: "02",
     title: "Winterdienst",
     formValue: "Winterdienst",
+    href: "/leistungen/winterdienst/",
     text: "Schneeräumung und Streuarbeiten auf Treppen, Aufgängen, Gehwegen, Zufahrten, Parkplätzen und Höfen.",
   },
   {
@@ -18,6 +20,7 @@ export const serviceCatalog = [
     number: "03",
     title: "Hausmeisterservice",
     formValue: "Hausmeisterservice",
+    href: "/leistungen/hausmeisterservice/",
     text: "Kontrolle und Wartung privater und gewerblicher Objekte sowie Kleinreparaturen, sofern kein Fachbetrieb erforderlich ist.",
   },
   {
@@ -25,6 +28,7 @@ export const serviceCatalog = [
     number: "04",
     title: "Entrümpelung",
     formValue: "Entrümpelung",
+    href: "/leistungen/entruempelung/",
     text: "Private Haushalts- und Wohnungsauflösungen sowie gewerbliche Betriebsauflösungen — bei Bedarf einschließlich Demontagearbeiten.",
   },
 ] as const;

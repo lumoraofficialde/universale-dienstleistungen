@@ -7,6 +7,70 @@ const defaultSiteUrl =
 const expectedSiteUrl = (
   process.env.NEXT_PUBLIC_SITE_URL ?? defaultSiteUrl
 ).replace(/\/+$/, "");
+const renderedBasePath = (process.env.NEXT_PUBLIC_BASE_PATH ?? "").replace(
+  /\/+$/,
+  "",
+);
+
+const servicePageCases = [
+  {
+    route: "/leistungen/gartenpflege/",
+    title: "Gartenpflege | Universale Dienstleistungen Büsum",
+    description:
+      "Universale Dienstleistungen aus Büsum übernimmt Rasen- und Grünpflege sowie Form- und Rückschnitt von Hecken und Gehölzen.",
+    heading: "Gartenpflege.",
+    coreContent: "Rasen- und Grünpflege",
+    schemaName: "Gartenpflege",
+  },
+  {
+    route: "/leistungen/winterdienst/",
+    title: "Winterdienst | Universale Dienstleistungen Büsum",
+    description:
+      "Universale Dienstleistungen aus Büsum räumt Schnee und streut Treppen, Aufgänge, Wege, Zufahrten, Parkplätze und Höfe.",
+    heading: "Winterdienst.",
+    coreContent: "Zufahrten",
+    schemaName: "Winterdienst",
+  },
+  {
+    route: "/leistungen/hausmeisterservice/",
+    title: "Hausmeisterservice | Universale Dienstleistungen Büsum",
+    description:
+      "Universale Dienstleistungen aus Büsum kontrolliert und wartet Anlagen privater und gewerblicher Objekte und übernimmt zulässige Kleinreparaturen.",
+    heading: "Hausmeisterservice.",
+    coreContent: "Kleinreparaturen.",
+    schemaName: "Hausmeisterservice",
+  },
+  {
+    route: "/leistungen/entruempelung/",
+    title: "Entrümpelung | Universale Dienstleistungen Büsum",
+    description:
+      "Universale Dienstleistungen aus Büsum übernimmt private Haushalts- und Wohnungsauflösungen sowie gewerbliche Entrümpelungen und Betriebsauflösungen.",
+    heading: "Entrümpelung.",
+    coreContent: "Haushaltsauflösungen",
+    schemaName: "Entrümpelung",
+  },
+  {
+    route: "/leistungen/objektbetreuung/",
+    title:
+      "Gewerbliche Objektbetreuung | Universale Dienstleistungen Büsum",
+    description:
+      "Universale Dienstleistungen aus Büsum bündelt für gewerbliche Objekte Kontrolle, Wartung, Pflege, Reinigung, Gartenpflege und Winterdienst.",
+    heading: "Ein Objekt.",
+    coreContent: "Pflege. Reinigung. Betreuung.",
+    schemaName: "Gewerbliche Objektbetreuung",
+  },
+];
+
+const publicRouteCases = [
+  "",
+  ...servicePageCases.map(({ route }) => route.slice(1)),
+  "team/",
+  "impressum/",
+  "datenschutz/",
+];
+
+const escapeRegExp = (value) =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 const readTextTree = async (directoryUrl) => {
   const entries = await readdir(directoryUrl, { withFileTypes: true });
@@ -160,13 +224,95 @@ test("exports a complete static GitHub Pages site", async () => {
     `User-agent: *\nAllow: /\n\nSitemap: ${expectedSiteUrl}/sitemap.xml\n`,
   );
   assert.match(sitemap, /<urlset/);
-  for (const route of ["", "team/", "impressum/", "datenschutz/"]) {
+  for (const route of publicRouteCases) {
     assert.ok(
       sitemap.includes(`<loc>${expectedSiteUrl}/${route}</loc>`),
       `Sitemap is missing ${expectedSiteUrl}/${route}`,
     );
   }
+  assert.equal(
+    [...sitemap.matchAll(/<loc>/g)].length,
+    publicRouteCases.length,
+    "Sitemap must contain exactly the exported public routes",
+  );
   assert.doesNotMatch(sitemap, /\/404(?:\/|<)/);
+});
+
+test("exports five German service pages with metadata, links, and Service schema", async () => {
+  for (const servicePage of servicePageCases) {
+    const serviceHtml = await readFile(
+      new URL(
+        `../dist/client${servicePage.route}index.html`,
+        import.meta.url,
+      ),
+      "utf8",
+    );
+    const canonicalUrl = `${expectedSiteUrl}${servicePage.route}`;
+
+    assert.match(serviceHtml, /<html lang="de">/i);
+    assert.ok(
+      serviceHtml.includes(`<title>${servicePage.title}</title>`),
+      `${servicePage.route} is missing its German title`,
+    );
+    assert.ok(
+      serviceHtml.includes(
+        `<meta name="description" content="${servicePage.description}"`,
+      ),
+      `${servicePage.route} is missing its German description`,
+    );
+    assert.ok(
+      serviceHtml.includes(
+        `<link rel="canonical" href="${canonicalUrl}"`,
+      ),
+      `${servicePage.route} is missing its canonical URL`,
+    );
+    assert.match(
+      serviceHtml,
+      new RegExp(
+        `<h1\\b[^>]*>[\\s\\S]*?${escapeRegExp(
+          servicePage.heading,
+        )}[\\s\\S]*?<\\/h1>`,
+        "i",
+      ),
+    );
+    assert.ok(
+      serviceHtml.includes(servicePage.coreContent),
+      `${servicePage.route} is missing its core service content`,
+    );
+    assert.match(
+      serviceHtml,
+      /<script\b[^>]*type="application\/ld\+json"[^>]*>/i,
+    );
+    assert.ok(
+      serviceHtml.includes('"@type":"Service"'),
+      `${servicePage.route} is missing Service JSON-LD`,
+    );
+    assert.ok(
+      serviceHtml.includes(`"name":"${servicePage.schemaName}"`),
+      `${servicePage.route} has the wrong Service schema name`,
+    );
+    assert.ok(
+      serviceHtml.includes(`"url":"${canonicalUrl}"`),
+      `${servicePage.route} has the wrong Service schema URL`,
+    );
+    assert.doesNotMatch(
+      serviceHtml,
+      /Unexpectedly client reference/,
+      `${servicePage.route} must not serialize a client reference into a link`,
+    );
+    assert.match(serviceHtml, /href="#kontakt"/);
+
+    for (const relatedPage of servicePageCases) {
+      if (relatedPage.route === servicePage.route) continue;
+
+      assert.ok(
+        serviceHtml.includes(
+          `href="${renderedBasePath}${relatedPage.route}"`,
+        ),
+        `${servicePage.route} is missing its internal link to ${relatedPage.route}`,
+      );
+    }
+  }
 });
 
 test("keeps the Pages asset prefix, original motion, and natural skin wired in", async () => {
