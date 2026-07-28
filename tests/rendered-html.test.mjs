@@ -26,10 +26,10 @@ const servicePageCases = [
       "Moin, ich interessiere mich für Gartenpflege durch Universale Dienstleistungen.",
     visualAssets: [
       "service-gartenpflege-hero.webp",
-      "gardener-trimming.webp",
-      "massstabsreise-kante.webp",
-      "grass-cutting.webp",
-      "massstabsreise-landschaft-sommer.webp",
+      "service-gartenpflege-hecke.webp",
+      "service-gartenpflege-kante.webp",
+      "service-gartenpflege-kleinflaeche.webp",
+      "service-gartenpflege-grossflaeche.webp",
       "service-gartenpflege-insight.webp",
     ],
   },
@@ -46,9 +46,9 @@ const servicePageCases = [
       "Moin, ich interessiere mich für Winterdienst durch Universale Dienstleistungen.",
     visualAssets: [
       "service-winterdienst-hero.webp",
-      "snow-clearing.webp",
-      "chronogarten-winter.webp",
-      "massstabsreise-landschaft-winter.webp",
+      "service-winterdienst-raeumen.webp",
+      "service-winterdienst-wege.webp",
+      "service-winterdienst-flaechen.webp",
       "service-winterdienst-technik.webp",
       "service-winterdienst-insight.webp",
     ],
@@ -66,10 +66,10 @@ const servicePageCases = [
       "Moin, ich interessiere mich für den Hausmeisterservice von Universale Dienstleistungen.",
     visualAssets: [
       "service-hausmeisterservice-hero.webp",
-      "chronogarten-hausmeister.webp",
-      "process-impulse-panorama.webp",
+      "service-hausmeisterservice-kontrolle.webp",
+      "service-hausmeisterservice-wartung.webp",
       "service-hausmeisterservice-reparatur.webp",
-      "chronogarten-intro.webp",
+      "service-hausmeisterservice-objektpflege.webp",
       "service-hausmeisterservice-insight.webp",
     ],
   },
@@ -86,7 +86,7 @@ const servicePageCases = [
       "Moin, ich interessiere mich für eine Entrümpelung durch Universale Dienstleistungen.",
     visualAssets: [
       "service-entruempelung-hero.webp",
-      "chronogarten-entruempelung.webp",
+      "service-entruempelung-haushalt.webp",
       "service-entruempelung-gewerbe.webp",
       "service-entruempelung-demontage.webp",
       "service-entruempelung-renovierung.webp",
@@ -107,10 +107,10 @@ const servicePageCases = [
       "Moin, ich interessiere mich für gewerbliche Objektbetreuung durch Universale Dienstleistungen.",
     visualAssets: [
       "service-objektbetreuung-hero.webp",
-      "chronogarten-hausmeister.webp",
-      "grass-cutting.webp",
-      "massstabsreise-landschaft-winter.webp",
-      "process-impulse-panorama.webp",
+      "service-objektbetreuung-kontrolle.webp",
+      "service-objektbetreuung-pflege.webp",
+      "service-objektbetreuung-aussen.webp",
+      "service-objektbetreuung-abstimmung.webp",
       "service-objektbetreuung-insight.webp",
     ],
   },
@@ -343,6 +343,10 @@ test("exports five German service pages with metadata, links, and Service schema
       servicePage.visualAssets.length,
       `${servicePage.route} must use distinct journey visuals`,
     );
+    assert.ok(
+      servicePage.visualAssets.every((asset) => asset.startsWith("service-")),
+      `${servicePage.route} must not reuse homepage visuals`,
+    );
     for (const visualAsset of servicePage.visualAssets) {
       assert.ok(
         serviceHtml.includes(visualAsset),
@@ -408,6 +412,7 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     fleetJourneyCss,
     processImpulseJourney,
     processImpulseJourneyCss,
+    servicePageCss,
     serviceCatalog,
     css,
     naturalCss,
@@ -425,6 +430,7 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     readFile(new URL("../app/concepts/fleet-scale-journey.module.css", import.meta.url), "utf8"),
     readFile(new URL("../app/concepts/process-impulse-journey.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/concepts/process-impulse-journey.module.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/leistungen/service-page.module.css", import.meta.url), "utf8"),
     readFile(new URL("../app/service-catalog.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../app/natural.css", import.meta.url), "utf8"),
@@ -453,6 +459,11 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.match(shell, /window\.location\.assign\(nextUrl\.href\)/);
   assert.match(shell, /popstate/);
   assert.match(shell, /hashchange/);
+  assert.match(shell, /homeScrollStorageKey/);
+  assert.match(shell, /rememberHomeScrollBeforeService/);
+  assert.match(shell, /scheduleHomeScrollRestore/);
+  assert.match(shell, /navigationEntry\?\.type === "back_forward"/);
+  assert.match(shell, /event\.persisted/);
   assert.doesNotMatch(shell, /dataset\.season/);
   assert.doesNotMatch(page, /data-season-story/);
   assert.match(page, /ActiveIntroConcept/);
@@ -719,7 +730,7 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
   assert.doesNotMatch(team, /Menschen\. Technik\. Ergebnis\./);
   assert.doesNotMatch(team, /team-gallery/);
   assert.match(shell, /aria-label="24\/7 erreichbar – jetzt anrufen: \+49 173 8948124"/);
-  assert.match(shell, /className="mobile-call__label"[\s\S]*?24\/7 erreichbar/);
+  assert.match(shell, /className="mobile-call__label"[\s\S]*?24\/7/);
   assert.match(shell, /https:\/\/wa\.me\/491738948124\?text=/);
   assert.match(shell, /className="mobile-whatsapp"/);
   assert.match(shell, /target="_blank"/);
@@ -728,7 +739,9 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     shell,
     /aria-label="WhatsApp-Chat mit Universale Dienstleistungen öffnen"/,
   );
-  assert.match(shell, /<svg[\s\S]*?viewBox="0 0 24 24"/);
+  assert.match(shell, /src=\{assetPath\("\/media\/whatsapp-glyph-white\.svg"\)\}/);
+  assert.doesNotMatch(shell, /M20\.4 11\.8/);
+  assert.match(css, /\.mobile-whatsapp\s*\{[\s\S]*?background:\s*#25d366/);
   assert.doesNotMatch(shell, /<strong>24\/7 anrufen<\/strong>/);
   assert.match(
     shell,
@@ -753,6 +766,18 @@ test("keeps the Pages asset prefix, original motion, and natural skin wired in",
     /link\.closest\("\.mobile-menu"\) \|\| link\.matches\("\.back-to-top"\)/,
   );
   assert.match(css, /\.back-to-top\s*\{[\s\S]*?width:\s*44px[\s\S]*?height:\s*44px/);
+  assert.match(
+    css,
+    /\.back-to-top\s*\{[\s\S]*?right:\s*auto[\s\S]*?left:\s*24px/,
+  );
+  assert.match(
+    servicePageCss,
+    /@media \(max-width: 780px\)[\s\S]*?\.stageNavigation\s*\{[\s\S]*?right:\s*calc\(84px \+ env\(safe-area-inset-right\)\)[\s\S]*?bottom:\s*calc\(86px \+ env\(safe-area-inset-bottom\)\)/,
+  );
+  assert.match(
+    servicePageCss,
+    /@media \(max-width: 780px\)[\s\S]*?\.copy h1 span\s*\{[\s\S]*?overflow-wrap:\s*normal[\s\S]*?word-break:\s*normal[\s\S]*?hyphens:\s*none/,
+  );
   assert.doesNotMatch(shell, /\["Über uns",/);
 });
 
@@ -798,19 +823,34 @@ test("ships optimized responsive visual assets", async () => {
   processImpulseAssets.forEach((file) => assert.ok(files.includes(file)));
   const serviceJourneyAssetBases = [
     "service-gartenpflege-hero",
+    "service-gartenpflege-hecke",
+    "service-gartenpflege-kante",
+    "service-gartenpflege-kleinflaeche",
+    "service-gartenpflege-grossflaeche",
     "service-gartenpflege-insight",
     "service-winterdienst-hero",
+    "service-winterdienst-raeumen",
+    "service-winterdienst-wege",
+    "service-winterdienst-flaechen",
     "service-winterdienst-technik",
     "service-winterdienst-insight",
     "service-hausmeisterservice-hero",
+    "service-hausmeisterservice-kontrolle",
+    "service-hausmeisterservice-wartung",
     "service-hausmeisterservice-reparatur",
+    "service-hausmeisterservice-objektpflege",
     "service-hausmeisterservice-insight",
     "service-entruempelung-hero",
+    "service-entruempelung-haushalt",
     "service-entruempelung-gewerbe",
     "service-entruempelung-demontage",
     "service-entruempelung-renovierung",
     "service-entruempelung-insight",
     "service-objektbetreuung-hero",
+    "service-objektbetreuung-kontrolle",
+    "service-objektbetreuung-pflege",
+    "service-objektbetreuung-aussen",
+    "service-objektbetreuung-abstimmung",
     "service-objektbetreuung-insight",
   ];
   const serviceJourneyAssets = serviceJourneyAssetBases.flatMap((base) => [
@@ -818,6 +858,7 @@ test("ships optimized responsive visual assets", async () => {
     `${base}-960.webp`,
   ]);
   serviceJourneyAssets.forEach((file) => assert.ok(files.includes(file)));
+  assert.ok(files.includes("whatsapp-glyph-white.svg"));
   assert.ok(!files.includes("terraschnitt-finished.jpg"));
   assert.ok(!files.includes("terraschnitt-before.jpg"));
   assert.ok(!files.includes("natural-paper-texture.png"));

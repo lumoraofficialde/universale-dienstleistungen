@@ -31,6 +31,19 @@ const homePath = basePath
 const homeHref = (hash: string) => `${homePath}${hash}`;
 const normalizePathname = (pathname: string) =>
   pathname.replace(/\/+$/, "") || "/";
+const normalizedHomePath = normalizePathname(homePath);
+const servicePathPrefix = `${
+  normalizedHomePath === "/" ? "" : normalizedHomePath
+}/leistungen/`;
+const homeScrollStorageKey = `universale:return-scroll:${
+  normalizedHomePath === "/" ? "root" : normalizedHomePath
+}`;
+
+type HomeScrollSnapshot = {
+  path: string;
+  scrollY: number;
+  savedAt: number;
+};
 
 export function SiteMotion() {
   useEffect(() => {
@@ -337,6 +350,7 @@ export function SiteMotion() {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let firstHashFrame = 0;
     let secondHashFrame = 0;
+    let restorationFrame = 0;
     let alive = true;
 
     const isSameDocument = (nextUrl: URL, currentUrl: URL) =>
@@ -410,6 +424,130 @@ export function SiteMotion() {
           if (alive) scrollToHash(window.location.hash, "auto");
         });
       });
+    };
+
+    const readHomeScrollSnapshot = () => {
+      try {
+        const stored = window.sessionStorage.getItem(homeScrollStorageKey);
+        if (!stored) return null;
+        const parsed = JSON.parse(stored) as Partial<HomeScrollSnapshot>;
+        if (
+          parsed.path !== normalizedHomePath ||
+          typeof parsed.scrollY !== "number" ||
+          !Number.isFinite(parsed.scrollY) ||
+          typeof parsed.savedAt !== "number" ||
+          Date.now() - parsed.savedAt > 12 * 60 * 60 * 1000
+        ) {
+          window.sessionStorage.removeItem(homeScrollStorageKey);
+          return null;
+        }
+        return parsed as HomeScrollSnapshot;
+      } catch {
+        return null;
+      }
+    };
+
+    const clearHomeScrollSnapshot = () => {
+      try {
+        window.sessionStorage.removeItem(homeScrollStorageKey);
+      } catch {
+        // Session storage can be unavailable in hardened browser modes.
+      }
+    };
+
+    const scheduleHomeScrollRestore = () => {
+      if (
+        normalizePathname(window.location.pathname) !== normalizedHomePath
+      ) {
+        return false;
+      }
+
+      const snapshot = readHomeScrollSnapshot();
+      if (!snapshot) return false;
+
+      if (restorationFrame) {
+        window.cancelAnimationFrame(restorationFrame);
+      }
+
+      let attempts = 0;
+      const previousScrollBehavior =
+        document.documentElement.style.scrollBehavior;
+      document.documentElement.style.scrollBehavior = "auto";
+
+      const restore = () => {
+        if (!alive) return;
+        const maxScrollY = Math.max(
+          0,
+          document.documentElement.scrollHeight - window.innerHeight,
+        );
+        window.scrollTo({
+          top: Math.min(snapshot.scrollY, maxScrollY),
+          behavior: "auto",
+        });
+        attempts += 1;
+
+        if (attempts < 4) {
+          restorationFrame = window.requestAnimationFrame(restore);
+          return;
+        }
+
+        document.documentElement.style.scrollBehavior =
+          previousScrollBehavior;
+        clearHomeScrollSnapshot();
+        restorationFrame = 0;
+      };
+
+      restorationFrame = window.requestAnimationFrame(restore);
+      return true;
+    };
+
+    const rememberHomeScrollBeforeService = (
+      event: globalThis.MouseEvent,
+    ) => {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey ||
+        normalizePathname(window.location.pathname) !== normalizedHomePath
+      ) {
+        return;
+      }
+
+      const origin = event.target;
+      if (!(origin instanceof Element)) return;
+      const link = origin.closest<HTMLAnchorElement>("a[href]");
+      if (
+        !link ||
+        link.target === "_blank" ||
+        link.hasAttribute("download")
+      ) {
+        return;
+      }
+
+      const nextUrl = new URL(link.href, window.location.href);
+      if (
+        nextUrl.origin !== window.location.origin ||
+        !normalizePathname(nextUrl.pathname).startsWith(servicePathPrefix)
+      ) {
+        return;
+      }
+
+      try {
+        const snapshot: HomeScrollSnapshot = {
+          path: normalizedHomePath,
+          scrollY: window.scrollY,
+          savedAt: Date.now(),
+        };
+        window.sessionStorage.setItem(
+          homeScrollStorageKey,
+          JSON.stringify(snapshot),
+        );
+      } catch {
+        // Native history restoration remains available as a fallback.
+      }
     };
 
     const handleStaticNavigation: VinextNavigate = (href) => {
@@ -490,28 +628,53 @@ export function SiteMotion() {
     };
 
     const handleHistoryNavigation = () => {
+      if (scheduleHomeScrollRestore()) return;
+      if (!window.location.hash) return;
       window.requestAnimationFrame(() => {
         scrollToHash(window.location.hash, "auto");
       });
     };
 
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) scheduleHomeScrollRestore();
+    };
+
+    window.addEventListener("click", rememberHomeScrollBeforeService, {
+      capture: true,
+    });
     window.addEventListener("click", handleHashNavigation, { capture: true });
     window.addEventListener("load", stabilizeCurrentHash, { once: true });
     window.addEventListener("popstate", handleHistoryNavigation);
     window.addEventListener("hashchange", handleHistoryNavigation);
+    window.addEventListener("pageshow", handlePageShow);
     stabilizeCurrentHash();
+    const navigationEntry = performance.getEntriesByType(
+      "navigation",
+    )[0] as PerformanceNavigationTiming | undefined;
+    if (navigationEntry?.type === "back_forward") {
+      scheduleHomeScrollRestore();
+    }
     void document.fonts.ready.then(() => {
       if (alive) stabilizeCurrentHash();
     });
 
     return () => {
       alive = false;
+      window.removeEventListener(
+        "click",
+        rememberHomeScrollBeforeService,
+        true,
+      );
       window.removeEventListener("click", handleHashNavigation, true);
       window.removeEventListener("load", stabilizeCurrentHash);
       window.removeEventListener("popstate", handleHistoryNavigation);
       window.removeEventListener("hashchange", handleHistoryNavigation);
+      window.removeEventListener("pageshow", handlePageShow);
       if (firstHashFrame) window.cancelAnimationFrame(firstHashFrame);
       if (secondHashFrame) window.cancelAnimationFrame(secondHashFrame);
+      if (restorationFrame) {
+        window.cancelAnimationFrame(restorationFrame);
+      }
       if (vinextWindow.__VINEXT_RSC_NAVIGATE__ === handleStaticNavigation) {
         vinextWindow.__VINEXT_RSC_NAVIGATE__ = originalVinextNavigate;
       }
@@ -989,7 +1152,7 @@ export function MobileCall({
         title="24/7 erreichbar – jetzt anrufen"
       >
         <span className="mobile-call__label" aria-hidden="true">
-          24/7 erreichbar
+          24/7
         </span>
         <svg
           viewBox="0 0 24 24"
@@ -1018,26 +1181,14 @@ export function MobileCall({
         tabIndex={contextHidden ? -1 : undefined}
         title="Per WhatsApp schreiben"
       >
-        <svg
-          viewBox="0 0 24 24"
-          width="26"
-          height="26"
+        <img
+          src={assetPath("/media/whatsapp-glyph-white.svg")}
+          width="28"
+          height="28"
+          alt=""
           aria-hidden="true"
-          focusable="false"
-        >
-          <path
-            d="M20.4 11.8a8.4 8.4 0 0 1-12.5 7.3L3.5 20.3l1.2-4.2a8.4 8.4 0 1 1 15.7-4.3Z"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.7"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M8.2 7.8c.2-.4.4-.4.7-.4h.5c.2 0 .4.1.5.5l.7 1.7c.1.3.1.5-.1.7l-.6.8c-.2.2-.1.4 0 .6.6 1.1 1.5 2 2.6 2.6.2.1.4.1.6-.1l.8-1c.2-.2.4-.3.7-.1l1.7.8c.3.2.4.3.4.6 0 .3-.2 1.4-1 1.9-.6.4-1.4.6-2.3.4-1.1-.2-2.6-.8-4.2-2.2-1.3-1.2-2.3-2.7-2.6-3.9-.3-1.1 0-2 .3-2.5Z"
-            fill="currentColor"
-          />
-        </svg>
+          draggable={false}
+        />
       </a>
     </div>
   );

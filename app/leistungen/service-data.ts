@@ -189,6 +189,46 @@ const images = {
     position: "center",
     mobilePosition: "64% center",
   },
+  gardenHedge: {
+    src: "/media/service-gartenpflege-hecke.webp",
+    srcSet:
+      "/media/service-gartenpflege-hecke-960.webp 960w, /media/service-gartenpflege-hecke.webp 1672w",
+    width: 1672,
+    height: 941,
+    alt: "Präziser Form- und Rückschnitt einer höheren Hecke",
+    position: "center",
+    mobilePosition: "67% center",
+  },
+  gardenEdgeExclusive: {
+    src: "/media/service-gartenpflege-kante.webp",
+    srcSet:
+      "/media/service-gartenpflege-kante-960.webp 960w, /media/service-gartenpflege-kante.webp 1672w",
+    width: 1672,
+    height: 941,
+    alt: "Mitarbeiter zieht eine saubere Kante zwischen Rasen und Beet",
+    position: "center",
+    mobilePosition: "66% center",
+  },
+  gardenSmallArea: {
+    src: "/media/service-gartenpflege-kleinflaeche.webp",
+    srcSet:
+      "/media/service-gartenpflege-kleinflaeche-960.webp 960w, /media/service-gartenpflege-kleinflaeche.webp 1672w",
+    width: 1672,
+    height: 941,
+    alt: "Kompakte Mähtechnik in einem schmaleren Gartenbereich",
+    position: "center",
+    mobilePosition: "67% center",
+  },
+  gardenLargeArea: {
+    src: "/media/service-gartenpflege-grossflaeche.webp",
+    srcSet:
+      "/media/service-gartenpflege-grossflaeche-960.webp 960w, /media/service-gartenpflege-grossflaeche.webp 1672w",
+    width: 1672,
+    height: 941,
+    alt: "Pflege einer größeren gewerblichen Grünfläche",
+    position: "center",
+    mobilePosition: "66% center",
+  },
   winterHero: {
     src: "/media/service-winterdienst-hero.webp",
     srcSet:
@@ -199,6 +239,36 @@ const images = {
     position: "center",
     mobilePosition: "68% center",
   },
+  winterClearing: {
+    src: "/media/service-winterdienst-raeumen.webp",
+    srcSet:
+      "/media/service-winterdienst-raeumen-960.webp 960w, /media/service-winterdienst-raeumen.webp 1672w",
+    width: 1672,
+    height: 941,
+    alt: "Geräumter und gestreuter Gehweg an einem Winterobjekt",
+    position: "center",
+    mobilePosition: "67% center",
+  },
+  winterPaths: {
+    src: "/media/service-winterdienst-wege.webp",
+    srcSet:
+      "/media/service-winterdienst-wege-960.webp 960w, /media/service-winterdienst-wege.webp 1672w",
+    width: 1672,
+    height: 941,
+    alt: "Sichere Schneeräumung an Treppen und einem schmalen Zugang",
+    position: "center",
+    mobilePosition: "66% center",
+  },
+  winterAreas: {
+    src: "/media/service-winterdienst-flaechen.webp",
+    srcSet:
+      "/media/service-winterdienst-flaechen-960.webp 960w, /media/service-winterdienst-flaechen.webp 1672w",
+    width: 1672,
+    height: 941,
+    alt: "Räumung eines größeren Parkplatzes mit kompakter Wintertechnik",
+    position: "center",
+    mobilePosition: "67% center",
+  },
   winterEquipment: {
     src: "/media/service-winterdienst-technik.webp",
     srcSet:
@@ -206,6 +276,36 @@ const images = {
     width: 1672,
     height: 941,
     alt: "Kompakte Räumtechnik im Einsatz auf einem schmalen Winterweg",
+    position: "center",
+    mobilePosition: "66% center",
+  },
+  caretakerControl: {
+    src: "/media/service-hausmeisterservice-kontrolle.webp",
+    srcSet:
+      "/media/service-hausmeisterservice-kontrolle-960.webp 960w, /media/service-hausmeisterservice-kontrolle.webp 1672w",
+    width: 1672,
+    height: 941,
+    alt: "Kontrolle von Eingang und Regenwasserablauf an einem Objekt",
+    position: "center",
+    mobilePosition: "66% center",
+  },
+  caretakerMaintenance: {
+    src: "/media/service-hausmeisterservice-wartung.webp",
+    srcSet:
+      "/media/service-hausmeisterservice-wartung-960.webp 960w, /media/service-hausmeisterservice-wartung.webp 1672w",
+    width: 1672,
+    height: 941,
+    alt: "Einfache routinemäßige Wartung an einer Objekteinrichtung",
+    position: "center",
+    mobilePosition: "66% center",
+  },
+  caretakerCare: {
+    src: "/media/service-hausmeisterservice-objektpflege.webp",
+    srcSet:
+      "/media/service-hausmeisterservice-objektpflege-960.webp 960w, /media/service-hausmeisterservice-objektpflege.webp 1672w",
+    width: 1672,
+    height: 941,
+    alt: "Professionelle Pflege eines vereinbarten Objektbereichs",
     position: "center",
     mobilePosition: "66% center",
   },
@@ -259,6 +359,16 @@ const images = {
     position: "center",
     mobilePosition: "68% center",
   },
+  clearanceHousehold: {
+    src: "/media/service-entruempelung-haushalt.webp",
+    srcSet:
+      "/media/service-entruempelung-haushalt-960.webp 960w, /media/service-entruempelung-haushalt.webp 1672w",
+    width: 1672,
+    height: 941,
+    alt: "Geordnetes Sortieren und Verpacken bei einer Haushaltsauflösung",
+    position: "center",
+    mobilePosition: "66% center",
+  },
   clearanceBusiness: {
     src: "/media/service-entruempelung-gewerbe.webp",
     srcSet:
@@ -309,6 +419,46 @@ const images = {
     position: "center",
     mobilePosition: "66% center",
   },
+  commercialControl: {
+    src: "/media/service-objektbetreuung-kontrolle.webp",
+    srcSet:
+      "/media/service-objektbetreuung-kontrolle-960.webp 960w, /media/service-objektbetreuung-kontrolle.webp 1672w",
+    width: 1672,
+    height: 941,
+    alt: "Kontrolle von Fassade und Zugang eines Gewerbeobjekts",
+    position: "center",
+    mobilePosition: "66% center",
+  },
+  commercialCare: {
+    src: "/media/service-objektbetreuung-pflege.webp",
+    srcSet:
+      "/media/service-objektbetreuung-pflege-960.webp 960w, /media/service-objektbetreuung-pflege.webp 1672w",
+    width: 1672,
+    height: 941,
+    alt: "Laufende Pflege eines gewerblichen Gemeinschaftsbereichs",
+    position: "center",
+    mobilePosition: "66% center",
+  },
+  commercialOutside: {
+    src: "/media/service-objektbetreuung-aussen.webp",
+    srcSet:
+      "/media/service-objektbetreuung-aussen-960.webp 960w, /media/service-objektbetreuung-aussen.webp 1672w",
+    width: 1672,
+    height: 941,
+    alt: "Pflege von Wegen und Grün an einem Gewerbeobjekt",
+    position: "center",
+    mobilePosition: "66% center",
+  },
+  commercialCoordination: {
+    src: "/media/service-objektbetreuung-abstimmung.webp",
+    srcSet:
+      "/media/service-objektbetreuung-abstimmung-960.webp 960w, /media/service-objektbetreuung-abstimmung.webp 1672w",
+    width: 1672,
+    height: 941,
+    alt: "Direkte Abstimmung der Aufgaben an einem Gewerbeobjekt",
+    position: "center",
+    mobilePosition: "66% center",
+  },
   commercialInsight: {
     src: "/media/service-objektbetreuung-insight.webp",
     srcSet:
@@ -355,7 +505,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Rückschnitt von Gehölzen",
           "Unterschiedliche Größen",
         ],
-        image: images.hedgeWork,
+        image: images.gardenHedge,
       },
       {
         key: "kante",
@@ -368,7 +518,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Hecken und Gehölze",
           "Form- und Rückschnitt",
         ],
-        image: images.gardenEdge,
+        image: images.gardenEdgeExclusive,
       },
       {
         key: "objekt",
@@ -381,7 +531,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Kleinere Objekte",
           "Mähtechnik für kleinere Flächen",
         ],
-        image: images.grassWork,
+        image: images.gardenSmallArea,
       },
       {
         key: "flaeche",
@@ -394,7 +544,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Gleichmäßige Pflege",
           "Dafür ausgelegte Mähwerke",
         ],
-        image: images.summerGrounds,
+        image: images.gardenLargeArea,
       },
     ],
     insight: {
@@ -467,7 +617,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Streuarbeiten",
           "Passende Technik",
         ],
-        image: images.snowWork,
+        image: images.winterClearing,
       },
       {
         key: "wege",
@@ -480,11 +630,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Aufgänge",
           "Gehwege",
         ],
-        image: {
-          ...images.winterStory,
-          position: "58% center",
-          mobilePosition: "60% center",
-        },
+        image: images.winterPaths,
       },
       {
         key: "flaechen",
@@ -497,7 +643,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Parkplätze",
           "Höfe",
         ],
-        image: images.winterGrounds,
+        image: images.winterAreas,
       },
       {
         key: "technik",
@@ -583,7 +729,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Vereinbarte Anlagen",
           "Abgestimmter Umfang",
         ],
-        image: images.propertyStory,
+        image: images.caretakerControl,
       },
       {
         key: "wartung",
@@ -596,7 +742,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Wartung",
           "Private und gewerbliche Objekte",
         ],
-        image: images.workPlanning,
+        image: images.caretakerMaintenance,
       },
       {
         key: "kleinreparatur",
@@ -622,7 +768,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Reinigung",
           "Betreuung des Objekts",
         ],
-        image: images.objectStory,
+        image: images.caretakerCare,
       },
     ],
     insight: {
@@ -695,11 +841,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Wohnungsauflösungen",
           "Private Aufträge",
         ],
-        image: {
-          ...images.clearanceStory,
-          position: "70% center",
-          mobilePosition: "70% center",
-        },
+        image: images.clearanceHousehold,
       },
       {
         key: "betrieb",
@@ -812,7 +954,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Wartung",
           "Kleinreparaturen ohne Fachbetrieb",
         ],
-        image: images.propertyStory,
+        image: images.commercialControl,
       },
       {
         key: "pflege",
@@ -825,7 +967,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Reinigung",
           "Innen- und Außenbereiche",
         ],
-        image: images.grassWork,
+        image: images.commercialCare,
       },
       {
         key: "aussen",
@@ -838,7 +980,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Hecken und Gehölze",
           "Räumen und Streuen",
         ],
-        image: images.winterGrounds,
+        image: images.commercialOutside,
       },
       {
         key: "abstimmung",
@@ -851,7 +993,7 @@ export const servicePages: Record<ServiceSlug, ServicePageData> = {
           "Umfang vereinbaren",
           "Ein Ansprechpartner",
         ],
-        image: images.workPlanning,
+        image: images.commercialCoordination,
       },
     ],
     insight: {

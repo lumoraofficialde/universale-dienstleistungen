@@ -713,14 +713,18 @@
   }
 
   .copy h1 {
-    max-width: 9.7ch;
-    font-size: clamp(3.1rem, 13.2vw, 4.25rem);
-    line-height: 0.8;
+    max-width: 100%;
+    font-size: clamp(2.8rem, 11.9vw, 3.9rem);
+    line-height: 0.82;
   }
 
   .copy h1 span {
     width: auto;
     white-space: normal;
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+    text-wrap: balance;
   }
 
   .copyChange > p {
@@ -761,8 +765,8 @@
 
   .stageNavigation {
     top: auto;
-    right: 18px;
-    bottom: calc(176px + env(safe-area-inset-bottom));
+    right: calc(84px + env(safe-area-inset-right));
+    bottom: calc(86px + env(safe-area-inset-bottom));
     left: 18px;
     width: auto;
     display: grid;
