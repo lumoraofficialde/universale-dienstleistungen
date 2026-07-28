@@ -11,9 +11,9 @@ const previewImage = `${siteUrl}/og.jpg`;
 const logoPath = `${siteUrl}/media/universale-logo.png`;
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const description =
-  "Gartenpflege, Winterdienst, Hausmeisterservice und Entrümpelung für private und gewerbliche Objekte – persönlich koordiniert aus Büsum.";
+  "Winterdienst, Gartenpflege, Hausmeisterservice und Entrümpelung in Büsum und Dithmarschen – für private und gewerbliche Objekte.";
 const title =
-  "Gartenpflege, Winterdienst, Hausmeisterservice & Entrümpelung | Universale";
+  "Winterdienst & Gartenpflege Büsum/Dithmarschen | Universale";
 
 export const metadata: Metadata = {
   metadataBase: new URL(canonicalUrl),
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
         url: previewImage,
         width: 1200,
         height: 630,
-        alt: "Universale Dienstleistungen — Alles im Griff. Bei jedem Wetter.",
+        alt: "Universale Dienstleistungen für Büsum und Dithmarschen",
       },
     ],
   },
@@ -63,6 +63,23 @@ const organizationSchema = {
   image: previewImage,
   telephone: "+49 173 8948124",
   email: "info@universale-dienstleistungen.de",
+  areaServed: [
+    {
+      "@type": "City",
+      name: "Büsum",
+    },
+    {
+      "@type": "AdministrativeArea",
+      name: "Dithmarschen",
+    },
+  ],
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: "+49 173 8948124",
+    contactType: "customer service",
+    areaServed: "DE-SH",
+    availableLanguage: "de",
+  },
   address: {
     "@type": "PostalAddress",
     streetAddress: "Westerstraße 3",
@@ -78,6 +95,7 @@ const organizationSchema = {
       "Winterdienst",
       "Hausmeisterservice",
       "Entrümpelung",
+      "Gewerbliche Objektbetreuung",
     ].map((name) => ({
       "@type": "Offer",
       itemOffered: {

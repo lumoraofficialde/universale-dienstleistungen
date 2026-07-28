@@ -7,7 +7,7 @@ const siteUrl = (
 const canonicalUrl = `${siteUrl}/team/`;
 const previewImage = `${siteUrl}/og.jpg`;
 const description =
-  "Arbeitsweise, Abstimmung und Einsatzorganisation bei Universale Dienstleistungen aus Büsum.";
+  "Arbeitsweise, Abstimmung und Einsatzorganisation bei Universale Dienstleistungen für Büsum und Dithmarschen.";
 
 export const metadata: Metadata = {
   title: "Arbeitsweise | Universale Dienstleistungen",
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
         url: previewImage,
         width: 1200,
         height: 630,
-        alt: "Universale Dienstleistungen — Alles im Griff. Bei jedem Wetter.",
+        alt: "Universale Dienstleistungen für Büsum und Dithmarschen",
       },
     ],
   },

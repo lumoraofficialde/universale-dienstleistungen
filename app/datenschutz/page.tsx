@@ -47,7 +47,7 @@ const navigation = [
   { id: "ueberblick", number: "01", label: "Überblick" },
   { id: "verantwortlich", number: "02", label: "Verantwortliche Stelle" },
   { id: "hosting", number: "03", label: "Hosting" },
-  { id: "kontakt", number: "04", label: "Kontaktaufnahme" },
+  { id: "kontakt", number: "04", label: "Kontakt & WhatsApp" },
   { id: "technik", number: "05", label: "Cookies & Technik" },
   { id: "rechte", number: "06", label: "Ihre Rechte" },
   { id: "speicherdauer", number: "07", label: "Speicherdauer" },
@@ -76,8 +76,8 @@ export default function DatenschutzPage() {
         <p>
           Technische Daten entstehen beim Aufruf der Website durch den
           Hosting-Anbieter. Weitere Daten erhalten wir nur, wenn Sie uns diese
-          mitteilen – beispielsweise telefonisch, per E-Mail oder über die
-          vorbereitete E-Mail-Anfrage im Kontaktbereich.
+          mitteilen – beispielsweise telefonisch, per E-Mail, über WhatsApp
+          oder über die vorbereitete E-Mail-Anfrage im Kontaktbereich.
         </p>
 
         <h3>Wofür werden Daten genutzt?</h3>
@@ -165,6 +165,35 @@ export default function DatenschutzPage() {
           erforderlich oder gesetzlich vorgeschrieben ist.
         </p>
 
+        <h3>WhatsApp-Link</h3>
+        <p>
+          Die Website enthält Links zu WhatsApp. Es ist kein WhatsApp-Plugin
+          eingebettet und beim bloßen Laden unserer Website werden keine Daten
+          an WhatsApp übertragen. Erst wenn Sie einen WhatsApp-Link auswählen,
+          öffnet Ihr Gerät beziehungsweise Browser den Dienst. Wenn Sie die
+          vorbereitete oder eine eigene Nachricht dort absenden, verarbeiten
+          wir die von Ihnen übermittelten Angaben zur Bearbeitung Ihrer
+          Anfrage.
+        </p>
+        <p>
+          Anbieter für Nutzerinnen und Nutzer in der Europäischen Region ist
+          WhatsApp Ireland Limited. WhatsApp verarbeitet bei der Nutzung des
+          Dienstes unter anderem Konto-, Geräte-, Verbindungs- und
+          Nutzungsinformationen. Die Nutzung ist freiwillig; alternativ
+          erreichen Sie uns per Telefon oder E-Mail.
+        </p>
+        <p className={styles.note}>
+          Weitere Informationen:{" "}
+          <a
+            href="https://www.whatsapp.com/legal/privacy-policy-eea"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Datenschutzerklärung von WhatsApp für die Europäische Region (öffnet in einem neuen Tab)"
+          >
+            Datenschutzerklärung von WhatsApp
+          </a>
+        </p>
+
         <h3>Rechtsgrundlagen</h3>
         <p>
           Bezieht sich Ihre Anfrage auf einen Vertrag oder vorvertragliche
@@ -242,7 +271,7 @@ export default function DatenschutzPage() {
           Funktionsweise der Website, die eingesetzten Dienstleister oder die
           rechtlichen Anforderungen ändern.
         </p>
-        <p className={`${styles.note} ${styles.caps}`}>Stand: 27. Juli 2026</p>
+        <p className={`${styles.note} ${styles.caps}`}>Stand: 28. Juli 2026</p>
       </LegalSection>
     </LegalPage>
   );

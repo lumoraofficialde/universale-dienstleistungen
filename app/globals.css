@@ -401,7 +401,7 @@ body.menu-is-open .back-to-top {
 
 .menu-button,
 .mobile-menu,
-.mobile-call {
+.mobile-contact-bar {
   display: none;
 }
 
@@ -519,19 +519,22 @@ body.menu-is-open .back-to-top {
 }
 
 .hero h1 {
-  max-width: 9ch;
+  max-width: 14ch;
   font-family: var(--font-display), sans-serif;
-  font-size: clamp(4.5rem, 9.35vw, 9.15rem);
+  font-size: clamp(4rem, 7.15vw, 7.35rem);
   font-weight: 600;
   letter-spacing: -0.045em;
-  line-height: 0.79;
+  line-height: 0.8;
   text-transform: uppercase;
 }
 
 .hero h1 span {
   display: block;
+  margin-top: 0.14em;
   color: var(--acid);
-  white-space: nowrap;
+  font-size: 0.66em;
+  line-height: 0.88;
+  white-space: normal;
 }
 
 .hero-copy {
@@ -562,8 +565,12 @@ body.menu-is-open .back-to-top {
   margin-top: 2rem;
   display: flex;
   align-items: center;
-  gap: 1.4rem;
+  gap: 1rem 1.35rem;
   flex-wrap: wrap;
+}
+
+.hero-whatsapp {
+  color: var(--acid);
 }
 
 .button {
@@ -1312,6 +1319,11 @@ body.menu-is-open .back-to-top {
   transform: translateY(-3px);
 }
 
+.service-choice:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  min-height: 132px;
+}
+
 .service-choice__icon {
   position: relative;
   z-index: 1;
@@ -1454,6 +1466,22 @@ body.menu-is-open .back-to-top {
 .form-row + .form-row,
 .form-row + .message-label,
 .message-label + .privacy-note {
+  margin-top: 1.6rem;
+}
+
+.contact-route-help {
+  margin-top: 0.85rem;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.7rem;
+  line-height: 1.55;
+}
+
+.contact-route-help.is-error {
+  color: var(--acid);
+  font-weight: 700;
+}
+
+.contact-route-help + .message-label {
   margin-top: 1.6rem;
 }
 
@@ -2137,7 +2165,12 @@ main[tabindex="-1"]:focus {
     line-height: 1.45;
   }
   .hero-layout { grid-template-columns: 1fr; gap: 2.2rem; }
-  .hero h1 { font-size: clamp(3.35rem, 15.4vw, 5.5rem); line-height: 0.82; }
+  .hero h1 {
+    max-width: 100%;
+    font-size: clamp(3rem, 13.2vw, 4.8rem);
+    line-height: 0.82;
+    overflow-wrap: normal;
+  }
   .hero h1 span { white-space: normal; }
   .hero-panel { max-width: 100%; padding-top: 1.2rem; }
   .hero-panel p { font-size: 0.82rem; }
@@ -2379,79 +2412,90 @@ main[tabindex="-1"]:focus {
   .footer-meta { grid-template-columns: 1fr; gap: 1rem; }
   .footer-meta > a { justify-self: start; }
 
-  .mobile-call {
+  .mobile-contact-bar {
     position: fixed;
     z-index: 45;
-    right: calc(16px + env(safe-area-inset-right));
-    bottom: calc(16px + env(safe-area-inset-bottom));
-    left: auto;
-    width: 52px;
-    height: 52px;
-    min-height: 52px;
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(10px, env(safe-area-inset-bottom));
+    left: max(12px, env(safe-area-inset-left));
+    min-height: 62px;
+    padding: 4px;
     display: grid;
-    place-items: center;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     color: var(--pine-deep);
-    background: var(--acid);
-    border: 1px solid rgba(10, 38, 29, 0.2);
-    border-radius: 50%;
+    background: rgba(247, 244, 235, 0.96);
+    border: 1px solid rgba(10, 38, 29, 0.22);
+    border-radius: 6px 6px 18px 6px;
     box-shadow: 0 14px 35px rgba(7, 26, 19, 0.22);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
     transform: translateZ(0);
     transition:
-      background-color 180ms ease,
-      box-shadow 180ms ease,
       opacity 180ms ease,
       transform 180ms ease;
   }
 
-  .mobile-call__label {
-    position: absolute;
-    right: 0;
-    bottom: calc(100% + 6px);
-    width: max-content;
-    padding: 0.34rem 0.52rem;
-    color: var(--paper);
-    background: var(--pine);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px 4px 10px 4px;
-    box-shadow: 0 9px 24px rgba(7, 26, 19, 0.16);
-    font-size: 0.64rem;
-    font-weight: 800;
-    letter-spacing: 0.055em;
-    line-height: 1;
+  .mobile-contact-bar a {
+    min-width: 0;
+    min-height: 52px;
+    display: grid;
+    grid-template-columns: 20px auto;
+    gap: 0.45rem;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    border-radius: 4px 4px 12px 4px;
+    font-size: 0.62rem;
+    font-weight: 820;
+    letter-spacing: 0.045em;
     text-transform: uppercase;
-    white-space: nowrap;
+    transition:
+      color 180ms ease,
+      background-color 180ms ease,
+      transform 180ms ease;
   }
 
-  .mobile-call svg {
+  .mobile-contact-bar a + a {
+    border-left: 1px solid rgba(10, 38, 29, 0.14);
+  }
+
+  .mobile-contact-bar svg {
+    width: 20px;
+    height: 20px;
     display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
-  .mobile-call:active {
-    transform: translateY(1px) scale(0.97);
+  .mobile-contact-bar a:active {
+    transform: translateY(1px) scale(0.98);
   }
 
-  .mobile-call:focus-visible {
+  .mobile-contact-bar a:focus-visible {
     outline: 3px solid var(--pine-deep);
-    outline-offset: 3px;
+    outline-offset: -2px;
   }
 
-  body.menu-is-open .mobile-call,
-  .mobile-call.is-context-hidden {
+  body.menu-is-open .mobile-contact-bar,
+  .mobile-contact-bar.is-context-hidden {
     opacity: 0;
     pointer-events: none;
-    transform: translateY(8px);
+    transform: translateY(12px);
   }
 
   .back-to-top {
-    right: calc(76px + env(safe-area-inset-right));
-    bottom: calc(20px + env(safe-area-inset-bottom));
+    right: calc(16px + env(safe-area-inset-right));
+    bottom: calc(84px + env(safe-area-inset-bottom));
   }
 }
 
 @media (max-width: 780px) and (hover: hover) {
-  .mobile-call:hover {
-    background: #f0f7a8;
-    box-shadow: 0 18px 42px rgba(7, 26, 19, 0.28);
+  .mobile-contact-bar a:hover {
+    color: var(--pine-deep);
+    background: var(--acid);
     transform: translateY(-2px);
   }
 }
@@ -2459,7 +2503,7 @@ main[tabindex="-1"]:focus {
 @media (max-width: 420px) {
   .brand-name { display: none; }
   .hero-kicker { max-width: 26ch; }
-  .hero h1 { font-size: clamp(3.15rem, 15vw, 4.25rem); }
+  .hero h1 { font-size: clamp(2.9rem, 13.2vw, 4.1rem); }
   .hero-actions .text-link { display: none; }
   .service-picker__grid { grid-template-columns: 1fr; }
   .service-choice { min-height: 122px; }

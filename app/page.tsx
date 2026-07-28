@@ -18,6 +18,10 @@ import { ActiveIntroConcept } from "./concepts/active-intro";
 import { FleetScaleJourney } from "./concepts/fleet-scale-journey";
 import { ProcessImpulseJourney } from "./concepts/process-impulse-journey";
 import { serviceCatalog } from "./service-catalog";
+import { TrustArea } from "./trust-area";
+
+const whatsappHref =
+  "https://wa.me/491738948124?text=Hallo%20Universale%20Dienstleistungen%2C%20ich%20m%C3%B6chte%20einen%20Einsatz%20in%20B%C3%BCsum%20oder%20Dithmarschen%20besprechen.";
 
 const situations = [
   {
@@ -91,6 +95,12 @@ const serviceChoices = [
     note: "Haushalt & Betrieb",
     icon: "clear",
   },
+  {
+    value: serviceCatalog[4].formValue,
+    label: serviceCatalog[4].title,
+    note: "Hausverwaltung & Gewerbe",
+    icon: "property",
+  },
 ] as const;
 
 type ServiceChoiceIcon = (typeof serviceChoices)[number]["icon"];
@@ -135,6 +145,7 @@ function ServiceIllustration({ type }: { type: ServiceChoiceIcon }) {
 export default function Home() {
   const [formStatus, setFormStatus] = useState("");
   const [selectedService, setSelectedService] = useState("");
+  const [contactRouteMissing, setContactRouteMissing] = useState(false);
 
   const handleSpotlight = (event: PointerEvent<HTMLElement>) => {
     if (event.pointerType !== "mouse") return;
@@ -159,13 +170,23 @@ export default function Home() {
     if (!form.reportValidity()) return;
 
     const data = new FormData(form);
+    const phone = String(data.get("phone") ?? "").trim();
+    const email = String(data.get("email") ?? "").trim();
+    if (!phone && !email) {
+      setContactRouteMissing(true);
+      setFormStatus(
+        "Bitte geben Sie eine Telefonnummer oder eine E-Mail-Adresse an.",
+      );
+      return;
+    }
+
+    setContactRouteMissing(false);
     const subject = `Anfrage: ${data.get("service")}`;
     const body = [
       `Name: ${data.get("name")}`,
-      `Telefon: ${data.get("phone") || "nicht angegeben"}`,
-      `E-Mail: ${data.get("email")}`,
+      `Telefon: ${phone || "nicht angegeben"}`,
+      `E-Mail: ${email || "nicht angegeben"}`,
       `Leistung: ${data.get("service")}`,
-      `Wunschtermin/Zeitraum: ${data.get("date") || "offen"}`,
       `Ausführungsort: ${data.get("location")}`,
       "",
       "Beschreibung:",
@@ -180,6 +201,7 @@ export default function Home() {
 
   const chooseService = (service: string) => {
     setSelectedService(service);
+    setContactRouteMissing(false);
     setFormStatus("");
   };
 
@@ -223,24 +245,34 @@ export default function Home() {
             <div className="hero-layout">
               <div className="hero-copy">
                 <h1 id="hero-title">
-                  Alles im Griff.
-                  <span>Bei jedem Wetter.</span>
+                  Winterdienst.<br />
+                  Gartenpflege &amp;<br />
+                  Hausmeister<wbr />service.
+                  <span>In Büsum &amp;<br />Dithmarschen.</span>
                 </h1>
               </div>
 
               <aside className="hero-panel" aria-label="Direktanfrage">
                 <p>
-                  Vom Standort Büsum aus koordinieren wir Gartenpflege,
-                  Winterdienst, Hausmeisterservice und Entrümpelung für private
-                  Haushalte und gewerbliche Objekte. Einsatzort und Termin klären
-                  wir direkt mit Ihnen.
+                  Zuverlässige Objektbetreuung für Privatkunden,
+                  Hausverwaltungen und Unternehmen. Vom Standort Büsum aus
+                  koordinieren wir Einsätze im Kreis Dithmarschen und prüfen
+                  weitere gewerbliche Einsatzorte individuell.
                 </p>
                 <div className="hero-actions">
                   <a className="button button--accent" href="#kontakt">
-                    Anfrage starten <span aria-hidden="true">↗︎</span>
+                    Vor-Ort-Termin anfragen <span aria-hidden="true">↗︎</span>
                   </a>
                   <a className="text-link text-link--light" href="tel:+491738948124">
-                    Einsatz besprechen <span aria-hidden="true">→</span>
+                    Jetzt anrufen <span aria-hidden="true">→</span>
+                  </a>
+                  <a
+                    className="text-link text-link--light hero-whatsapp"
+                    href={whatsappHref}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Per WhatsApp <span aria-hidden="true">→</span>
                   </a>
                 </div>
               </aside>
@@ -392,6 +424,8 @@ export default function Home() {
 
         <ProcessImpulseJourney />
 
+        <TrustArea />
+
         <section
           className="contact"
           id="kontakt"
@@ -403,8 +437,9 @@ export default function Home() {
               <p className="eyebrow">Ihre Anfrage</p>
               <h2 id="contact-title">Aufgabe schildern.<br />Rückmeldung erhalten.</h2>
               <p>
-                Wählen Sie einen Leistungsbereich und nennen Sie Einsatzort,
-                Aufgabe und gewünschten Zeitraum. Beim Klick auf
+                Wählen Sie einen Leistungsbereich und nennen Sie Einsatzort
+                und Aufgabe. Eine Telefonnummer oder E-Mail-Adresse genügt für
+                die Rückmeldung. Beim Klick auf
                 „E-Mail-Anfrage vorbereiten“ öffnet sich Ihr E-Mail-Programm;
                 versendet wird die Anfrage erst dort.
               </p>
@@ -417,6 +452,10 @@ export default function Home() {
                 <a href="mailto:info@universale-dienstleistungen.de">
                   <span>E-Mail</span>
                   <strong>info@universale-dienstleistungen.de</strong>
+                </a>
+                <a href={whatsappHref} target="_blank" rel="noreferrer">
+                  <span>WhatsApp</span>
+                  <strong>Nachricht senden</strong>
                 </a>
                 <div>
                   <span>Standort</span>
@@ -475,25 +514,36 @@ export default function Home() {
                       />
                     </label>
                     <label>
-                      <span>Telefon (optional)</span>
+                      <span>Telefon</span>
                       <input
                         name="phone"
                         type="tel"
                         autoComplete="tel"
                         maxLength={50}
+                        aria-describedby="contact-route-help"
+                        aria-invalid={contactRouteMissing || undefined}
+                        onChange={() => {
+                          setContactRouteMissing(false);
+                          setFormStatus("");
+                        }}
                       />
                     </label>
                   </div>
 
                   <div className="form-row form-row--two">
                     <label>
-                      <span>E-Mail *</span>
+                      <span>E-Mail</span>
                       <input
                         name="email"
                         type="email"
                         autoComplete="email"
                         maxLength={254}
-                        required
+                        aria-describedby="contact-route-help"
+                        aria-invalid={contactRouteMissing || undefined}
+                        onChange={() => {
+                          setContactRouteMissing(false);
+                          setFormStatus("");
+                        }}
                       />
                     </label>
                     <label>
@@ -508,18 +558,13 @@ export default function Home() {
                     </label>
                   </div>
 
-                  <div className="form-row">
-                    <label>
-                      <span>Wunschtermin oder Zeitraum</span>
-                      <input
-                        name="date"
-                        type="text"
-                        autoComplete="off"
-                        maxLength={100}
-                        placeholder="z. B. August 2026 oder flexibel"
-                      />
-                    </label>
-                  </div>
+                  <p
+                    className={`contact-route-help${contactRouteMissing ? " is-error" : ""}`}
+                    id="contact-route-help"
+                  >
+                    Telefonnummer oder E-Mail-Adresse: Eine Kontaktmöglichkeit
+                    genügt.
+                  </p>
 
                   <label className="message-label">
                     <span>Worum geht es? *</span>

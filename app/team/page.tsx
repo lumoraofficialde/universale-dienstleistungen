@@ -51,9 +51,9 @@ export default function TeamPage() {
             <h1 id="team-hero-title"><span>Klare Abläufe.</span><span>Verbindliche Abstimmung.</span></h1>
             <div className="team-hero__foot">
               <p>
-                Von Büsum aus koordinieren wir Anfragen, Einsätze und Termine.
-                Umfang, Termin, Personal und Technik stimmen wir passend zur
-                Aufgabe ab.
+                Von Büsum aus koordinieren wir Anfragen, Einsätze und Termine
+                im Kreis Dithmarschen. Umfang, Termin, Personal und Technik
+                stimmen wir passend zur Aufgabe ab.
               </p>
               <a className="button button--accent" href={`${basePath}/#kontakt`}>
                 Anfrage starten <span aria-hidden="true">↗︎</span>
